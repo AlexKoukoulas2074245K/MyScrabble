@@ -26,7 +26,7 @@ public abstract class GameObject
 	
 	/* Apart from animation an ArrayList of Textures is also available.
 	 * Private HashMap to limit the control of the HashMap by the
-	 * subclass. Instead two helper methods are provided below 
+	 * subclass. Instead two accessing helper methods are provided below.
 	 */
 	private HashMap<Integer, Texture> textures;
 	

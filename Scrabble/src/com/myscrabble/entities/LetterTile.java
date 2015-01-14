@@ -20,19 +20,30 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
  */
 public class LetterTile extends GameObject
 {
+	/* Tile Pushing Direction Flags */
+	public static final int LEFT  = 0;
+	public static final int RIGHT = 1;
+	public static final int UP    = 2;
+	public static final int DOWN  = 3;
+	
+	/* Standard Tile Size (equals TileSize of Tile class) */
 	public static final int TILE_SIZE = Tile.TILE_SIZE;
+	
+	/* LetterTile highlight status flags */
 	public static final int HIGHLIGHT_IDLE = 0;
 	public static final int HIGHLIGHT_SELECTED = 1;
 	public static final int HIGHLIGHT_DESELECTED = 2;
-	public static final int LEFT = 0;
-	public static final int RIGHT = 1;
 	
 	/* Default texture path for all letters */
 	private static String DEFAULT_LETTER_PATH = "/tiles/" + Play.TILE_STYLE + "/";
 	
+	/* GameObject's textures HashMap key to texture */
 	private static final int LETTER_TEX = 0;
+	
+	/* No movement goal */
 	private static final int NO_MOVE_GOAL = -1;
 	
+	/* Standard vertical speed */
 	private static final float V_SPEED = 2f;
 	
 	
@@ -40,7 +51,6 @@ public class LetterTile extends GameObject
 	
 	private char letter;
 	private int points;
-	
 	private int highlightStatus;
 	private boolean grabbed;
 	private float movingGoalPos;
@@ -62,9 +72,11 @@ public class LetterTile extends GameObject
 		grabbed = false;
 		movingGoalPos = -1;
 		
-		pushedFlags = new boolean[2];
+		pushedFlags = new boolean[4];
 		pushedFlags[LEFT] = false;
 		pushedFlags[RIGHT] = false;
+		pushedFlags[UP] = false;
+		pushedFlags[DOWN] = false;
 		
 		loadTexture();
 	}
@@ -194,15 +206,32 @@ public class LetterTile extends GameObject
 		RenderUtils.renderTexture(getTexture(LETTER_TEX), x, y);
 	}
 	
-	
-	public void pushLeft()
+	/**
+	 * 
+	 * @param direction. The direction of the push
+	 * Before moving it asserts that the tile will
+	 * not move in the same direction twice in a row
+	 */
+	public void push(int direction)
 	{
-		push(LEFT);
+		if(direction == LEFT && !pushedFlags[LEFT])
+		{
+			pushedFlags[RIGHT] = false;
+			pushedFlags[LEFT] = true;
+			movingGoalPos = x - TILE_SIZE;
+		}
+		else if(direction == RIGHT && !pushedFlags[RIGHT])
+		{
+			pushedFlags[RIGHT] = true;
+			pushedFlags[LEFT] = false;
+			movingGoalPos = x + TILE_SIZE;
+		}	
 	}
 	
-	public void pushRight()
+	private void loadTexture()
 	{
-		push(RIGHT);
+		String fullPath = DEFAULT_LETTER_PATH + letter + STD_TEX_EXT;
+		addTexture(LETTER_TEX, fullPath);
 	}
 	
 	/* Getters / Setters */
@@ -219,6 +248,11 @@ public class LetterTile extends GameObject
 	public boolean getIdle()
 	{
 		return movingGoalPos == NO_MOVE_GOAL;
+	}
+	
+	public boolean[] getFlags()
+	{
+		return pushedFlags;
 	}
 	
 	public boolean canBeMoved(int direction)
@@ -275,32 +309,8 @@ public class LetterTile extends GameObject
 		pushedFlags[direction] = status;
 	}
 	
-	/**
-	 * 
-	 * @param direction. The direction of the push
-	 * Before moving it asserts that the tile will
-	 * not move in the same direction twice in a row
-	 */
-	private void push(int direction)
+	public void setFlags(boolean[] pushedFlags)
 	{
-		if(direction == LEFT && !pushedFlags[LEFT])
-		{
-			pushedFlags[RIGHT] = false;
-			pushedFlags[LEFT] = true;
-			movingGoalPos = x - TILE_SIZE;
-		}
-		else if(direction == RIGHT && !pushedFlags[RIGHT])
-		{
-			pushedFlags[RIGHT] = true;
-			pushedFlags[LEFT] = false;
-			movingGoalPos = x + TILE_SIZE;
-		}	
-	}
-	
-	private void loadTexture()
-	{
-		String fullPath = DEFAULT_LETTER_PATH + letter + STD_TEX_EXT;
-		addTexture(LETTER_TEX, fullPath);
-	}
-	
+		this.pushedFlags = pushedFlags;
+	}	
 }

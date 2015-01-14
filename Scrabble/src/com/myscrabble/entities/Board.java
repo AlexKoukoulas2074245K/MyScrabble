@@ -18,11 +18,11 @@ import com.myscrabble.util.RenderUtils;
 
 public class Board extends GameObject 
 {
-	public static final int BOARD_ROWS = 15;
-	public static final int BOARD_COLS = 15;
+	static final int BOARD_ROWS = 15;
+	static final int BOARD_COLS = 15;
 	
 	/* A matrix representation of the board with the special tiles included */ 
-	public static final int[][] boardLayout = new int[][]{
+	static final int[][] boardLayout = new int[][]{
 		{ 4 , 0 , 0 , 1 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 1 , 0 , 0 , 4 },
 		{ 0 , 3 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 3 , 0 },
 		{ 0 , 0 , 3 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 },

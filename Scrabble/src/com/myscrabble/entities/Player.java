@@ -72,7 +72,7 @@ public class Player
 		{
 			if(tileRack.tilesIdle())
 			{
-				tileRack.pushTilesLeft(0);
+				tileRack.pushTiles(LetterTile.LEFT, 0);
 			}
 		}
 		else if(ScrabbleUtils.intersects(selLetterTile.getRect(), board.getRect()))
@@ -111,7 +111,8 @@ public class Player
 				{
 					selLetterTile = lt;
 					selLetterTile.setGrabbed(true);
-					selLetterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);					
+					selLetterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);
+					
 					int indexOfTile = tileRack.getTileIndex(lt);
 					tileRack.removeTile(selLetterTile);
 					
@@ -124,7 +125,7 @@ public class Player
 						tileRack.getLetterTiles().get(i).setPushDir(LetterTile.LEFT, false);
 					}
 					
-					tileRack.pushTilesLeft(indexOfTile + 1);
+					tileRack.pushTiles(LetterTile.LEFT, indexOfTile + 1);
 				}
 			}
 		}
