@@ -4,6 +4,8 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
@@ -23,12 +25,14 @@ import static com.myscrabble.entities.LetterTile.DOWN;
 
 public class TileRack extends GameObject
 {
-
+	/* Standard max number of tiles for a rack */
+	public static final int MAX_NO_TILES = 7;
 	
 	/* Letter Tile Management (additions,current,deletions)*/
 	private ArrayList<LetterTile> letterTiles;
 	private ArrayList<LetterTile> tilesToRemove;
-	private ArrayList<LetterTile> tilesToAdd;
+	private HashMap<LetterTile, Integer> tilesToAdd; // <-- HashMap to enable setting and/or inserting  tiles
+												     // instead of just appending to the end.
 	
 	/* Temporary storage of LetterTile attributes */
 	private ArrayList<Float> tempStoredPositions;
@@ -40,6 +44,15 @@ public class TileRack extends GameObject
 	private static final int RACK_BACK = 0;
 	private static final int RACK_FRONT = 1;
 	
+	private static final float PLAYER_1_POS_X = 192.0f;
+	private static final float PLAYER_1_POS_Y = 592.0f;
+	
+
+	public static float[] getTilePos(final int index)
+	{
+		return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
+	}
+	
 	private float frontY;
 	
 	public TileRack(GameStateManager gsm)
@@ -48,7 +61,7 @@ public class TileRack extends GameObject
 		
 		letterTiles = new ArrayList<LetterTile>();
 		tilesToRemove = new ArrayList<LetterTile>();
-		tilesToAdd = new ArrayList<LetterTile>();
+		tilesToAdd = new HashMap<LetterTile, Integer>();
 		
 		tempStoredPositions = new ArrayList<Float>();
 		tempStoredFlags = new ArrayList<boolean[]>();
@@ -59,17 +72,16 @@ public class TileRack extends GameObject
 		//TODO: REFORMAT
 		LetterBag letterBag = new LetterBag(gsm);
 		
-		x = Main.getCenterDimensions()[0] - getTexture(RACK_FRONT).getTextureWidth()/2;
-		y = Main.getNormalDimensions()[1] - (int)(1.5f * getTexture(RACK_BACK).getTextureHeight());
+		x = PLAYER_1_POS_X;
+		y = PLAYER_1_POS_Y;
+		
 		frontY = y + getTexture(RACK_BACK).getTextureHeight() - getTexture(RACK_FRONT).getTextureHeight();
 		
 		for(int i = 0; i < 7; i++)
 		{
 			char letter   = letterBag.drawLetter();
 			int letterValue = ScrabbleUtils.getValueOf(letter);
-			float letterX = getLetterX(i);
-			float letterY = y;
-			letterTiles.add(new LetterTile(gsm, letter, letterValue, letterX, letterY));
+			letterTiles.add(new LetterTile(gsm, letter, letterValue, getTilePos(i)));
 		}
 	
 	}
@@ -77,7 +89,33 @@ public class TileRack extends GameObject
 	@Override
 	public void update()
 	{
+		coreTileUpdate();
 		
+		if(!tilesAreIdle())
+		{
+			return;
+		}
+		
+		/** Remove tiles */
+		for(LetterTile lt : tilesToRemove)
+		{
+			letterTiles.remove(lt);
+		}
+
+		tilesToRemove.clear();
+		
+		/** Add tiles */
+		for(Entry<LetterTile, Integer> entry : tilesToAdd.entrySet())
+		{
+			letterTiles.add(entry.getValue(), entry.getKey());
+		}
+		
+		tilesToAdd.clear();
+				
+	}
+	
+	private void coreTileUpdate()
+	{
 		storeTempAttribs();
 		
 		for(LetterTile lt : letterTiles)
@@ -86,27 +124,8 @@ public class TileRack extends GameObject
 		}
 		
 		checkForMerges();
-		
-		if(!tilesIdle())
-		{
-			return;
-		}
-		
-		for(LetterTile lt : tilesToRemove)
-		{
-			letterTiles.remove(lt);
-		}
-
-		tilesToRemove.clear();
-		
-		for(LetterTile lt : tilesToAdd)
-		{
-			letterTiles.add(lt);
-		}
-		tilesToAdd.clear();
-				
 	}
-		
+	
 	public void renderBack()
 	{
 		RenderUtils.renderTexture(getTexture(RACK_BACK), x, y, false);
@@ -140,7 +159,7 @@ public class TileRack extends GameObject
 	 */
 	public void reformTiles(final LetterTile lt)
 	{
-		if(!tilesIdle())
+		if(!tilesAreIdle())
 		{
 			return;	
 		}
@@ -199,85 +218,6 @@ public class TileRack extends GameObject
 		}
 	}
 	
-	public void addTile(final LetterTile lt)
-	{
-		char ch = lt.getLetter();
-		int points = lt.getPoints();
-		
-		tilesToAdd.add(new LetterTile(gsm, ch, points, getLetterX(letterTiles.size()), y));
-	}
-	
-	public void removeTile(final LetterTile lt)
-	{
-		tilesToRemove.add(lt);
-	}
-	
-	public Rectangle getRect()
-	{
-		return new Rectangle((int)x, (int)y - Tile.TILE_SIZE / 2,
-									 getTexture(RACK_BACK).getTextureWidth(), 
-								   	 getTexture(RACK_BACK).getTextureHeight());
-	}
-	
-	public int getNoCollisions(final LetterTile lt)
-	{
-		int noCollisions = 0;
-		
-		for(LetterTile other: letterTiles)
-		{
-			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
-			{
-				noCollisions++;
-			}
-		}
-		
-		return noCollisions;
-	}
-	
-	public ArrayList<LetterTile> getCollidedTiles(final LetterTile lt)
-	{
-		ArrayList<LetterTile> result = new ArrayList<>();
-		
-		for(LetterTile other: letterTiles)
-		{
-			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
-			{
-				result.add(other);
-			}
-		}
-		
-		return result;
-	}
-	
-	public float getLetterX(final int index)
-	{
-		return x + index * Tile.TILE_SIZE;
-	}
-	
-	public int getTileIndex(LetterTile lt)
-	{
-		return letterTiles.indexOf(lt);
-	}
-	
-	public boolean tilesIdle()
-	{
-		for(LetterTile lt: letterTiles)
-		{
-			if(!lt.getIdle())
-			{
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public ArrayList<LetterTile> getLetterTiles()
-	{
-		return letterTiles;
-	}
-	
-		
 	private void storeTempAttribs()
 	{
 		for(LetterTile lt : letterTiles)
@@ -331,6 +271,138 @@ public class TileRack extends GameObject
 	{
 		pushTiles(LEFT, 0);
 	}
+	
+	public void addTile(final LetterTile lt, final int index)
+	{
+		char ch = lt.getLetter();
+		int points = lt.getPoints();
+		
+		tilesToAdd.put(new LetterTile(gsm, ch, points, getTilePos(index)), index);
+	}
+	
+	public void removeTile(final LetterTile lt)
+	{
+		tilesToRemove.add(lt);
+	}
+	
+	/* Getters / Setters */
+	public Rectangle getRect()
+	{
+		return new Rectangle((int)x, (int)y - Tile.TILE_SIZE / 2,
+									 getTexture(RACK_BACK).getTextureWidth(), 
+								   	 getTexture(RACK_BACK).getTextureHeight());
+	}
+	
+	public int getNoCollisions(final LetterTile lt)
+	{
+		int noCollisions = 0;
+		
+		for(LetterTile other: letterTiles)
+		{
+			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
+			{
+				noCollisions++;
+			}
+		}
+		
+		return noCollisions;
+	}
+	
+	public ArrayList<LetterTile> getCollidedTiles(final LetterTile lt)
+	{
+		ArrayList<LetterTile> result = new ArrayList<>();
+		
+		for(LetterTile other: letterTiles)
+		{
+			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
+			{
+				result.add(other);
+			}
+		}
+		
+		return result;
+	}
+	
+	public int getTileIndex(LetterTile lt)
+	{
+		return letterTiles.indexOf(lt);
+	}
+	
+	public boolean tilesAreIdle()
+	{
+		for(LetterTile lt: letterTiles)
+		{
+			if(!lt.getIdle())
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public int nTiles()
+	{
+		return letterTiles.size();
+	}
+	
+	public ArrayList<LetterTile> getLetterTiles()
+	{
+		return letterTiles;
+	}
+	
+	/**
+	 * Attempts to find and return a hole in the formation
+	 * of the tiles in the rack (i.e. a spot -in between, at
+	 * the start or at the end of the letter tiles- where a new
+	 * tile could come in)
+	 */
+	public TileRackHole getLetterTileFormationHole()
+	{
+		if(letterTiles.size() == 0)
+		{
+			return TileRackHole.getDefaultHole();
+		}
+		else if(letterTiles.size() == MAX_NO_TILES) /* this should never happen */
+		{
+			return null;
+		}
+		else
+		{
+			if(letterTiles.get(0).getX() != getTilePos(0)[0])
+			{
+				return TileRackHole.getDefaultHole();
+			}
+			
+			for(int i = 1; i < letterTiles.size(); i++)
+			{
+				if(letterTiles.get(i).getCenterX() -
+				   letterTiles.get(i- 1).getCenterX() != LetterTile.TILE_SIZE)
+				{
+					return new TileRackHole(i, getTilePos(i));
+				}
+			}
+			
+			if(letterTiles.size() < MAX_NO_TILES)
+			{
+				return new TileRackHole(letterTiles.size(), getTilePos(letterTiles.size()));
+			}
+			
+			return TileRackHole.getDefaultHole();
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < letterTiles.size(); i++)
+		{
+			sb.append(i + ": " + letterTiles.get(i).getLetter() + " | ");
+		}
+		
+		return sb.toString();
+	}
 }
 
 /**
@@ -338,12 +410,62 @@ public class TileRack extends GameObject
  * @author Alex Koukoulas
  * Class Description:
  * A Struct representing
- * a hole in the LetterTiles
- * standing in the TileRack
+ * a hole in the LetterTiles' formation
+ * while standing in the TileRack. This information
+ * is needed because it may be a valid candidate for
+ * a letter tile hovering over the rack. 
+ * Has an index and a position.
  */
 class TileRackHole
 {
-	public int index;
-	public float x;
-	public float y;
+	public static TileRackHole getDefaultHole()
+	{
+		return new TileRackHole(0, TileRack.getTilePos(0));
+	}
+	
+	public static boolean isDefaultHole(TileRackHole hole)
+	{
+		return hole.equals(getDefaultHole());
+	}
+	
+	private int index;
+	private float[] pos;
+	
+	public TileRackHole(int index, float[] pos)
+	{
+		this.index = index;
+		this.pos = pos;
+	}
+	
+	@Override
+	public boolean equals(Object object)
+	{
+		if(!(object instanceof TileRackHole) || object == null)
+		{
+			return false;
+		}
+		else
+		{
+			TileRackHole other  = (TileRackHole)object;
+			
+			return other.getIndex()  == this.index &&
+			 	   other.getPos()[0] == this.pos[0];
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return index + "     |     " + "[" + pos[0] + ", " + pos[1] + "}";
+	}
+	
+	public int getIndex()
+	{
+		return index;
+	}
+	
+	public float[] getPos()
+	{
+		return pos;
+	}
 }

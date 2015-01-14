@@ -57,13 +57,18 @@ public class LetterTile extends GameObject
 	
 	public LetterTile(GameStateManager gsm, char letter, int points, float x, float y)
 	{
+		this(gsm, letter, points, new float[]{x, y});
+	}
+	
+	public LetterTile(GameStateManager gsm, char letter, int points, float[] pos)
+	{
 		super(gsm);
 		
 		this.letter = letter;
 		this.points = points;
 		
-		this.x = x;
-		this.y = y;
+		this.x = pos[0];
+		this.y = pos[1];
 		this.x0 = x;
 		this.y0 = y;
 		

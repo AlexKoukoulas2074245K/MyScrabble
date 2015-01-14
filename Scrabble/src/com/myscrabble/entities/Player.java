@@ -54,11 +54,14 @@ public class Player
 	
 	private void releaseLetterTile()
 	{
-		if(!ScrabbleUtils.intersects(selLetterTile.getRect(), tileRack.getRect()))
-		{
-			tileRack.addTile(selLetterTile);
-			selLetterTile = null;
-		}
+		//if(ScrabbleUtils.intersects(selLetterTile.getRect(), tileRack.getRect()))
+		//{
+			if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
+			{				
+				tileRack.addTile(selLetterTile, tileRack.getLetterTileFormationHole().getIndex());
+				selLetterTile = null;
+			}
+		//}
 	}
 	
 	private void checkAreaHovering()
@@ -70,7 +73,7 @@ public class Player
 		}
 		else if(!ScrabbleUtils.intersects(selLetterTile.getRect(), tileRack.getRect()))
 		{
-			if(tileRack.tilesIdle())
+			if(tileRack.tilesAreIdle())
 			{
 				tileRack.pushTiles(LetterTile.LEFT, 0);
 			}
@@ -134,7 +137,7 @@ public class Player
 	public void update()
 	{
 		tileRack.update();
-		
+		System.out.println(tileRack);
 		if(hasSelectedLetterTile())
 		{
 			selLetterTile.update();
