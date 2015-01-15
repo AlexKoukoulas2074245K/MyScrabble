@@ -24,7 +24,7 @@ public class ResourceManager
 	public static final String STD_TEX_EXT = ".png";
 	private static final String STD_TEX_EXT_UPPER = "PNG";
 	
-	private static final String DEFAULT_DIR = "C:/Users/Public/Pictures/scrabble/res";
+	private static final String DEFAULT_DIR = "C:/Users/alex/Pictures/scrabble/res";
 	private static final String TEX_DIR = DEFAULT_DIR + "/tex";
 	
 	
