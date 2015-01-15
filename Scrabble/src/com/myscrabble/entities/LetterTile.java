@@ -52,8 +52,10 @@ public class LetterTile extends GameObject
 	private char letter;
 	private int points;
 	private int highlightStatus;
-	private boolean grabbed;
 	private float movingGoalPos;
+	
+	private boolean grabbed;
+	private boolean recentlyAdded;
 	
 	public LetterTile(GameStateManager gsm, char letter, int points, float x, float y)
 	{
@@ -75,6 +77,8 @@ public class LetterTile extends GameObject
 		highlightStatus = HIGHLIGHT_IDLE;
 		
 		grabbed = false;
+		recentlyAdded = false;
+		
 		movingGoalPos = -1;
 		
 		pushedFlags = new boolean[4];
@@ -188,7 +192,7 @@ public class LetterTile extends GameObject
 	{
 		if(ScrabbleUtils.getContainment(mouseX, mouseY, getRect()))
 		{
-			if(highlightStatus != LetterTile.HIGHLIGHT_SELECTED)
+			if(highlightStatus != LetterTile.HIGHLIGHT_SELECTED && !recentlyAdded)
 			{
 				highlightStatus = LetterTile.HIGHLIGHT_SELECTED;
 			}
@@ -201,6 +205,11 @@ public class LetterTile extends GameObject
 					   						 getOriginalRect()))
 			{
 				highlightStatus = LetterTile.HIGHLIGHT_DESELECTED;
+			}
+			
+			if(recentlyAdded)
+			{
+				recentlyAdded = false;
 			}
 		}
 	}
@@ -299,6 +308,11 @@ public class LetterTile extends GameObject
 							 (int)Tile.TILE_SIZE, (int)Tile.TILE_SIZE);
 	}
 	
+	public boolean isRecentlyAdded()
+	{
+		return recentlyAdded;
+	}
+	
 	public void setHighlightStatus(int highlightStatus)
 	{
 		this.highlightStatus = highlightStatus;
@@ -317,5 +331,10 @@ public class LetterTile extends GameObject
 	public void setFlags(boolean[] pushedFlags)
 	{
 		this.pushedFlags = pushedFlags;
-	}	
+	}
+	
+	public void setRecentlyAdded(boolean recentlyAdded)
+	{
+		this.recentlyAdded = recentlyAdded;
+	}
 }

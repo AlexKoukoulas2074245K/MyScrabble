@@ -6,7 +6,7 @@ import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
-import com.myscrabble.entities.TileSelector;
+import com.myscrabble.entities.TileIndicator;
 import com.myscrabble.managers.GameStateManager;
 
 /**
@@ -34,17 +34,13 @@ public class Play extends GameState
 	/* Letter bag */
 	private LetterBag letterBag;
 	
-	/* UI tile selector */
-	private TileSelector tileSelector;
-	
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
 		
-		tileSelector = new TileSelector(gsm);
 		board = new Board(gsm);
 		players = new ArrayList<Player>();
-		players.add(new Player(gsm, board, tileSelector));
+		players.add(new Player(gsm, board));
 		
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(board);

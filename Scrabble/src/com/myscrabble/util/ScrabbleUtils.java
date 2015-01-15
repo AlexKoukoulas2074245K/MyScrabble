@@ -66,15 +66,4 @@ public class ScrabbleUtils
 	{
 		return rect.contains((int)mouseX, (int)mouseY);
 	}
-	
-	/**
-	 * 
-	 * @param r1 Rectangle r1
-	 * @param r2 Rectangle r2
-	 * @return whether the two rectangles intersect
-	 */
-	public static boolean intersects(final Rectangle r1, final Rectangle r2)
-	{
-		return r1.intersects(r2);
-	}
 }

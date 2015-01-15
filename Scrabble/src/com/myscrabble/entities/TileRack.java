@@ -111,8 +111,7 @@ public class TileRack extends GameObject
 			resetFlags();
 		}
 		
-		tilesToAdd.clear();
-				
+		tilesToAdd.clear();			
 	}
 	
 	private void coreTileUpdate()
@@ -129,7 +128,7 @@ public class TileRack extends GameObject
 	
 	public void renderBack()
 	{
-		RenderUtils.renderTexture(getTexture(RACK_BACK), x, y, false);
+		RenderUtils.renderTexture(getTexture(RACK_BACK), x, y);
 		
 		for(LetterTile lt: letterTiles)
 		{
@@ -139,7 +138,7 @@ public class TileRack extends GameObject
 	
 	public void renderFront()
 	{
-		RenderUtils.renderTexture(getTexture(RACK_FRONT), x, frontY, false);
+		RenderUtils.renderTexture(getTexture(RACK_FRONT), x, frontY);
 	}
 	
 	/**
@@ -242,7 +241,7 @@ public class TileRack extends GameObject
 			LetterTile ltPrev = letterTiles.get(i - 1);
 			LetterTile ltCurr = letterTiles.get(i);
 			
-			if(ScrabbleUtils.intersects(ltPrev.getRect(), ltCurr.getRect()) &&
+			if(ltPrev.getRect().intersects(ltCurr.getRect()) &&
 			   !ltPrev.getGrabbed() && !ltCurr.getGrabbed())
 			{
 				ltPrev.setX(tempStoredPositions.get(i - 1));
@@ -259,34 +258,9 @@ public class TileRack extends GameObject
 		
 		if(mergeSpotted)
 		{
-		    defaultPush();
+		    pushTiles(LEFT, 0);
 		}
 		
-	}
-	
-	private boolean tilesCanMoveLeft()
-	{
-	    for(LetterTile lt : letterTiles)
-	    {
-	        if(!lt.canBeMoved(LEFT))
-	        {
-	            return false;
-	        }
-	    }
-	    
-	    return true;
-	}
-	
-	/**
-	 * This tile push is used in special
-	 * occasions, particularly when two
-	 * tiles are found to have their
-	 * rectangles intersecting
-	 * (something that is not wanted).
-	 */
-	private void defaultPush()
-	{
-		pushTiles(LEFT, 0);
 	}
 	
 	private void resetFlags()
@@ -297,12 +271,16 @@ public class TileRack extends GameObject
 	    }
 	}
 	
+	/* Add / Remove tiles from rack */
 	public void addTile(final LetterTile lt, final int index)
 	{
 		char ch = lt.getLetter();
 		int points = lt.getPoints();
 		
-		tilesToAdd.put(new LetterTile(gsm, ch, points, getTilePos(index)), index);
+		LetterTile newTile = new LetterTile(gsm, ch, points, getTilePos(index));
+		newTile.setRecentlyAdded(true);
+		
+		tilesToAdd.put(newTile, index);
 	}
 	
 	public void removeTile(final LetterTile lt)
@@ -324,7 +302,7 @@ public class TileRack extends GameObject
 		
 		for(LetterTile other: letterTiles)
 		{
-			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
+			if(lt.getRect().intersects(other.getRect()))
 			{
 				noCollisions++;
 			}
@@ -339,7 +317,7 @@ public class TileRack extends GameObject
 		
 		for(LetterTile other: letterTiles)
 		{
-			if(ScrabbleUtils.intersects(lt.getRect(), other.getRect()))
+			if(lt.getRect().intersects(other.getRect()))
 			{
 				result.add(other);
 			}

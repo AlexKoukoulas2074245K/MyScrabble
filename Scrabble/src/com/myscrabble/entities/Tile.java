@@ -1,11 +1,18 @@
 package com.myscrabble.entities;
 
+import java.awt.Rectangle;
+import java.util.Random;
+
 /**
  * 
  * @author Alex Koukoulas
  * Class Description:
  * This class holds all the fields for a particular
- * tile on the playing board. 
+ * tile on the playing board. Not to be confused
+ * with LetterTile which is an actual game object
+ * child. This class serves on the other hand
+ * serves the role of the place holder on the game
+ * board.
  */
 
 public class Tile 
@@ -30,19 +37,35 @@ public class Tile
 		this.col = col;
 		this.row = row;
 		this.type = type;
-		this.isEmpty = true;
-		x = col * TILE_SIZE;
-		y = row * TILE_SIZE;
+		this.isEmpty = new Random().nextInt(2) == 1;
+		
+		x = Board.SIDE_WIDTH + Board.X_OFFSET + col * TILE_SIZE;
+		y = Board.SIDE_HEIGHT + Board.Y_OFFSET + row * TILE_SIZE;
 	}
-
+	
+	public Rectangle getRect()
+	{
+		return new Rectangle((int)x, (int)y, TILE_SIZE, TILE_SIZE);
+	}
+	
 	public int getType()
 	{
 		return type;
 	}
-
-	public void setType(int type)
+	
+	public boolean isEmpty()
 	{
-		this.type = type;
+		return isEmpty;
+	}
+	
+	public float getX()
+	{
+		return x;
+	}
+	
+	public float getY()
+	{
+		return y;
 	}
 
 	public int getCol()
@@ -50,48 +73,38 @@ public class Tile
 		return col;
 	}
 
-	public void setCol(int col)
-	{
-		this.col = col;
-	}
-
 	public int getRow()
 	{
 		return row;
 	}
 
-	public void setRow(int row)
+	public void setType(int type)
 	{
-		this.row = row;
+		this.type = type;
 	}
-
-	public float getX()
+	
+	public void setEmpty(boolean isEmpty)
 	{
-		return x;
+		this.isEmpty = isEmpty;
 	}
-
+	
 	public void setX(float x)
 	{
 		this.x = x;
 	}
-
-	public float getY()
-	{
-		return y;
-	}
-
+	
 	public void setY(float y)
 	{
 		this.y = y;
 	}
 
-	public boolean isEmpty()
+	public void setCol(int col)
 	{
-		return isEmpty;
+		this.col = col;
 	}
-
-	public void setEmpty(boolean isEmpty)
+	
+	public void setRow(int row)
 	{
-		this.isEmpty = isEmpty;
+		this.row = row;
 	}
 }

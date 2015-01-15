@@ -72,42 +72,20 @@ public class RenderUtils
 	 * @param tex
 	 * @param x
 	 * @param y
-	 * 
-	 * This default texture rendering method does not center
-	 * the texture on the coordinates supplied
-	 */
-	public static void renderTexture(final Texture tex, final float x, final float y)
-	{
-		renderTexture(tex, x, y, false);
-	}
-	
-	/**
-	 * 
-	 * @param tex
-	 * @param x
-	 * @param y
 	 * @param center: Whether or not to center
 	 * the texture on the coordinates given
 	 */
-	public static void renderTexture(final Texture tex, final float x, final float y, final boolean center)
+	public static void renderTexture(final Texture tex, final float x, final float y)
 	{
 		/** Creates the vertices depending on center request or not */
 		float[][] quadVertices;
+
 		
-		if(center)
-		{
-			quadVertices = new float[][]{{x - tex.getTextureWidth() / 2f, y - tex.getTextureHeight() / 2f}, 									  
-								  		 {x + tex.getTextureWidth() / 2f, y - tex.getTextureHeight() / 2f},
-								  		 {x + tex.getTextureWidth() / 2f, y + tex.getTextureHeight() / 2f},
-								  		 {x - tex.getTextureWidth() / 2f, y + tex.getTextureHeight() / 2f}};
-		}
-		else
-		{
-			quadVertices = new float[][]{{x                        , y                         }, 									  
-								  		 {x + tex.getTextureWidth(), y                         },
-								  		 {x + tex.getTextureWidth(), y + tex.getTextureHeight()},
-								  		 {x                        , y + tex.getTextureHeight()}};
-		}
+		quadVertices = new float[][]{{x                        , y                         }, 									  
+							  		 {x + tex.getTextureWidth(), y                         },
+							  		 {x + tex.getTextureWidth(), y + tex.getTextureHeight()},
+							  		 {x                        , y + tex.getTextureHeight()}};
+	
 		
 		/** Renders the texture on top of the rectangle */
 		glPushMatrix();

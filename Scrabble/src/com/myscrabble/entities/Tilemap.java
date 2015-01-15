@@ -1,5 +1,6 @@
 package com.myscrabble.entities;
 
+import com.myscrabble.managers.InputManager;
 import com.myscrabble.util.OutOfBoardException;
 
 
@@ -31,13 +32,18 @@ public class Tilemap
 	 */
 	public Tile getTile(int col, int row)
 	{
-		if(col >= Board.BOARD_COLS || row >= Board.BOARD_ROWS)
+		if(col >= Board.BOARD_COLS || row >= Board.BOARD_ROWS ||
+		   col < 0 || row < 0)
 		{	
-			System.err.println("Out of bounds exception for given indices: " + col + " | " + row);
-			throw new OutOfBoardException();
+			return null;
 		}
 			
 		return tiles[row][col];
+	}
+
+	public boolean isTileEmpty(int x, int y)
+	{
+		return getTile(x, y).isEmpty();
 	}
 	
 	private void createTilemap()

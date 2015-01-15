@@ -7,6 +7,7 @@ import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.Animation;
+import com.myscrabble.util.Timer;
 
 /**
  * 
