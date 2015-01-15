@@ -28,16 +28,6 @@ public class TileRack extends GameObject
 	/* Standard max number of tiles for a rack */
 	public static final int MAX_NO_TILES = 7;
 	
-	/* Letter Tile Management (additions,current,deletions)*/
-	private ArrayList<LetterTile> letterTiles;
-	private ArrayList<LetterTile> tilesToRemove;
-	private HashMap<LetterTile, Integer> tilesToAdd; // <-- HashMap to enable setting and/or inserting  tiles
-												     // instead of just appending to the end.
-	
-	/* Temporary storage of LetterTile attributes */
-	private ArrayList<Float> tempStoredPositions;
-	private ArrayList<boolean[]> tempStoredFlags;
-	
 	private static final String RACK_BACK_PATH = "/board/stand" + STD_TEX_EXT;
 	private static final String RACK_FRONT_PATH = "/board/standArm" + STD_TEX_EXT;
 	
@@ -47,14 +37,23 @@ public class TileRack extends GameObject
 	private static final float PLAYER_1_POS_X = 192.0f;
 	private static final float PLAYER_1_POS_Y = 592.0f;
 	
-
 	public static float[] getTilePos(final int index)
 	{
 		return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
 	}
-	
-	private float frontY;
-	
+	 
+	/* Letter Tile Management (additions,current,deletions)*/
+    private ArrayList<LetterTile> letterTiles;
+    private ArrayList<LetterTile> tilesToRemove;
+    private HashMap<LetterTile, Integer> tilesToAdd; // <-- HashMap to enable setting and/or inserting  tiles
+                                                     // instead of just appending to the end.
+    
+    /* Temporary storage of LetterTile attributes */
+    private ArrayList<Float> tempStoredPositions;
+    private ArrayList<boolean[]> tempStoredFlags;
+     
+    private float frontY;
+    
 	public TileRack(GameStateManager gsm)
 	{
 		super(gsm);
@@ -68,6 +67,7 @@ public class TileRack extends GameObject
 		
 		addTexture(RACK_BACK, RACK_BACK_PATH);
 		addTexture(RACK_FRONT, RACK_FRONT_PATH);
+		
 		
 		//TODO: REFORMAT
 		LetterBag letterBag = new LetterBag(gsm);
@@ -108,6 +108,7 @@ public class TileRack extends GameObject
 		for(Entry<LetterTile, Integer> entry : tilesToAdd.entrySet())
 		{
 			letterTiles.add(entry.getValue(), entry.getKey());
+			resetFlags();
 		}
 		
 		tilesToAdd.clear();
@@ -226,6 +227,8 @@ public class TileRack extends GameObject
 			tempStoredFlags.add(lt.getFlags());
 		}
 	}
+	
+	
 	/* Resets the positions of two tiles if 
 	 * intersection of their rectangles is
 	 * found
@@ -256,8 +259,22 @@ public class TileRack extends GameObject
 		
 		if(mergeSpotted)
 		{
-			defaultPush();
+		    defaultPush();
 		}
+		
+	}
+	
+	private boolean tilesCanMoveLeft()
+	{
+	    for(LetterTile lt : letterTiles)
+	    {
+	        if(!lt.canBeMoved(LEFT))
+	        {
+	            return false;
+	        }
+	    }
+	    
+	    return true;
 	}
 	
 	/**
@@ -270,6 +287,14 @@ public class TileRack extends GameObject
 	private void defaultPush()
 	{
 		pushTiles(LEFT, 0);
+	}
+	
+	private void resetFlags()
+	{
+	    for(LetterTile lt : letterTiles)
+	    {
+	        lt.setFlags(new boolean[4]);
+	    }
 	}
 	
 	public void addTile(final LetterTile lt, final int index)
@@ -398,7 +423,7 @@ public class TileRack extends GameObject
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < letterTiles.size(); i++)
 		{
-			sb.append(i + ": " + letterTiles.get(i).getLetter() + " | ");
+			sb.append(letterTiles.get(i).getLetter() + ": (" + letterTiles.get(i).getFlags()[0] + ", " +  letterTiles.get(i).getFlags()[1] +")  | ");
 		}
 		
 		return sb.toString();

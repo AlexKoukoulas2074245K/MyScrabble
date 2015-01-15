@@ -137,7 +137,6 @@ public class Player
 	public void update()
 	{
 		tileRack.update();
-		System.out.println(tileRack);
 		if(hasSelectedLetterTile())
 		{
 			selLetterTile.update();
