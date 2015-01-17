@@ -2,6 +2,7 @@ package com.myscrabble.entities;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.InputManager;
+import com.myscrabble.util.ScrabbleDictionary;
 import com.myscrabble.util.ScrabbleUtils;
 import com.myscrabble.util.Timer;
 
@@ -30,22 +31,26 @@ public class Player
 	/* The timer/cool down of player selection */ 
 	private Timer selectionTimer;
 	
+	/* Reference to the dictionary */
+	private ScrabbleDictionary scrabbleDict;
+	
 	private boolean isHuman;
 	private boolean isActive;
 	
-	public Player(GameStateManager gsm, Board board)
+	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict)
 	{
 		this.board = board;
+		this.scrabbleDict = scrabbleDict;
 		
 		selectionTimer = new Timer(SELECTION_COOLDOWN);
 		
-		tileRack = new TileRack(gsm);
+		tileRack = new TileRack(gsm, this);
 		isActive = true;
 		isHuman = true;
 		
 		selLetterTile = null;
 	}
-		
+	
 	public void handleInput()
 	{
 		if(hasSelectedLetterTile() && InputManager.isButtonDown(InputManager.LEFT_BUTTON))
@@ -56,20 +61,49 @@ public class Player
 		{
 			releaseLetterTile();
 		}
+		else if(!hasSelectedLetterTile() && InputManager.isButtonDown(InputManager.RIGHT_BUTTON))
+		{
+			checkForBoardWithdrawal();
+		}
 		else if(!hasSelectedLetterTile())
 		{
 			highlightLetters();
 			checkForSelection();
+			checkForBoardInteraction();
+		}
+	}
+	
+	public void update()
+	{
+		tileRack.update();
+		
+		if(hasSelectedLetterTile())
+		{
+			selLetterTile.update();
 		}
 		
+		if(selectionTimer != null)
+		{
+			selectionTimer.update();
+		}
 	}
 	
 	private void releaseLetterTile()
 	{
-		if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
-		{				
-			tileRack.addTile(selLetterTile, tileRack.getLetterTileFormationHole().getIndex());
-			selLetterTile = null;
+		if(selLetterTile.getRect().intersects(board.getRect()))
+		{
+			if(board.getIndicator().getStatus() == TileIndicator.FAILURE)
+			{
+				addTileToRack();
+			}
+			else if(board.getIndicator().getStatus() == TileIndicator.SUCCESS)
+			{
+				addTileToBoard();
+			}
+		}
+		else
+		{
+			addTileToRack();
 		}
 	}
 	
@@ -90,7 +124,7 @@ public class Player
 		
 		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
 		{
-			board.hoveredOver();
+			board.hoveredOverWithTile();
 		}
 		else
 		{
@@ -156,18 +190,46 @@ public class Player
 		}
 	}
 	
-	public void update()
+	private void checkForBoardWithdrawal()
 	{
-		tileRack.update();
-		
-		if(hasSelectedLetterTile())
+		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
 		{
-			selLetterTile.update();
+			if(board.checkForTileWithdrawal())
+			{				
+				addTileToRack(board.getTileWithdrawal());
+			}
 		}
-		
-		if(selectionTimer != null)
+	}
+	
+	private void checkForBoardInteraction()
+	{
+		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
 		{
-			selectionTimer.update();
+			board.hoveredOverWithoutTile(this);
+		}
+		else
+		{
+			board.disableIndicator();
+		}
+	}
+	
+	private void addTileToBoard()
+	{
+		board.addLetterTile(selLetterTile);
+		selLetterTile = null;
+	}
+		
+	private void addTileToRack()
+	{
+		addTileToRack(selLetterTile);
+		selLetterTile = null;
+	}
+	
+	private void addTileToRack(LetterTile letterTile)
+	{		
+		if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
+		{
+			tileRack.addTile(letterTile, tileRack.getLetterTileFormationHole().getIndex());
 		}
 	}
 	
@@ -195,5 +257,10 @@ public class Player
 	public void setActive(boolean isActive)
 	{
 		this.isActive = isActive;
+	}
+	
+	private boolean wordExists(String word)
+	{
+		return scrabbleDict.wordExists(word);
 	}
 }

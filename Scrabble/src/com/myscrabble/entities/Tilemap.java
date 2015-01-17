@@ -22,6 +22,17 @@ public class Tilemap
 		createTilemap();
 	}
 	
+	public void render()
+	{
+		for(Tile[] allTiles : tiles)
+		{
+			for(Tile tile : allTiles)
+			{
+				tile.render();
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 * @param col
@@ -35,15 +46,33 @@ public class Tilemap
 		if(col >= Board.BOARD_COLS || row >= Board.BOARD_ROWS ||
 		   col < 0 || row < 0)
 		{	
+			System.out.println(col + " | " + row);
 			return null;
 		}
 			
 		return tiles[row][col];
 	}
 
-	public boolean isTileEmpty(int x, int y)
+	/**
+	 * 
+	 * @param letterTile. The letter tile to be added to the tile map
+	 * @param tileIndicator. The board's tile indicator used to 
+	 * extract the positional information needed to store the letter tile.
+	 */
+	public void addLetterTile(LetterTile letterTile, TileIndicator tileIndicator)
 	{
-		return getTile(x, y).isEmpty();
+		/* grab target tile */
+		Tile targetTile = getTile(tileIndicator.getCol(), tileIndicator.getRow());
+		
+		/* set position of letter tile */
+		letterTile.setX(targetTile.getX());
+		letterTile.setY(targetTile.getY());
+		
+		/* place the letter tile on top of the tile */
+		targetTile.setTile(letterTile);
+		
+		/* reset tile indicator status to none */
+		tileIndicator.setStatus(TileIndicator.NONE);
 	}
 	
 	private void createTilemap()
@@ -57,5 +86,12 @@ public class Tilemap
 				tiles[row][col] = new Tile(col, row, Board.boardLayout[row][col]);
 			}
 		}
-	}	
+	}
+	
+	/* Getters / Setters */
+	public boolean isTileEmpty(int x, int y)
+	{
+		return getTile(x, y).isEmpty();
+	}
+	
 }

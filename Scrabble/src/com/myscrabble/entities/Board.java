@@ -92,15 +92,14 @@ public class Board extends GameObject
 	{
 		RenderUtils.renderTexture(getTexture(BOARD_COLOR), x, y);
 		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE), x, y);
+		tilemap.render();
 		tileIndicator.render();
 	}
 	 
-	public void hoveredOver()
+	public void hoveredOverWithTile()
 	{
-		int mouseX = InputManager.getX() - X_OFFSET - SIDE_WIDTH;
-		int mouseY = InputManager.getY() - Y_OFFSET + SIDE_WIDTH;
 		
-		Tile targetTile = tilemap.getTile(mouseX / Tile.TILE_SIZE, mouseY / Tile.TILE_SIZE - 1);
+		Tile targetTile = tilemap.getTile(getTransfMouseCol(), getTransfMouseRow());
 		
 		if(targetTile == null)
 		{
@@ -109,23 +108,70 @@ public class Board extends GameObject
 		
 		if(targetTile.isEmpty())
 		{
-			tileIndicator.setCurrentAnimation(TileIndicator.SUCCESS_ANI);
-			tileIndicator.setX(targetTile.getX());
-			tileIndicator.setY(targetTile.getY());
+			tileIndicator.setStatus(TileIndicator.SUCCESS);
 		}
 		else
 		{
-			tileIndicator.setCurrentAnimation(TileIndicator.FAILURE_ANI);
-			tileIndicator.setX(targetTile.getX());
-			tileIndicator.setY(targetTile.getY());
+			tileIndicator.setStatus(TileIndicator.FAILURE);
 		}
+		
+		tileIndicator.setPos(targetTile.getPos());
+		tileIndicator.setCol(targetTile.getCol());
+		tileIndicator.setRow(targetTile.getRow());
+	}
+	
+	public void hoveredOverWithoutTile(Player player)
+	{
+		if(!getEmptyLetter() && getTileOnMouse().getLetterTile().getPlayerRef() == player)
+		{
+			tileIndicator.setStatus(TileIndicator.NORMAL);
+			tileIndicator.setPos(getTilePosMouse());
+			tileIndicator.setCol(getTileOnMouse().getCol());
+			tileIndicator.setRow(getTileOnMouse().getRow());
+		}
+		else
+		{
+			disableIndicator();
+		}
+	}
+	
+	public boolean checkForTileWithdrawal()
+	{	
+		if(tileIndicator.getStatus() == TileIndicator.NORMAL)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public LetterTile getTileWithdrawal()
+	{
+		LetterTile result = null;
+		
+		if(tileIndicator.getStatus() == TileIndicator.NORMAL)
+		{
+			disableIndicator();
+			Tile targetTile = tilemap.getTile(tileIndicator.getCol(), tileIndicator.getRow());
+			result = targetTile.getLetterTile();
+			
+			targetTile.clearTile();
+		}
+		
+		return result;
 	}
 	
 	public void disableIndicator()
 	{
-		tileIndicator.setCurrentAnimation(TileIndicator.NONE_ANI);
+		tileIndicator.setStatus(TileIndicator.NONE);
 	}
 	
+	public void addLetterTile(LetterTile letterTile)
+	{
+		tilemap.addLetterTile(letterTile, tileIndicator);
+	}
+	
+	/* Getters / Setters */
 	public Rectangle getRect()
 	{
 		return new Rectangle((int)x + SIDE_WIDTH, (int)y + SIDE_HEIGHT, 
@@ -134,4 +180,48 @@ public class Board extends GameObject
 		
 	}
 	
+	private Tile getTileOnMouse()
+	{
+		if(tilemap.getTile(getTransfMouseCol(), getTransfMouseRow()) == null)
+		{
+			return null;
+		}
+		
+		return tilemap.getTile(getTransfMouseCol(), getTransfMouseRow());
+	}
+	
+	public TileIndicator getIndicator()
+	{
+		return tileIndicator;
+	}
+	
+	public boolean getEmptyLetter()
+	{
+		return getTileOnMouse().isEmpty();
+	}
+	
+	public float[] getTilePosMouse()
+	{
+		return getTileOnMouse().getPos();
+	}
+	
+	public int getTransfMouseX()
+	{
+		return InputManager.getX() - X_OFFSET - SIDE_WIDTH;
+	}
+	
+	public int getTransfMouseY()
+	{
+		return InputManager.getY() - Y_OFFSET + SIDE_WIDTH;
+	}
+	
+	public int getTransfMouseCol()
+	{
+		return getTransfMouseX() / Tile.TILE_SIZE;
+	}
+	
+	public int getTransfMouseRow()
+	{
+		return getTransfMouseY() / Tile.TILE_SIZE - 1;
+	}
 }

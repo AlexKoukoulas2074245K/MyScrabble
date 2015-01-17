@@ -26,6 +26,18 @@ public class InputManager
 		}
 	}
 	
+	public static boolean thereAreButtonsPressed()
+	{
+		for(int i = 0; i < MAX_BUTTONS; i++)
+		{
+			if(isButtonDown(i))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isButtonDown(int button)
 	{
 		return buttonsDown[button];

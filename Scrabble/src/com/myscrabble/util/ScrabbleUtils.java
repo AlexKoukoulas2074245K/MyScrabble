@@ -3,8 +3,6 @@ package com.myscrabble.util;
 import java.awt.Rectangle;
 import java.util.HashMap;
 
-import com.myscrabble.main.Main;
-
 /**
  * 
  * @author Alex Koukoulas

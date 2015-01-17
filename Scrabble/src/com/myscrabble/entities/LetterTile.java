@@ -46,7 +46,7 @@ public class LetterTile extends GameObject
 	/* Standard vertical speed */
 	private static final float V_SPEED = 2f;
 	
-	
+	private Player playerRef;
 	private boolean[] pushedFlags;
 	
 	private char letter;
@@ -57,15 +57,16 @@ public class LetterTile extends GameObject
 	private boolean grabbed;
 	private boolean recentlyAdded;
 	
-	public LetterTile(GameStateManager gsm, char letter, int points, float x, float y)
+	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float x, float y)
 	{
-		this(gsm, letter, points, new float[]{x, y});
+		this(gsm, playerRef, letter, points, new float[]{x, y});
 	}
 	
-	public LetterTile(GameStateManager gsm, char letter, int points, float[] pos)
+	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float[] pos)
 	{
 		super(gsm);
 		
+		this.playerRef = playerRef;
 		this.letter = letter;
 		this.points = points;
 		
@@ -249,6 +250,11 @@ public class LetterTile extends GameObject
 	}
 	
 	/* Getters / Setters */
+	public Player getPlayerRef()
+	{
+		return playerRef;
+	}
+	
 	public char getLetter()
 	{
 		return letter;
@@ -311,6 +317,11 @@ public class LetterTile extends GameObject
 	public boolean isRecentlyAdded()
 	{
 		return recentlyAdded;
+	}
+	
+	public void setPlayerRef(Player playerRef)
+	{
+		this.playerRef = playerRef;
 	}
 	
 	public void setHighlightStatus(int highlightStatus)

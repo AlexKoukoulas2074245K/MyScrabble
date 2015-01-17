@@ -25,6 +25,9 @@ public class Tile
 	public static final int DOUBLE_WORD   = 3;
 	public static final int TRIPLE_WORD   = 4;
 	
+	private LetterTile letterTile;
+	private Player playerRef;
+	
 	private int type;
 	private int col;
 	private int row;
@@ -37,15 +40,35 @@ public class Tile
 		this.col = col;
 		this.row = row;
 		this.type = type;
-		this.isEmpty = new Random().nextInt(2) == 1;
+		this.isEmpty = true;
 		
 		x = Board.SIDE_WIDTH + Board.X_OFFSET + col * TILE_SIZE;
 		y = Board.SIDE_HEIGHT + Board.Y_OFFSET + row * TILE_SIZE;
 	}
 	
+	public void render()
+	{
+		if(!isEmpty)
+		{
+			letterTile.render();
+		}
+	}
+	
+	public void clearTile()
+	{
+		letterTile = null;
+		isEmpty = true;
+	}
+	
+	/* Getters / Setters */
 	public Rectangle getRect()
 	{
 		return new Rectangle((int)x, (int)y, TILE_SIZE, TILE_SIZE);
+	}
+	
+	public LetterTile getLetterTile()
+	{
+		return letterTile;
 	}
 	
 	public int getType()
@@ -67,7 +90,12 @@ public class Tile
 	{
 		return y;
 	}
-
+	
+	public float[] getPos()
+	{
+		return new float[]{x, y};
+	}
+	
 	public int getCol()
 	{
 		return col;
@@ -77,7 +105,7 @@ public class Tile
 	{
 		return row;
 	}
-
+	
 	public void setType(int type)
 	{
 		this.type = type;
@@ -86,6 +114,12 @@ public class Tile
 	public void setEmpty(boolean isEmpty)
 	{
 		this.isEmpty = isEmpty;
+	}
+	
+	public void setTile(LetterTile letterTile)
+	{
+		this.letterTile = letterTile;
+		isEmpty = false;
 	}
 	
 	public void setX(float x)

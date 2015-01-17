@@ -1,6 +1,9 @@
 package com.myscrabble.managers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,20 +27,57 @@ public class ResourceManager
 	public static final String STD_TEX_EXT = ".png";
 	private static final String STD_TEX_EXT_UPPER = "PNG";
 	
-	private static final String DEFAULT_DIR = "C:/Users/alex/Pictures/scrabble/res";
-	private static final String TEX_DIR = DEFAULT_DIR + "/tex";
-	
+	private static final String RES_DIR = "C:/Users/alex/Pictures/scrabble/res";
+	private static final String TEX_DIR = RES_DIR + "/tex";
 	
 	private HashMap<String, Texture> loadedTextures;
 	
 	public ResourceManager()
 	{
-		this(DEFAULT_DIR);
+		this(RES_DIR);
 	}
 	
 	public ResourceManager(final String rootDir)
 	{		
 		loadedTextures = new HashMap<>();
+	}
+	
+	public String loadFileAsString(final String filePath)
+	{
+		String fileDir = RES_DIR + filePath;
+		StringBuilder result  = new StringBuilder();
+		
+		File file = new File(fileDir);
+		
+		try(BufferedReader br = new BufferedReader(new FileReader(file)))
+		{
+			String line;
+			
+			while((line = br.readLine()) != null)
+			{
+				result.append(line);
+				result.append(System.lineSeparator());
+			}
+			
+			result.deleteCharAt(result.length() - 1);
+			result.deleteCharAt(result.length() - 1);
+			
+			return result.toString();
+		}
+		catch (FileNotFoundException e)
+		{
+			System.err.println("File not found: " + fileDir);
+			e.printStackTrace();
+			System.exit(1);
+		}
+		catch (IOException e)
+		{
+			System.err.println("Error while reading from: " + fileDir);
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return new String();
 	}
 	
 	/**

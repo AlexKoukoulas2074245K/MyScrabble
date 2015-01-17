@@ -14,45 +14,6 @@ public class RenderUtils
 {
 	public static final float MAX_RGB_VAL = 255f;
 	
-	public static void renderRectangle(final float x, final float y, final float width, 
-									   final float height, final float[] color, 
-									   final boolean centerRendering)
-	{
-		float[][] vertices = new float[4][2];
-		
-		if(centerRendering)
-		{
-			vertices = new float[][]{{x - width / 2f, y - height / 2f}, 									  
-								  	 {x + width / 2f, y - height / 2f},
-								     {x + width / 2f, y + height / 2f},
-								     {x - width / 2f, y + height / 2f}};
-		}
-		else
-		{
-			vertices = new float[][]{{x        , y         }, 									  
-								  	 {x + width, y         },
-								  	 {x + width, y + height},
-								  	 {x        , y + height}};
-		}
-		
-		glPushMatrix();
-		{
-			//glPushAttrib(GL_CURRENT_BIT);
-			
-			glColor3f(color[0], color[1], color[2]);
-			
-			glBegin(GL_QUADS);
-			glVertex2f(vertices[0][0], vertices[0][1]);
-			glVertex2f(vertices[1][0], vertices[1][1]);
-			glVertex2f(vertices[2][0], vertices[2][1]);
-			glVertex2f(vertices[3][0], vertices[3][1]);
-			glEnd();
-			
-			//glPopAttrib();
-		}
-		glPopMatrix();
-	}
-	
 	/**
 	 * 
 	 * @param r
@@ -69,22 +30,35 @@ public class RenderUtils
 	
 	/**
 	 * 
-	 * @param tex
-	 * @param x
-	 * @param y
-	 * @param center: Whether or not to center
-	 * the texture on the coordinates given
+	 * @param tex Texture to be rendered
+	 * @param x x-offset to start rendering
+	 * @param y y-offset to start rendering
+	 * Does not specify width and height so the rendering width and height
+	 * will default to the original texture's dimensions.
 	 */
 	public static void renderTexture(final Texture tex, final float x, final float y)
+	{
+		renderTexture(tex, x, y, tex.getTextureWidth(), tex.getTextureHeight());
+	}
+	
+	/**
+	 * 
+	 * @param tex Texture to be rendered
+	 * @param x x-offset to start rendering
+	 * @param y y-offset to start rendering
+	 * @param width the final width of the texture(defaults to the texture's own width if left blank)
+	 * @param height the final height of the texture(default to the texture's own height if left blank)
+	 */
+	public static void renderTexture(final Texture tex, final float x, final float y, final float width, final float height)
 	{
 		/** Creates the vertices depending on center request or not */
 		float[][] quadVertices;
 
 		
-		quadVertices = new float[][]{{x                        , y                         }, 									  
-							  		 {x + tex.getTextureWidth(), y                         },
-							  		 {x + tex.getTextureWidth(), y + tex.getTextureHeight()},
-							  		 {x                        , y + tex.getTextureHeight()}};
+		quadVertices = new float[][]{{x        , y         }, 									  
+							  		 {x + width, y         },
+							  		 {x + width, y + height},
+							  		 {x        , y + height}};
 	
 		
 		/** Renders the texture on top of the rectangle */

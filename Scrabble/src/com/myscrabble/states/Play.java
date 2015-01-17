@@ -2,12 +2,17 @@ package com.myscrabble.states;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.opengl.Texture;
+
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileIndicator;
+import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.util.RenderUtils;
+import com.myscrabble.util.ScrabbleDictionary;
 
 /**
  * 
@@ -20,6 +25,8 @@ public class Play extends GameState
 	/* TEMP */
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
+	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
+	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
 	 */
@@ -34,17 +41,27 @@ public class Play extends GameState
 	/* Letter bag */
 	private LetterBag letterBag;
 	
+	private Texture backgroundTexture;
+	
+	/* Dictionary Reference */
+	private ScrabbleDictionary scrabbleDict;
+	 
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
 		
+		scrabbleDict = new ScrabbleDictionary(gsm.getRes());
+		
 		board = new Board(gsm);
 		players = new ArrayList<Player>();
-		players.add(new Player(gsm, board));
+		players.add(new Player(gsm, board, scrabbleDict));
 		
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(board);
-		gameObjects.add(new LetterBag(gsm));		
+		gameObjects.add(new LetterBag(gsm));
+		
+		//TODO: remove
+		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
 	}
 
 	@Override
@@ -76,6 +93,10 @@ public class Play extends GameState
 	@Override
 	public void render() 
 	{	
+		RenderUtils.renderTexture(backgroundTexture, 0, 0, 
+								  Main.getNormalDimensions()[0], 
+								  Main.getNormalDimensions()[1]);
+		
 		for(GameObject go: gameObjects)
 		{
 			go.render();

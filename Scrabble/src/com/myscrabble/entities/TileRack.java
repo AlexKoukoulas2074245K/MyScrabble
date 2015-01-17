@@ -52,11 +52,14 @@ public class TileRack extends GameObject
     private ArrayList<Float> tempStoredPositions;
     private ArrayList<boolean[]> tempStoredFlags;
      
+    private Player playerRef;
     private float frontY;
     
-	public TileRack(GameStateManager gsm)
+	public TileRack(GameStateManager gsm, Player playerRef)
 	{
 		super(gsm);
+		
+		this.playerRef = playerRef;
 		
 		letterTiles = new ArrayList<LetterTile>();
 		tilesToRemove = new ArrayList<LetterTile>();
@@ -81,7 +84,7 @@ public class TileRack extends GameObject
 		{
 			char letter   = letterBag.drawLetter();
 			int letterValue = ScrabbleUtils.getValueOf(letter);
-			letterTiles.add(new LetterTile(gsm, letter, letterValue, getTilePos(i)));
+			letterTiles.add(new LetterTile(gsm, playerRef, letter, letterValue, getTilePos(i)));
 		}
 	
 	}
@@ -277,7 +280,7 @@ public class TileRack extends GameObject
 		char ch = lt.getLetter();
 		int points = lt.getPoints();
 		
-		LetterTile newTile = new LetterTile(gsm, ch, points, getTilePos(index));
+		LetterTile newTile = new LetterTile(gsm, playerRef, ch, points, getTilePos(index));
 		newTile.setRecentlyAdded(true);
 		
 		tilesToAdd.put(newTile, index);
