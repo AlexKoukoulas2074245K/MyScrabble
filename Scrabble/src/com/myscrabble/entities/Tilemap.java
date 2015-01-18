@@ -1,7 +1,5 @@
 package com.myscrabble.entities;
 
-import com.myscrabble.managers.InputManager;
-import com.myscrabble.util.OutOfBoardException;
 
 
 /**
@@ -46,7 +44,6 @@ public class Tilemap
 		if(col >= Board.BOARD_COLS || row >= Board.BOARD_ROWS ||
 		   col < 0 || row < 0)
 		{	
-			System.out.println(col + " | " + row);
 			return null;
 		}
 			

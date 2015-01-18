@@ -1,13 +1,29 @@
 package com.myscrabble.main;
 
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_VERSION;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glGetString;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glViewport;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import com.myscrabble.managers.GameStateManager;
-
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * 
@@ -102,7 +118,7 @@ public class Main
 	private static void gameLoop()
 	{
 		finished = false;
-		
+	
 		while(!Display.isCloseRequested() && !finished && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
 		{
 			/* Game Input Handling */
@@ -122,7 +138,7 @@ public class Main
 			Display.sync(wconfig.getFps());
 			
 			/* VSync */
-			Display.setVSyncEnabled(wconfig.getVsync());
+			//Display.setVSyncEnabled(wconfig.getVsync());
 		}
 	}
 	

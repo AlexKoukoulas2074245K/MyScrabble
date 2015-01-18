@@ -3,7 +3,7 @@ package com.myscrabble.entities;
 import java.awt.Rectangle;
 
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.InputManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
@@ -177,8 +177,8 @@ public class LetterTile extends GameObject
 	
 	private void updateGrabbed()
 	{
-		x = InputManager.getX() - TILE_SIZE/2;
-		y = InputManager.getY() - TILE_SIZE/2;
+		x = MouseManager.getX() - TILE_SIZE/2;
+		y = MouseManager.getY() - TILE_SIZE/2;
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public class LetterTile extends GameObject
 	
 	@Override
 	public void render()
-	{
+	{		
 		RenderUtils.renderTexture(getTexture(LETTER_TEX), x, y);
 	}
 	

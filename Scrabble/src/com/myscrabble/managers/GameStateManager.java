@@ -35,9 +35,9 @@ public class GameStateManager
 	
 	public void handleInput()
 	{
-		InputManager.update();
+		MouseManager.listenToInput();
 		states.peek().handleInput();
-		InputManager.listenToInput();
+		MouseManager.update();
 	}
 	
 	public void update()

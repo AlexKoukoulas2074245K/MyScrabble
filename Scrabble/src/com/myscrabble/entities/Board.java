@@ -4,10 +4,8 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
 
-import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.InputManager;
-import com.myscrabble.util.OutOfBoardException;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.RenderUtils;
 /**
  * 
@@ -122,6 +120,11 @@ public class Board extends GameObject
 	
 	public void hoveredOverWithoutTile(Player player)
 	{
+		if(getTileOnMouse() == null)
+		{
+			return;
+		}
+		
 		if(!getEmptyLetter() && getTileOnMouse().getLetterTile().getPlayerRef() == player)
 		{
 			tileIndicator.setStatus(TileIndicator.NORMAL);
@@ -207,12 +210,12 @@ public class Board extends GameObject
 	
 	public int getTransfMouseX()
 	{
-		return InputManager.getX() - X_OFFSET - SIDE_WIDTH;
+		return MouseManager.getX() - X_OFFSET - SIDE_WIDTH;
 	}
 	
 	public int getTransfMouseY()
 	{
-		return InputManager.getY() - Y_OFFSET + SIDE_WIDTH;
+		return MouseManager.getY() - Y_OFFSET + SIDE_WIDTH;
 	}
 	
 	public int getTransfMouseCol()

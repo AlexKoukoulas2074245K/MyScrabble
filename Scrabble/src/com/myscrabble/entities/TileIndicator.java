@@ -61,7 +61,7 @@ public class TileIndicator extends GameObject
 	
 	@Override
 	public void render()
-	{
+	{		
 		if(currentAnimation != NONE)
 		{
 			RenderUtils.renderTexture(animations.get(currentAnimation).getCurrentFrame(), x, y);

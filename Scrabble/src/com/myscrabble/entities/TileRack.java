@@ -1,5 +1,7 @@
 package com.myscrabble.entities;
 
+import static com.myscrabble.entities.LetterTile.LEFT;
+import static com.myscrabble.entities.LetterTile.RIGHT;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
@@ -7,14 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
-import static com.myscrabble.entities.LetterTile.LEFT;
-import static com.myscrabble.entities.LetterTile.RIGHT;
-import static com.myscrabble.entities.LetterTile.UP;
-import static com.myscrabble.entities.LetterTile.DOWN;
 /**
  * 
  * @author Alex Koukoulas
@@ -52,14 +49,16 @@ public class TileRack extends GameObject
     private ArrayList<Float> tempStoredPositions;
     private ArrayList<boolean[]> tempStoredFlags;
      
+    private LetterBag letterBag;
     private Player playerRef;
     private float frontY;
     
-	public TileRack(GameStateManager gsm, Player playerRef)
+	public TileRack(GameStateManager gsm, Player playerRef, LetterBag letterBag)
 	{
 		super(gsm);
 		
 		this.playerRef = playerRef;
+		this.letterBag = letterBag;
 		
 		letterTiles = new ArrayList<LetterTile>();
 		tilesToRemove = new ArrayList<LetterTile>();
@@ -71,10 +70,6 @@ public class TileRack extends GameObject
 		addTexture(RACK_BACK, RACK_BACK_PATH);
 		addTexture(RACK_FRONT, RACK_FRONT_PATH);
 		
-		
-		//TODO: REFORMAT
-		LetterBag letterBag = new LetterBag(gsm);
-		
 		x = PLAYER_1_POS_X;
 		y = PLAYER_1_POS_Y;
 		
@@ -82,11 +77,8 @@ public class TileRack extends GameObject
 		
 		for(int i = 0; i < 7; i++)
 		{
-			char letter   = letterBag.drawLetter();
-			int letterValue = ScrabbleUtils.getValueOf(letter);
-			letterTiles.add(new LetterTile(gsm, playerRef, letter, letterValue, getTilePos(i)));
+			drawLetterTile(i);
 		}
-	
 	}
 	
 	@Override
@@ -107,12 +99,16 @@ public class TileRack extends GameObject
 
 		tilesToRemove.clear();
 		
+		if(tilesToAdd.size() == 0) return;
+		
 		/** Add tiles */
 		for(Entry<LetterTile, Integer> entry : tilesToAdd.entrySet())
 		{
 			letterTiles.add(entry.getValue(), entry.getKey());
-			resetFlags();
+			
 		}
+		
+		resetFlags();
 		
 		tilesToAdd.clear();			
 	}
@@ -256,6 +252,7 @@ public class TileRack extends GameObject
 			}
 		}
 		
+		
 		tempStoredPositions.clear();
 		tempStoredFlags.clear();
 		
@@ -272,6 +269,20 @@ public class TileRack extends GameObject
 	    {
 	        lt.setFlags(new boolean[4]);
 	    }
+	}
+	
+	public void drawLetterTile()
+	{
+		drawLetterTile(getLetterTileFormationHole().getIndex());
+	}
+	
+	public void drawLetterTile(int index)
+	{
+		char letter   = letterBag.drawLetter();
+		int letterValue = ScrabbleUtils.getValueOf(letter);
+		float[] pos = getTilePos(index);
+		
+		letterTiles.add(new LetterTile(gsm, playerRef, letter, letterValue, pos));
 	}
 	
 	/* Add / Remove tiles from rack */

@@ -1,7 +1,7 @@
 package com.myscrabble.entities;
 
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.InputManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.ScrabbleDictionary;
 import com.myscrabble.util.ScrabbleUtils;
 import com.myscrabble.util.Timer;
@@ -34,17 +34,21 @@ public class Player
 	/* Reference to the dictionary */
 	private ScrabbleDictionary scrabbleDict;
 	
+	/* Reference to the letterBag used by all players */
+	private LetterBag letterBag;
+	
 	private boolean isHuman;
 	private boolean isActive;
 	
-	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict)
+	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag)
 	{
 		this.board = board;
 		this.scrabbleDict = scrabbleDict;
+		this.letterBag = letterBag;
 		
 		selectionTimer = new Timer(SELECTION_COOLDOWN);
 		
-		tileRack = new TileRack(gsm, this);
+		tileRack = new TileRack(gsm, this, letterBag);
 		isActive = true;
 		isHuman = true;
 		
@@ -53,15 +57,15 @@ public class Player
 	
 	public void handleInput()
 	{
-		if(hasSelectedLetterTile() && InputManager.isButtonDown(InputManager.LEFT_BUTTON))
+		if(hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.LEFT_BUTTON))
 		{
 			checkAreaHovering();
 		}
-		else if(hasSelectedLetterTile() && InputManager.isButtonReleased(InputManager.LEFT_BUTTON))
+		else if(hasSelectedLetterTile() && MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON))
 		{
 			releaseLetterTile();
 		}
-		else if(!hasSelectedLetterTile() && InputManager.isButtonDown(InputManager.RIGHT_BUTTON))
+		else if(!hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.RIGHT_BUTTON))
 		{
 			checkForBoardWithdrawal();
 		}
@@ -70,6 +74,12 @@ public class Player
 			highlightLetters();
 			checkForSelection();
 			checkForBoardInteraction();
+			checkForBagHovering();
+		}
+		
+		if(!hasSelectedLetterTile() && MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
+		{
+			checkForLetterDrawAttempt();
 		}
 	}
 	
@@ -92,6 +102,7 @@ public class Player
 	{
 		if(selLetterTile.getRect().intersects(board.getRect()))
 		{
+			
 			if(board.getIndicator().getStatus() == TileIndicator.FAILURE)
 			{
 				addTileToRack();
@@ -122,7 +133,7 @@ public class Player
 			}
 		}
 		
-		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
+		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
 			board.hoveredOverWithTile();
 		}
@@ -132,12 +143,24 @@ public class Player
 		}
 	}
 	
+	private void checkForBagHovering()
+	{
+		if(letterBag.getRect().contains(MouseManager.getX(), MouseManager.getY()))
+		{
+			letterBag.highlight(true);
+		}
+		else
+		{
+			letterBag.highlight(false);
+		}
+	}
+	
 	private void highlightLetters()
 	{
 				
 		for(LetterTile lt : tileRack.getLetterTiles())
 		{
-			lt.highlightResponse(InputManager.getX(), InputManager.getY());
+			lt.highlightResponse(MouseManager.getX(), MouseManager.getY());
 		}		
 	}
 	
@@ -161,7 +184,7 @@ public class Player
 		
 		for(LetterTile lt : tileRack.getLetterTiles())
 		{
-			if(InputManager.isButtonDown(InputManager.LEFT_BUTTON))
+			if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
 			{
 				if(lt.getHighlightStatus() == LetterTile.HIGHLIGHT_SELECTED ||
 				   lt.isRecentlyAdded())
@@ -192,7 +215,7 @@ public class Player
 	
 	private void checkForBoardWithdrawal()
 	{
-		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
+		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
 			if(board.checkForTileWithdrawal())
 			{				
@@ -203,13 +226,21 @@ public class Player
 	
 	private void checkForBoardInteraction()
 	{
-		if(board.getRect().contains(InputManager.getX(), InputManager.getY()))
+		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
 			board.hoveredOverWithoutTile(this);
 		}
 		else
 		{
 			board.disableIndicator();
+		}
+	}
+	
+	private void checkForLetterDrawAttempt()
+	{
+		if(letterBag.getHighlighted() && tileRack.nTiles() < TileRack.MAX_NO_TILES)
+		{
+			tileRack.drawLetterTile();
 		}
 	}
 	
@@ -222,15 +253,21 @@ public class Player
 	private void addTileToRack()
 	{
 		addTileToRack(selLetterTile);
-		selLetterTile = null;
 	}
 	
 	private void addTileToRack(LetterTile letterTile)
 	{		
 		if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
 		{
+			System.out.println(tileRack.getLetterTileFormationHole().getIndex());
 			tileRack.addTile(letterTile, tileRack.getLetterTileFormationHole().getIndex());
+			selLetterTile = null;
 		}
+//		else
+//		{
+//			System.out.println("FAILED");
+//			System.out.println(tileRack.nTiles() + " | " + TileRack.MAX_NO_TILES);
+//		}
 	}
 	
 	public void render()

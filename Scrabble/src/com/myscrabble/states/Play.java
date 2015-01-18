@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.opengl.Texture;
 
+import rendering.Shader;
+
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
@@ -11,8 +13,11 @@ import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileIndicator;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
+
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * 
@@ -26,6 +31,7 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
+	private static final String SHADING_FACTOR_NAME = "darknessParam";
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
@@ -46,27 +52,36 @@ public class Play extends GameState
 	/* Dictionary Reference */
 	private ScrabbleDictionary scrabbleDict;
 	 
+	//TODO: remove
+	private Shader shader;
+	private float darknessFactor;
+	
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
 		
 		scrabbleDict = new ScrabbleDictionary(gsm.getRes());
-		
 		board = new Board(gsm);
+		letterBag = new LetterBag(gsm);
+		
 		players = new ArrayList<Player>();
-		players.add(new Player(gsm, board, scrabbleDict));
+		players.add(new Player(gsm, board, scrabbleDict, letterBag));
 		
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(board);
-		gameObjects.add(new LetterBag(gsm));
+		gameObjects.add(letterBag);
 		
 		//TODO: remove
 		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
+		
+		shader = new Shader("/shaders/shader", gsm.getRes());
+		darknessFactor = 1.0f;
 	}
 
 	@Override
 	public void handleInput() 
 	{	
+		
 		for(Player player: players)
 		{
 			if(player.isActive())
@@ -92,10 +107,14 @@ public class Play extends GameState
 
 	@Override
 	public void render() 
-	{	
+	{
+		
+		applyShading();
+		
 		RenderUtils.renderTexture(backgroundTexture, 0, 0, 
 								  Main.getNormalDimensions()[0], 
 								  Main.getNormalDimensions()[1]);
+		
 		
 		for(GameObject go: gameObjects)
 		{
@@ -106,5 +125,19 @@ public class Play extends GameState
 		{
 			player.render();
 		}
+		
+		clearShading();
+		
+	}
+	
+	private void applyShading()
+	{
+		shader.useProgram();
+		shader.setUniform3f(SHADING_FACTOR_NAME, new float[]{darknessFactor, darknessFactor, darknessFactor});
+	}
+	
+	private void clearShading()
+	{
+		shader.stopProgram();
 	}
 }

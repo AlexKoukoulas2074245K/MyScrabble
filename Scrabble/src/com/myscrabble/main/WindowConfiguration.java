@@ -14,7 +14,7 @@ public class WindowConfiguration
 	public static final String TITLE = "My Scrabble";
 	public static final boolean RESIZABLE = false;
 	
-	public static final int DEFAULT_WIDTH = 640;
+	public static final int DEFAULT_WIDTH = 760;
 	public static final int DEFAULT_HEIGHT = 640;	
 	public static final int DEFAULT_FRAME_CAP = 60;
 	public static final boolean DEFAULT_VSYNC = true;

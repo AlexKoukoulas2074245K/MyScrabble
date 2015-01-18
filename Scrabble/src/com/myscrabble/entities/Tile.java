@@ -1,7 +1,6 @@
 package com.myscrabble.entities;
 
 import java.awt.Rectangle;
-import java.util.Random;
 
 /**
  * 
@@ -26,7 +25,6 @@ public class Tile
 	public static final int TRIPLE_WORD   = 4;
 	
 	private LetterTile letterTile;
-	private Player playerRef;
 	
 	private int type;
 	private int col;

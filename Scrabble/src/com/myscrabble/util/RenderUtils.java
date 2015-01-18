@@ -33,7 +33,7 @@ public class RenderUtils
 	 * @param tex Texture to be rendered
 	 * @param x x-offset to start rendering
 	 * @param y y-offset to start rendering
-	 * Does not specify width and height so the rendering width and height
+	 * <br>Does not specify width and height so the rendering width and height
 	 * will default to the original texture's dimensions.
 	 */
 	public static void renderTexture(final Texture tex, final float x, final float y)
