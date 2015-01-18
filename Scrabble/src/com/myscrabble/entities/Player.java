@@ -39,6 +39,7 @@ public class Player
 	
 	private boolean isHuman;
 	private boolean isActive;
+	private boolean validWord;
 	
 	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag)
 	{
@@ -110,6 +111,7 @@ public class Player
 			else if(board.getIndicator().getStatus() == TileIndicator.SUCCESS)
 			{
 				addTileToBoard();
+				validWord = wordExists();
 			}
 		}
 		else
@@ -219,7 +221,8 @@ public class Player
 		{
 			if(board.checkForTileWithdrawal())
 			{				
-				addTileToRack(board.getTileWithdrawal());
+				addTileToRack(board.withdrawTile(this));
+				validWord = wordExists();
 			}
 		}
 	}
@@ -246,7 +249,7 @@ public class Player
 	
 	private void addTileToBoard()
 	{
-		board.addLetterTile(selLetterTile);
+		board.addLetterTile(selLetterTile, this);
 		selLetterTile = null;
 	}
 		
@@ -263,11 +266,6 @@ public class Player
 			tileRack.addTile(letterTile, tileRack.getLetterTileFormationHole().getIndex());
 			selLetterTile = null;
 		}
-//		else
-//		{
-//			System.out.println("FAILED");
-//			System.out.println(tileRack.nTiles() + " | " + TileRack.MAX_NO_TILES);
-//		}
 	}
 	
 	public void render()
@@ -279,6 +277,11 @@ public class Player
 		{
 			selLetterTile.render();
 		}
+	}
+	
+	public boolean hasValidWord()
+	{
+		return validWord;
 	}
 	
 	public boolean isActive()
@@ -296,8 +299,8 @@ public class Player
 		this.isActive = isActive;
 	}
 	
-	private boolean wordExists(String word)
+	public boolean wordExists()
 	{
-		return scrabbleDict.wordExists(word);
+		return scrabbleDict.wordExists(board.getPlayerFormation(this));
 	}
 }

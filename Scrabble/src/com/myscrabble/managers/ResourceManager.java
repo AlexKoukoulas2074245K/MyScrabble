@@ -42,6 +42,11 @@ public class ResourceManager
 		loadedTextures = new HashMap<>();
 	}
 	
+	/**
+	 * 
+	 * @param filePath of the file to open
+	 * @return the file contents as a Strings
+	 */
 	public String loadFileAsString(final String filePath)
 	{
 		String fileDir = RES_DIR + filePath;
@@ -113,6 +118,43 @@ public class ResourceManager
 		}
 		
 		return new Animation(keyFrames, aniDelay, true);
+	}
+	
+	/**
+	 * 
+	 * @param relativePath of the textures to be loaded
+	 * @return All the textures in a given directory path
+	 * contained in an ArrayList.
+	 */
+	public ArrayList<Texture> getAllTextures(String relativePath)
+	{
+		ArrayList<Texture> result = new ArrayList<>();
+		
+		File finalDir = new File(TEX_DIR + relativePath);
+		
+		if(!finalDir.isDirectory())
+		{
+			System.err.println("False directory to extract textures: " + finalDir.getAbsolutePath());
+			System.exit(1);
+			return null;
+		}
+		
+		for(File f : finalDir.listFiles())
+		{
+			try
+			{
+				result.add(TextureLoader.getTexture(STD_TEX_EXT_UPPER,
+						   ResourceLoader.getResourceAsStream(f.getAbsolutePath())));
+			}
+			catch (IOException e)
+			{
+				System.err.println("Unnable to load texture: " + f.getAbsolutePath());
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+		
+		return result;
 	}
 	
 	/**

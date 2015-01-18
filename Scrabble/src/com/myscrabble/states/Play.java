@@ -4,20 +4,17 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.opengl.Texture;
 
-import rendering.Shader;
-
+import com.myscrabble.buttons.BWordSelection;
+import com.myscrabble.buttons.Button;
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
-import com.myscrabble.entities.TileIndicator;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.MouseManager;
+import com.myscrabble.rendering.Shader;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
-
-import static org.lwjgl.opengl.GL20.*;
 
 /**
  * 
@@ -40,6 +37,9 @@ public class Play extends GameState
 	
 	/* All active players */
 	private ArrayList<Player> players;
+	
+	/* All active buttons */
+	private ArrayList<Button> buttons;
 	
 	/* Instance of game Board */
 	private Board board;
@@ -71,6 +71,10 @@ public class Play extends GameState
 		gameObjects.add(board);
 		gameObjects.add(letterBag);
 		
+		buttons = new ArrayList<Button>();
+		buttons.add(new BWordSelection(gsm));
+		
+		
 		//TODO: remove
 		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
 		
@@ -89,6 +93,11 @@ public class Play extends GameState
 				player.handleInput();
 			}
 		}
+		
+		for(Button b : buttons)
+		{
+			b.handleInput();
+		}
 	}
 
 	@Override
@@ -97,6 +106,11 @@ public class Play extends GameState
 		for(Player player: players)
 		{
 			player.update();
+			
+			for(Button button : buttons)
+			{
+				button.update(player);
+			}
 		}
 		
 		for(GameObject go: gameObjects)
@@ -116,6 +130,11 @@ public class Play extends GameState
 								  Main.getNormalDimensions()[1]);
 		
 		
+		for(Button button : buttons)
+		{
+			button.render();
+		}
+		
 		for(GameObject go: gameObjects)
 		{
 			go.render();
@@ -126,8 +145,7 @@ public class Play extends GameState
 			player.render();
 		}
 		
-		clearShading();
-		
+		clearShading();	
 	}
 	
 	private void applyShading()

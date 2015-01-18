@@ -37,7 +37,7 @@ public class ScrabbleDictionary
 		
 		for(String word : content.split(System.lineSeparator()))
 		{
-			words.add(word);
+			words.add(word.toUpperCase());
 		}
 	}
 	

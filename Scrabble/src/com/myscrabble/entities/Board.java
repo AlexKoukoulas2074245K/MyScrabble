@@ -3,6 +3,7 @@ package com.myscrabble.entities;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
+import java.util.HashMap;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
@@ -64,6 +65,11 @@ public class Board extends GameObject
 	private Tilemap tilemap;
 	private TileIndicator tileIndicator;
 	
+	/* Used to keep track of players' current letter
+	 * formations. (i.e. the word created so far in 
+	 * the board by a player) */
+	private HashMap<Player, StringBuilder> playerFormations;
+	
 	public Board(GameStateManager gsm)
 	{
 		super(gsm);
@@ -77,6 +83,7 @@ public class Board extends GameObject
 		tilemap = new Tilemap();
 		tileIndicator = new TileIndicator(gsm);
 		
+		playerFormations = new HashMap<Player, StringBuilder>();
 	}
 	
 	@Override
@@ -148,7 +155,7 @@ public class Board extends GameObject
 		return false;
 	}
 	
-	public LetterTile getTileWithdrawal()
+	public LetterTile withdrawTile(Player playerRef)
 	{
 		LetterTile result = null;
 		
@@ -161,17 +168,20 @@ public class Board extends GameObject
 			targetTile.clearTile();
 		}
 		
+		popFromFormation(playerRef);
+		
 		return result;
+	}
+	
+	public void addLetterTile(LetterTile letterTile, Player playerRef)
+	{
+		addToFormation(letterTile, playerRef);
+		tilemap.addLetterTile(letterTile, tileIndicator);
 	}
 	
 	public void disableIndicator()
 	{
 		tileIndicator.setStatus(TileIndicator.NONE);
-	}
-	
-	public void addLetterTile(LetterTile letterTile)
-	{
-		tilemap.addLetterTile(letterTile, tileIndicator);
 	}
 	
 	/* Getters / Setters */
@@ -181,6 +191,28 @@ public class Board extends GameObject
 							 getTexture(BOARD_TEXTURE).getTextureWidth() - 2 * SIDE_WIDTH,
 						     getTexture(BOARD_TEXTURE).getTextureHeight() - 2 * SIDE_HEIGHT);
 		
+	}
+	
+	public String getPlayerFormation(Player player)
+	{
+		return playerFormations.get(player).toString();
+	}
+	
+	private void popFromFormation(Player playerRef)
+	{
+		StringBuilder currentWord = playerFormations.get(playerRef);
+		currentWord.deleteCharAt(currentWord.length() - 1);
+	}
+	
+	private void addToFormation(LetterTile letterTile, Player playerRef)
+	{
+		if(!playerFormations.containsKey(playerRef))
+		{	
+			playerFormations.put(playerRef, new StringBuilder());
+		}
+		
+		StringBuilder currentWord = playerFormations.get(playerRef);
+		currentWord.append(letterTile.getLetter());
 	}
 	
 	private Tile getTileOnMouse()
