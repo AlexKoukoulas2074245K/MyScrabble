@@ -220,8 +220,9 @@ public class Player
 		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
 			if(board.checkForTileWithdrawal())
-			{				
-				addTileToRack(board.withdrawTile(this));
+			{
+			    LetterTile target = board.withdrawTile(this);
+				addTileToRack(target);
 				validWord = wordExists();
 			}
 		}
@@ -262,7 +263,6 @@ public class Player
 	{		
 		if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
 		{
-			System.out.println(tileRack.getLetterTileFormationHole().getIndex());
 			tileRack.addTile(letterTile, tileRack.getLetterTileFormationHole().getIndex());
 			selLetterTile = null;
 		}
@@ -299,8 +299,18 @@ public class Player
 		this.isActive = isActive;
 	}
 	
+	public String getCurrentWord()
+	{
+	    return board.getCurrentWord(this);
+	}
+	
+	public int getCurrentPoints()
+	{
+	    return board.calculatePoints(this);
+	}
+	
 	public boolean wordExists()
 	{
-		return scrabbleDict.wordExists(board.getPlayerFormation(this));
+		return scrabbleDict.wordExists(board.getCurrentWord(this));
 	}
 }

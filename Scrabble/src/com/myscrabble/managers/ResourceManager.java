@@ -26,6 +26,7 @@ public class ResourceManager
 {
 	public static final String STD_TEX_EXT = ".png";
 	private static final String STD_TEX_EXT_UPPER = "PNG";
+	private static final String INVALID_EXT = ".db";
 	
 	private static final String RES_DIR = "res";
 	private static final String TEX_DIR = RES_DIR + "/tex";
@@ -100,6 +101,11 @@ public class ResourceManager
 		
 		for(File f : dir.listFiles())
 		{
+		    if(f.getName().endsWith(INVALID_EXT))
+		    {
+		        continue;
+		    }
+		    
 			try
 			{
 				Texture tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER, 
@@ -140,6 +146,11 @@ public class ResourceManager
 		
 		for(File f : finalDir.listFiles())
 		{
+		    if(f.getName().endsWith(INVALID_EXT))
+		    {
+		        continue;
+		    }
+		    
 			try
 			{
 				result.add(TextureLoader.getTexture(STD_TEX_EXT_UPPER,

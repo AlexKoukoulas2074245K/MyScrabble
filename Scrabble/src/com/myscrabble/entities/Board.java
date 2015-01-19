@@ -3,11 +3,13 @@ package com.myscrabble.entities;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.RenderUtils;
+import com.myscrabble.util.ScrabbleUtils;
 /**
  * 
  * @author Alex Koukoulas
@@ -37,21 +39,21 @@ public class Board extends GameObject
 	
 	/* A matrix representation of the board with the special tiles included */ 
 	static final int[][] boardLayout = new int[][]{
-		{ 4 , 0 , 0 , 1 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 1 , 0 , 0 , 4 },
-		{ 0 , 3 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 3 , 0 },
-		{ 0 , 0 , 3 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 },
-		{ 1 , 0 , 0 , 3 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 , 1 },
-		{ 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 },
-		{ 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 2 , 0 , 0 },
-		{ 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 1 , 0 , 0 , 0 },
-		{ 4 , 0 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 , 1 , 0 , 0 , 0 , 4 },
-		{ 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 1 , 0 , 0 , 0 },
-		{ 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 2 , 0 , 0 },
-		{ 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 },
-		{ 1 , 0 , 0 , 3 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 , 1 },
-		{ 0 , 0 , 3 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 0 , 3 , 0 , 0 },
-		{ 0 , 3 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 3 , 0 },
-		{ 4 , 0 , 0 , 1 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 1 , 0 , 0 , 4 }
+		{ 5 , 0 , 0 , 2 , 0 , 0 , 0 , 5 , 0 , 0 , 0 , 2 , 0 , 0 , 5 },
+		{ 0 , 4 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 4 , 0 },
+		{ 0 , 0 , 4 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 },
+		{ 2 , 0 , 0 , 4 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 , 2 },
+		{ 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 },
+		{ 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 3 , 0 , 0 },
+		{ 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 2 , 0 , 0 , 0 },
+		{ 5 , 0 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 , 2 , 0 , 0 , 0 , 5 },
+		{ 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 2 , 0 , 0 , 0 },
+		{ 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 3 , 0 , 0 },
+		{ 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 },
+		{ 2 , 0 , 0 , 4 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 , 2 },
+		{ 0 , 0 , 4 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 },
+		{ 0 , 4 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 4 , 0 },
+		{ 5 , 0 , 0 , 2 , 0 , 0 , 0 , 5 , 0 , 0 , 0 , 2 , 0 , 0 , 5 }
 	};
 	
 	/* Texture Paths */
@@ -68,7 +70,7 @@ public class Board extends GameObject
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
 	 * the board by a player) */
-	private HashMap<Player, StringBuilder> playerFormations;
+	private HashMap<Player, ArrayList<Tile>> playerFormations;
 	
 	public Board(GameStateManager gsm)
 	{
@@ -83,7 +85,7 @@ public class Board extends GameObject
 		tilemap = new Tilemap();
 		tileIndicator = new TileIndicator(gsm);
 		
-		playerFormations = new HashMap<Player, StringBuilder>();
+		playerFormations = new HashMap<Player, ArrayList<Tile>>();
 	}
 	
 	@Override
@@ -155,28 +157,42 @@ public class Board extends GameObject
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param playerRef Reference to the player
+	 * @return The withdrawn letter tile from the
+	 * game board.
+	 */
 	public LetterTile withdrawTile(Player playerRef)
 	{
 		LetterTile result = null;
+		Tile targetTile = null;
 		
 		if(tileIndicator.getStatus() == TileIndicator.NORMAL)
 		{
 			disableIndicator();
-			Tile targetTile = tilemap.getTile(tileIndicator.getCol(), tileIndicator.getRow());
+			targetTile = tilemap.getTile(tileIndicator.getCol(), tileIndicator.getRow());
 			result = targetTile.getLetterTile();
-			
-			targetTile.clearTile();
 		}
 		
-		popFromFormation(playerRef);
+		if(result != null && targetTile != null)
+		{
+		    popFromFormation(result, playerRef);
+		    targetTile.clearTile();
+		}
 		
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param letterTile the letterTile to be added to the current playerFormation
+	 * @param playerRef reference to the player that requeststed a letter addition
+	 */
 	public void addLetterTile(LetterTile letterTile, Player playerRef)
 	{
-		addToFormation(letterTile, playerRef);
 		tilemap.addLetterTile(letterTile, tileIndicator);
+		addToFormation(letterTile, playerRef);
 	}
 	
 	public void disableIndicator()
@@ -193,26 +209,52 @@ public class Board extends GameObject
 		
 	}
 	
-	public String getPlayerFormation(Player player)
+	/**
+	 * 
+	 * @param player The Player requesting the calculation
+	 * @return the points corresponding to the player's
+	 * current word form their tile formation
+	 */
+	public int calculatePoints(Player player)
 	{
-		return playerFormations.get(player).toString();
+	    return ScrabbleUtils.calculatePoints(playerFormations.get(player));
 	}
 	
-	private void popFromFormation(Player playerRef)
+	/**
+	 * 
+	 * @param player The player that requests his/her current
+	 * word from their current tile formation.
+	 * @return The player's current word from
+	 * their current tile formation
+	 */
+	public String getCurrentWord(Player player)
 	{
-		StringBuilder currentWord = playerFormations.get(playerRef);
-		currentWord.deleteCharAt(currentWord.length() - 1);
+		StringBuilder result = new StringBuilder();
+		
+		for(Tile tile : playerFormations.get(player))
+		{
+		    result.append(tile.getLetterTile().getLetter());
+		}
+		
+		return result.toString();
+	}
+	
+	private void popFromFormation(LetterTile letterTile, Player playerRef)
+	{
+	    ArrayList<Tile> tilesSoFar = playerFormations.get(playerRef);
+	    Tile letterTileHolder = tilemap.getLetterTileHolder(letterTile);
+	    
+	    tilesSoFar.remove(letterTileHolder);
 	}
 	
 	private void addToFormation(LetterTile letterTile, Player playerRef)
 	{
 		if(!playerFormations.containsKey(playerRef))
 		{	
-			playerFormations.put(playerRef, new StringBuilder());
+			playerFormations.put(playerRef, new ArrayList<Tile>());
 		}
 		
-		StringBuilder currentWord = playerFormations.get(playerRef);
-		currentWord.append(letterTile.getLetter());
+		playerFormations.get(playerRef).add(tilemap.getLetterTileHolder(letterTile));
 	}
 	
 	private Tile getTileOnMouse()

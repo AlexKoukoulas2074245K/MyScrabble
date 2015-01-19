@@ -1,7 +1,9 @@
 package com.myscrabble.util;
 
-import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.myscrabble.entities.Tile;
 
 /**
  * 
@@ -53,15 +55,42 @@ public class ScrabbleUtils
 		return letterPoints.get(letter);
 	}
 	
-	/**
-	 * 
-	 * @param x Mouse x
-	 * @param y Mouse y
-	 * @param rect Rectangle to be checked
-	 * @return Intersection
-	 */
-	public static boolean getContainment(final float mouseX, final float mouseY, final Rectangle rect)
+	public static int calculatePoints(ArrayList<Tile> tileFormation)
 	{
-		return rect.contains((int)mouseX, (int)mouseY);
+	    int result = 0;
+	    int modifier = 0;
+	    
+	    for(Tile tile : tileFormation)
+	    {
+	        
+	        int letterPoints = tile.getLetterTile().getPoints();
+	        int tileType = tile.getType();
+	        
+	        if(tileType == Tile.DOUBLE_LETTER || tileType == Tile.TRIPLE_LETTER)
+	        {
+	            result += letterPoints * tileType;
+	        }
+	        else
+	        {
+	            result += letterPoints;
+	        }
+	        
+	        if(tileType == Tile.DOUBLE_WORD)
+	        {
+	            modifier += 2; 
+	        }
+	        else if(tileType == Tile.TRIPLE_WORD)
+	        {
+	            modifier += 3;
+	        }
+	        
+	    }
+	    
+	    if(modifier > 0)
+	    {
+	        result *= modifier;
+	    }
+	    
+	    return result;
 	}
 }

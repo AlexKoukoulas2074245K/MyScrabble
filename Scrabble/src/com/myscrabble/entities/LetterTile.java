@@ -191,7 +191,7 @@ public class LetterTile extends GameObject
 	 */
 	public void highlightResponse(float mouseX, float mouseY)
 	{
-		if(ScrabbleUtils.getContainment(mouseX, mouseY, getRect()))
+		if(getRect().contains(mouseX, mouseY))
 		{
 			if(highlightStatus != LetterTile.HIGHLIGHT_SELECTED && !recentlyAdded)
 			{
@@ -201,9 +201,8 @@ public class LetterTile extends GameObject
 		else
 		{
 			if(highlightStatus == LetterTile.HIGHLIGHT_SELECTED &&
-			   !ScrabbleUtils.getContainment(mouseX, 
-					   						 mouseY, 
-					   						 getOriginalRect()))
+			   !getOriginalRect().contains(mouseX, mouseY)) 
+					   						 
 			{
 				highlightStatus = LetterTile.HIGHLIGHT_DESELECTED;
 			}

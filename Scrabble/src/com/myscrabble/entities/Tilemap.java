@@ -49,7 +49,29 @@ public class Tilemap
 			
 		return tiles[row][col];
 	}
-
+	
+	/**
+	 * 
+	 * @param letterTile to be searched in the tile map
+	 * @return The tile holding that letter tile
+	 */
+	public Tile getLetterTileHolder(LetterTile letterTile)
+	{
+	    for(Tile[] allTiles : tiles)
+	    {
+	        for(Tile tile : allTiles)
+	        {
+	            if(tile.getLetterTile() == letterTile)
+	            {
+	                return tile;
+	            }
+	        }
+	    }
+	    
+	    System.out.println("Tile not found!");
+	    return null;
+	}
+	
 	/**
 	 * 
 	 * @param letterTile. The letter tile to be added to the tile map

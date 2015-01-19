@@ -19,10 +19,10 @@ public class Tile
 	public static final int TILE_SIZE = 32;
 	
 	public static final int PLAIN         = 0;
-	public static final int DOUBLE_LETTER = 1;
-	public static final int TRIPLE_LETTER = 2;
-	public static final int DOUBLE_WORD   = 3;
-	public static final int TRIPLE_WORD   = 4;
+	public static final int DOUBLE_LETTER = 2;
+	public static final int TRIPLE_LETTER = 3;
+	public static final int DOUBLE_WORD   = 4;
+	public static final int TRIPLE_WORD   = 5;
 	
 	private LetterTile letterTile;
 	
