@@ -27,7 +27,7 @@ public class ResourceManager
 	public static final String STD_TEX_EXT = ".png";
 	private static final String STD_TEX_EXT_UPPER = "PNG";
 	
-	private static final String RES_DIR = "C:/Users/alex/Pictures/scrabble/res";
+	private static final String RES_DIR = "res";
 	private static final String TEX_DIR = RES_DIR + "/tex";
 	
 	private HashMap<String, Texture> loadedTextures;
@@ -95,8 +95,7 @@ public class ResourceManager
 	 */
 	public Animation loadAnimation(final String dirPath, final int aniDelay)
 	{
-		File dir = new File(TEX_DIR + dirPath);
-		
+		File dir = new File(TEX_DIR + dirPath);		
 		ArrayList<Texture> keyFrames = new ArrayList<>();
 		
 		for(File f : dir.listFiles())
