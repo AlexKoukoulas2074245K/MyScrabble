@@ -69,7 +69,7 @@ public class BWordSelection extends Button
 	@Override
 	public void executeFunction()
 	{
-	    System.out.println(currentWordPoints);
+	    System.out.println(currentWordSelection + ": " + currentWordPoints);
 	}
 	
 	@Override

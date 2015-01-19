@@ -22,8 +22,8 @@ public class TileIndicator extends GameObject
 	
 	/* Root animation directories */
 	private static final String TEX_FAILURE_ROOT_DIR = "/tiles/selection/failure/";
-	private static final String TEX_NORMAL_ROOT_DIR  = "/tiles/selection/normal";
 	private static final String TEX_SUCCESS_ROOT_DIR = "/tiles/selection/success/";
+	private static final String TEX_NORMAL_ROOT_DIR  = "/tiles/selection/normal";
 	
 	/* Default animation delay */
 	private static final int ANI_DELAY = 5;
@@ -46,8 +46,8 @@ public class TileIndicator extends GameObject
 	private void loadAnimations()
 	{
 		addAnimation(TEX_FAILURE_ROOT_DIR, ANI_DELAY);
-		addAnimation(TEX_NORMAL_ROOT_DIR,  ANI_DELAY);
 		addAnimation(TEX_SUCCESS_ROOT_DIR, ANI_DELAY);
+		addAnimation(TEX_NORMAL_ROOT_DIR,  ANI_DELAY);
 	}
 	
 	@Override

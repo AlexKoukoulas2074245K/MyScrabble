@@ -14,10 +14,7 @@ public class InputManager
 	
 	private static boolean[] buttonsDown = new boolean[MAX_BUTTONS];
 	private static boolean[] buttonsPrev = new boolean[MAX_BUTTONS];
-	
-	private static float x0;
-	private static float y0;
-	
+
 	public static void update()
 	{
 		for(int i = 0; i < MAX_BUTTONS; i++)

@@ -1,14 +1,13 @@
 package com.myscrabble.entities;
 
+import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
+
 import java.awt.Rectangle;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
-import com.myscrabble.util.ScrabbleUtils;
-
-import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 /**
  * 
  * @author Alex Koukoulas

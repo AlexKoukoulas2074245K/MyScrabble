@@ -3,7 +3,6 @@ package com.myscrabble.entities;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.myscrabble.managers.GameStateManager;
@@ -70,7 +69,7 @@ public class Board extends GameObject
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
 	 * the board by a player) */
-	private HashMap<Player, ArrayList<Tile>> playerFormations;
+	private HashMap<Player, TileFormation> playerFormations;
 	
 	public Board(GameStateManager gsm)
 	{
@@ -85,7 +84,7 @@ public class Board extends GameObject
 		tilemap = new Tilemap();
 		tileIndicator = new TileIndicator(gsm);
 		
-		playerFormations = new HashMap<Player, ArrayList<Tile>>();
+		playerFormations = new HashMap<Player, TileFormation>();
 	}
 	
 	@Override
@@ -103,6 +102,10 @@ public class Board extends GameObject
 		tileIndicator.render();
 	}
 	 
+	/**
+	 * Response to hovering over the game board 
+	 * with the mouse holding a letter tile.
+	 */
 	public void hoveredOverWithTile()
 	{
 		
@@ -127,6 +130,13 @@ public class Board extends GameObject
 		tileIndicator.setRow(targetTile.getRow());
 	}
 	
+	/**
+	 * 
+	 * @param player To be cross checked with the letterTiles
+	 * on the board for equality in references <br>
+	 * Response to hovering over the gameboard without
+	 * holding a letter tile
+	 */
 	public void hoveredOverWithoutTile(Player player)
 	{
 		if(getTileOnMouse() == null)
@@ -147,14 +157,15 @@ public class Board extends GameObject
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Whether or not the tile indicator
+	 * points to the active player's letter tiles
+	 * in the game board
+	 */
 	public boolean checkForTileWithdrawal()
 	{	
-		if(tileIndicator.getStatus() == TileIndicator.NORMAL)
-		{
-			return true;
-		}
-		
-		return false;
+		return tileIndicator.getStatus() == TileIndicator.NORMAL;
 	}
 	
 	/**
@@ -177,6 +188,7 @@ public class Board extends GameObject
 		
 		if(result != null && targetTile != null)
 		{
+		
 		    popFromFormation(result, playerRef);
 		    targetTile.clearTile();
 		}
@@ -205,8 +217,7 @@ public class Board extends GameObject
 	{
 		return new Rectangle((int)x + SIDE_WIDTH, (int)y + SIDE_HEIGHT, 
 							 getTexture(BOARD_TEXTURE).getTextureWidth() - 2 * SIDE_WIDTH,
-						     getTexture(BOARD_TEXTURE).getTextureHeight() - 2 * SIDE_HEIGHT);
-		
+						     getTexture(BOARD_TEXTURE).getTextureHeight() - 2 * SIDE_HEIGHT);	
 	}
 	
 	/**
@@ -217,46 +228,74 @@ public class Board extends GameObject
 	 */
 	public int calculatePoints(Player player)
 	{
-	    return ScrabbleUtils.calculatePoints(playerFormations.get(player));
+	    return ScrabbleUtils.calculatePoints(playerFormations.get(player).getTiles(), tilemap);
 	}
 	
 	/**
 	 * 
-	 * @param player The player that requests his/her current
+	 * @param playerRef The player that requests his/her current
 	 * word from their current tile formation.
 	 * @return The player's current word from
 	 * their current tile formation
 	 */
-	public String getCurrentWord(Player player)
+	public String getCurrentWord(Player playerRef)
 	{
-		StringBuilder result = new StringBuilder();
-		
-		for(Tile tile : playerFormations.get(player))
-		{
-		    result.append(tile.getLetterTile().getLetter());
-		}
-		
-		return result.toString();
+		return playerFormations.get(playerRef).getWord();
 	}
 	
+	/**
+	 * 
+	 * @param playerRef Player reference to check
+	 * @return Whether player is registered in the
+	 * playerFormations HashMap.
+	 */
+	public boolean getPlayerRegistered(Player playerRef)
+	{
+		return playerFormations.containsKey(playerRef);
+	}
+	
+	/**
+	 * 
+	 * @param playerRef The player for which the tile formation will be checked
+	 * @return Whether the player's tile formation has no gaps and all tiles
+	 * are either in the same horizontal or vertical line in the game board.
+	 */
+	public boolean isCurrentFormationValid(Player playerRef)
+	{
+		return playerFormations.get(playerRef).isValidFormation();
+	}
+	
+	/**
+	 * 
+	 * @param letterTile To be removed from the player's tile formation
+	 * @param playerRef The player from whose tile formation the operation will be performed 
+	 */
 	private void popFromFormation(LetterTile letterTile, Player playerRef)
 	{
-	    ArrayList<Tile> tilesSoFar = playerFormations.get(playerRef);
-	    Tile letterTileHolder = tilemap.getLetterTileHolder(letterTile);
-	    
-	    tilesSoFar.remove(letterTileHolder);
+	    playerFormations.get(playerRef).removeTile(letterTile);
 	}
 	
+	/**
+	 * 
+	 * @param letterTile To be added to the player's tile formation
+	 * @param playerRef The player on whose tile formation the letter tile
+	 * will be appended
+	 */
 	private void addToFormation(LetterTile letterTile, Player playerRef)
 	{
 		if(!playerFormations.containsKey(playerRef))
 		{	
-			playerFormations.put(playerRef, new ArrayList<Tile>());
+			playerFormations.put(playerRef, new TileFormation());
 		}
 		
-		playerFormations.get(playerRef).add(tilemap.getLetterTileHolder(letterTile));
+		playerFormations.get(playerRef).addTile(letterTile);
 	}
 	
+	/**
+	 * 
+	 * @return The tile that corresponds to the present
+	 * mouse coordinates
+	 */
 	private Tile getTileOnMouse()
 	{
 		if(tilemap.getTile(getTransfMouseCol(), getTransfMouseRow()) == null)
@@ -282,6 +321,8 @@ public class Board extends GameObject
 		return getTileOnMouse().getPos();
 	}
 	
+	/* Transformed mouse x and y coordinates which are
+	 * used to extract a tile from the tile map */
 	public int getTransfMouseX()
 	{
 		return MouseManager.getX() - X_OFFSET - SIDE_WIDTH;
@@ -292,6 +333,9 @@ public class Board extends GameObject
 		return MouseManager.getY() - Y_OFFSET + SIDE_WIDTH;
 	}
 	
+	/* The column and row that correspond to the
+	 * current mouse coordiantes
+	 */
 	public int getTransfMouseCol()
 	{
 		return getTransfMouseX() / Tile.TILE_SIZE;

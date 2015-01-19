@@ -3,7 +3,6 @@ package com.myscrabble.entities;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.ScrabbleDictionary;
-import com.myscrabble.util.ScrabbleUtils;
 import com.myscrabble.util.Timer;
 
 /**
@@ -37,9 +36,7 @@ public class Player
 	/* Reference to the letterBag used by all players */
 	private LetterBag letterBag;
 	
-	private boolean isHuman;
 	private boolean isActive;
-	private boolean validWord;
 	
 	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag)
 	{
@@ -51,7 +48,6 @@ public class Player
 		
 		tileRack = new TileRack(gsm, this, letterBag);
 		isActive = true;
-		isHuman = true;
 		
 		selLetterTile = null;
 	}
@@ -111,7 +107,7 @@ public class Player
 			else if(board.getIndicator().getStatus() == TileIndicator.SUCCESS)
 			{
 				addTileToBoard();
-				validWord = wordExists();
+				System.out.println("Word : " + getCurrentWord() + " " + wordExists());
 			}
 		}
 		else
@@ -168,7 +164,7 @@ public class Player
 	
 	/**
 	 * Explanation:
-	 * On left click where a letter tile is highlighted ->
+	 * On left click where a letter tile in the rack is highlighted ->
 	 * grab that tile, de-highlight it, remove it from the rack
 	 * and last but not least disable the left movement of all the 
 	 * previous tiles (according to the index of the selected tile)
@@ -184,6 +180,29 @@ public class Player
 			return;
 		}
 		
+		if(tileRack.getRect().contains(MouseManager.getX(), MouseManager.getY()))
+		{
+			checkForSelectionInRack();
+		}
+		else if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
+		{
+			checkForSelectionInBoard();
+		}
+	}
+	
+	/**
+	 * Explanation:
+	 * On left click where a letter tile in the rack is highlighted ->
+	 * grab that tile, de-highlight it, remove it from the rack
+	 * and last but not least disable the left movement of all the 
+	 * previous tiles (according to the index of the selected tile)
+	 * and enable the left movement of all the tiles after the selected
+	 * one. Finally push all the tiles to the left. (Some of them
+	 * obviously will not be able to move because of the 
+	 * restrictions we applied before)
+	 */
+	private void checkForSelectionInRack()
+	{
 		for(LetterTile lt : tileRack.getLetterTiles())
 		{
 			if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
@@ -215,6 +234,20 @@ public class Player
 		}
 	}
 	
+	private void checkForSelectionInBoard()
+	{
+		if(MouseManager.isButtonDown(MouseManager.LEFT_BUTTON))
+		{
+			if(board.checkForTileWithdrawal())
+			{
+				selLetterTile = board.withdrawTile(this);
+				selLetterTile.setGrabbed(true);
+				selLetterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);
+			}
+		}
+		//selectionTimer = new Timer(SELECTION_COOLDOWN);
+	}
+	
 	private void checkForBoardWithdrawal()
 	{
 		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
@@ -223,7 +256,6 @@ public class Player
 			{
 			    LetterTile target = board.withdrawTile(this);
 				addTileToRack(target);
-				validWord = wordExists();
 			}
 		}
 	}
@@ -281,7 +313,7 @@ public class Player
 	
 	public boolean hasValidWord()
 	{
-		return validWord;
+		return wordExists() && wordIsValid();
 	}
 	
 	public boolean isActive()
@@ -311,6 +343,18 @@ public class Player
 	
 	public boolean wordExists()
 	{
-		return scrabbleDict.wordExists(board.getCurrentWord(this));
+		if(board.getPlayerRegistered(this))
+		{
+			return scrabbleDict.wordExists(board.getCurrentWord(this));
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public boolean wordIsValid()
+	{
+		return board.isCurrentFormationValid(this);
 	}
 }

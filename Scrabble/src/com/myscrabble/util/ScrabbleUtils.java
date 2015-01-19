@@ -1,9 +1,13 @@
 package com.myscrabble.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
+import com.myscrabble.entities.LetterTile;
 import com.myscrabble.entities.Tile;
+import com.myscrabble.entities.TileFormation;
+import com.myscrabble.entities.Tilemap;
 
 /**
  * 
@@ -55,16 +59,55 @@ public class ScrabbleUtils
 		return letterPoints.get(letter);
 	}
 	
-	public static int calculatePoints(ArrayList<Tile> tileFormation)
+	public static ArrayList<Float> getAscendingPositions(ArrayList<LetterTile> letterTiles, int direction)
+	{
+		ArrayList<Float> result = new ArrayList<>();
+		
+		for(LetterTile letterTile : letterTiles)
+		{
+			if(direction == TileFormation.HORIZONTAL)
+			{
+				result.add(letterTile.getX());
+			}
+			else
+			{
+				result.add(letterTile.getY());
+			}
+		}
+		
+		Collections.sort(result);
+		System.out.print(result);
+		System.out.println();
+		return result;
+	}
+	
+	public static float xDistanceBetween(LetterTile t1, LetterTile t2)
+	{
+		return (float)Math.abs(t1.getX() - t2.getX());
+	}
+	
+	public static float yDistanceBetween(LetterTile t1, LetterTile t2)
+	{
+		return (float)Math.abs(t1.getY() - t2.getY());
+	}
+	
+	/**
+	 * 
+	 * @param tileFormation The tiles to be evaluated
+	 * @return the total points of the word that
+	 * the tiles produce along with any modifiers in the board
+	 * (double word, triple letter etc.)
+	 */
+	public static int calculatePoints(ArrayList<LetterTile> letterTiles, Tilemap tilemap)
 	{
 	    int result = 0;
 	    int modifier = 0;
 	    
-	    for(Tile tile : tileFormation)
+	    for(LetterTile letterTile : letterTiles)
 	    {
 	        
-	        int letterPoints = tile.getLetterTile().getPoints();
-	        int tileType = tile.getType();
+	        int letterPoints = letterTile.getPoints();
+	        int tileType = tilemap.getLetterTileHolder(letterTile).getType();
 	        
 	        if(tileType == Tile.DOUBLE_LETTER || tileType == Tile.TRIPLE_LETTER)
 	        {
