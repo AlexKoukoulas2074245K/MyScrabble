@@ -5,8 +5,12 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 import java.awt.Rectangle;
 import java.util.HashMap;
 
+import org.lwjgl.opengl.GL11;
+
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
 /**
@@ -57,14 +61,14 @@ public class Board extends GameObject
 	
 	/* Texture Paths */
 	private static final String BOARD_TEX_PATH = "/board/board_trans" + STD_TEX_EXT;
-	private static final String BOARD_COL_PATH = "/board/boardColors/1" + STD_TEX_EXT;
+	private static final float[] BOARD_COLOR_RGB = RenderUtils.getGLColor(54, 149, 57);
 	
 	/* Texture Flags */
 	private static final int BOARD_TEXTURE = 0;
-	private static final int BOARD_COLOR = 1;
 	
 	private Tilemap tilemap;
 	private TileIndicator tileIndicator;
+	private Shader coloringShader;
 	
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
@@ -76,7 +80,6 @@ public class Board extends GameObject
 		super(gsm);
 		
 		addTexture(BOARD_TEXTURE, BOARD_TEX_PATH);
-		addTexture(BOARD_COLOR, BOARD_COL_PATH);
 		
 		x = X_OFFSET;
 		y = Y_OFFSET;
@@ -85,6 +88,8 @@ public class Board extends GameObject
 		tileIndicator = new TileIndicator(gsm);
 		
 		playerFormations = new HashMap<Player, TileFormation>();
+		
+		coloringShader = new Shader(ShaderType.COLORING, gsm.getRes());
 	}
 	
 	@Override
@@ -96,12 +101,20 @@ public class Board extends GameObject
 	@Override
 	public void render()
 	{
-		RenderUtils.renderTexture(getTexture(BOARD_COLOR), x, y);
+		drawColoredBackground();
 		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE), x, y);
 		tilemap.render();
 		tileIndicator.render();
 	}
-	 
+	
+	private void drawColoredBackground()
+	{
+	    coloringShader.useProgram();
+        coloringShader.setUniform3f("inputColor", BOARD_COLOR_RGB);
+        RenderUtils.renderRectangle(x, y, getTexture(BOARD_TEXTURE).getTextureWidth(), getTexture(BOARD_TEXTURE).getTextureHeight());
+        coloringShader.stopProgram();
+	}
+	
 	/**
 	 * Response to hovering over the game board 
 	 * with the mouse holding a letter tile.

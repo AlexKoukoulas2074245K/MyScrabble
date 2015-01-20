@@ -62,7 +62,7 @@ public class Shader
 	{
 		String vertexSource = rm.loadFileAsString(fileName + VERTEX_EXT);
 		String fragmentSource = rm.loadFileAsString(fileName + FRAGMENT_EXT);
-		
+		System.out.println(fragmentSource);
 		glShaderSource(vertexHandle, vertexSource);
 		glShaderSource(fragmentHandle, fragmentSource);
 	}
@@ -107,6 +107,11 @@ public class Shader
 		}
 		
 		glUniform3f(uniformLocations.get(uniformName), values[0], values[1], values[2]);
+	}
+	
+	public void setUniform3f(String uniformName, float x, float y, float z)
+	{
+	    setUniform3f(uniformName, new float[]{x, y, z});
 	}
 	
 	public int getProgramHandle()

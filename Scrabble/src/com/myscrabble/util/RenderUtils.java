@@ -30,6 +30,25 @@ public class RenderUtils
 	
 	/**
 	 * 
+	 * @param x offset to start rendering
+	 * @param y offset to start rendering
+	 * @param width of rectangle
+	 * @param height of rectangle
+	 * <br>Renders a rectangle(colour-less) on the specified coordinates and
+	 * with the desired width and height 
+	 */
+	public static void renderRectangle(final float x, final float y, final float width, final float height)
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(x        , y         );
+	    glVertex2f(x + width, y         );
+	    glVertex2f(x + width, y + height);
+	    glVertex2f(x        , y + width );
+	    glEnd();
+	}
+	
+	/**
+	 * 
 	 * @param tex Texture to be rendered
 	 * @param x x-offset to start rendering
 	 * @param y y-offset to start rendering
