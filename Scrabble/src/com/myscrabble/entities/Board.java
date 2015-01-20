@@ -93,8 +93,6 @@ public class Board extends GameObject
 	private TileIndicator tileIndicator;
 	private Shader coloringShader;
 	
-	private Rectangle[] colorPlaceholders;
-	
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
 	 * the board by a player) */
@@ -116,9 +114,7 @@ public class Board extends GameObject
 		
 		coloringShader = new Shader(ShaderType.COLORING, gsm.getRes());
 		
-		backgroundColor = BoardColor.DARK_BLUE;
-		
-		createColorPlaceholders();
+		backgroundColor = BoardColor.DARK_GREEN;
 	}
 	
 	@Override
@@ -131,28 +127,9 @@ public class Board extends GameObject
 	public void render()
 	{
 		drawColoredBackground();
-		drawColorPlaceholders();
 		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE), x, y);
 		tilemap.render();
 		tileIndicator.render();
-	}
-	
-	private void drawColorPlaceholders()
-	{
-	    coloringShader.useProgram();
-	    
-	    int i = 0;
-	    for(BoardColor element : BoardColor.values())
-	    {
-	        coloringShader.setUniform3f("inputColor", element.colour);
-	        RenderUtils.renderRectangle(colorPlaceholders[i].x, 
-	                                    colorPlaceholders[i].y, 
-	                                    colorPlaceholders[i].width, 
-	                                    colorPlaceholders[i].height);
-	        i++;
-	    }
-	       
-	    coloringShader.stopProgram();
 	}
 	
 	private void drawColoredBackground()
@@ -216,31 +193,6 @@ public class Board extends GameObject
 		{
 			disableIndicator();
 		}
-	}
-	
-	/**
-	 * Checks whether a different colour selection
-	 * has been made for the background colour.
-	 * of the board.
-	 */
-	public void checkForColorPlaceholderInteraction()
-	{
-	    if(!MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
-	    {
-	        return;
-	    }
-	    
-	    int i = 0;
-	    
-	    for(BoardColor color : BoardColor.values())
-	    {
-	        if(colorPlaceholders[i].contains(MouseManager.getX(), MouseManager.getY()))
-	        {
-	            backgroundColor = color;
-	        }
-	        
-	        i++;
-	    }
 	}
 	
 	/**
@@ -375,20 +327,6 @@ public class Board extends GameObject
 		}
 		
 		playerFormations.get(playerRef).addTile(letterTile);
-	}
-	
-	private void createColorPlaceholders()
-	{
-	    colorPlaceholders = new Rectangle[BoardColor.values().length];
-	    
-	    int placeHolderX = (int)x - Tile.TILE_SIZE - Tile.TILE_SIZE / 2;
-	    int placeHolderY = (int)y;
-	    
-	    for(int i = 0; i < BoardColor.values().length; i++)
-	    {
-	        colorPlaceholders[i] = new Rectangle(placeHolderX, placeHolderY + i * (Tile.TILE_SIZE + Tile.TILE_SIZE/2), 
-	                                             Tile.TILE_SIZE, Tile.TILE_SIZE);
-	    }
 	}
 	
 	/**

@@ -7,6 +7,7 @@ import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.RenderUtils;
 
 /**
@@ -57,8 +58,43 @@ public abstract class Button
 		textures = gsm.getRes().getAllTextures(BUTTON_TEX_DIR + name);
 	}
 	
-	/* Standard methods to be implemented by all children */
-	public abstract void handleInput();
+	/**
+	 * Default button input handling.
+	 * Responds to mouse movement
+	 * and presses.
+	 */
+	public void handleInput()
+	{
+		int mouseX = MouseManager.getX();
+		int mouseY = MouseManager.getY();
+		
+		if(getRect().contains(mouseX, mouseY))
+		{
+			highlighted = true;
+			
+			if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
+			{
+				pressed = true;
+			}
+			else if(MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON) && pressed)
+			{
+				executeFunction();
+				pressed = false;
+				highlighted = false;
+			}
+		}
+		else
+		{
+			highlighted = false;
+			
+			if(MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON))
+			{
+				pressed = false;
+			}
+		}
+	}
+	
+	/* Standard method to be implemented by all children */	
 	public abstract void executeFunction();
 	
 	public void update(Player playerRef)

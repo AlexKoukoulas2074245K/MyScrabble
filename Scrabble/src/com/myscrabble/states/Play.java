@@ -1,9 +1,10 @@
 package com.myscrabble.states;
 
+
 import java.util.ArrayList;
-
+import com.myscrabble.uicomponents.Button;
+import com.myscrabble.uicomponents.BWordSelection;
 import org.newdawn.slick.opengl.Texture;
-
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
@@ -12,8 +13,6 @@ import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
-import com.myscrabble.uicomponents.BWordSelection;
-import com.myscrabble.uicomponents.Button;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 

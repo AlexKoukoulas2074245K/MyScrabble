@@ -10,16 +10,14 @@ public class BWordSelection extends Button
 	/* Standard button name */
 	private static final String BUTTON_NAME = "wordSelection";
 	
-	private static final int X_OFFSET = 604;
-	private static final int Y_OFFSET = 400;
+	private static final int X_OFFSET = 612;
+	private static final int Y_OFFSET = 340;
 	
 	/* Texture Flags */
-	private static final int INVALID_NORMAL    = 0;
-	private static final int INVALID_HIGHLIGHT = 1;
-	private static final int INVALID_PRESSED   = 2;
-	private static final int VALID_NORMAL      = 3;
-	private static final int VALID_HIGHLIGHT   = 4;
-	private static final int VALID_PRESSED     = 5;
+	private static final int INVALID           = -1;
+	private static final int VALID_NORMAL      = 0;
+	private static final int VALID_HIGHLIGHT   = 1;
+	private static final int VALID_PRESSED     = 2;
 	
 	private String currentWordSelection;
 	private int currentWordPoints;
@@ -27,7 +25,8 @@ public class BWordSelection extends Button
 	public BWordSelection(GameStateManager gsm)
 	{
 		super(BUTTON_NAME, gsm);
-		currentTexture = INVALID_NORMAL;
+		
+		status = INVALID;
 		
 		x = X_OFFSET;
 		y = Y_OFFSET;
@@ -37,33 +36,7 @@ public class BWordSelection extends Button
 	{
 		if(status == INVALID) return;
 		
-		int mouseX = MouseManager.getX();
-		int mouseY = MouseManager.getY();
-		
-		if(getRect().contains(mouseX, mouseY))
-		{
-			highlighted = true;
-			
-			if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
-			{
-				pressed = true;
-			}
-			else if(MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON) && pressed)
-			{
-				executeFunction();
-				pressed = false;
-				highlighted = false;
-			}
-		}
-		else
-		{
-			highlighted = false;
-			
-			if(MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON))
-			{
-				pressed = false;
-			}
-		}
+		super.handleInput();
 	}
 
 	@Override
@@ -79,7 +52,6 @@ public class BWordSelection extends Button
 		{
 		    currentWordSelection = playerRef.getCurrentWord();
 		    currentWordPoints = playerRef.getCurrentPoints();
-		    
 			status = VALID;
 		}
 		else
@@ -93,24 +65,32 @@ public class BWordSelection extends Button
 	@Override
 	public void render()
 	{
-		selectTexture();
-		super.render();
+		if(status == VALID)
+		{
+			selectTexture();
+			super.render();
+		}
 	}
 	
+	/**
+	 * Selects adequate texture
+	 * based on the button's boolean
+	 * (highlighted, pressed) values.
+	 */
 	private void selectTexture()
 	{
 		if(highlighted)
 		{
-			currentTexture = status == VALID ? VALID_HIGHLIGHT : INVALID_HIGHLIGHT;
+			currentTexture = VALID_HIGHLIGHT;
 		}
 		if(pressed)
 		{
-			currentTexture = status == VALID ? VALID_PRESSED : INVALID_PRESSED;
+			currentTexture = VALID_PRESSED;
 		}
 		
 		if(!highlighted && !pressed)
 		{
-			currentTexture = status == VALID ? VALID_NORMAL : INVALID_NORMAL;
+			currentTexture = VALID_NORMAL;
 		}
 	}
 }
