@@ -1,7 +1,5 @@
 package com.myscrabble.entities;
 
-import static com.myscrabble.entities.LetterTile.LEFT;
-import static com.myscrabble.entities.LetterTile.RIGHT;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
@@ -9,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
@@ -84,6 +83,7 @@ public class TileRack extends GameObject
 	@Override
 	public void update()
 	{
+	    //System.out.println(this);
 		coreTileUpdate();
 		
 		if(!tilesAreIdle())
@@ -175,11 +175,11 @@ public class TileRack extends GameObject
 		{
 			if(lt.getCenterX() < collTiles.get(0).getCenterX())
 			{
-				pushTiles(RIGHT, 0);
+				pushTiles(Direction.RIGHT, 0);
 			}
 			else
 			{
-				pushTiles(LEFT, 0);
+				pushTiles(Direction.LEFT, 0);
 			}
 		}
 		else if(collisions == 2)
@@ -198,18 +198,18 @@ public class TileRack extends GameObject
 				leftSideTile = collTiles.get(0);
 			}
 			
-			if(rightSideTile.canBeMoved(LetterTile.RIGHT))
+			if(rightSideTile.canBeMoved(Direction.RIGHT))
 			{
-				pushTiles(RIGHT, letterTiles.indexOf(rightSideTile));
+				pushTiles(Direction.RIGHT, letterTiles.indexOf(rightSideTile));
 			}
-			else if(leftSideTile.canBeMoved(LetterTile.LEFT))
+			else if(leftSideTile.canBeMoved(Direction.LEFT))
 			{
-				leftSideTile.push(LEFT);
+				leftSideTile.push(Direction.LEFT);
 			}
 		}
 	}
 	
-	public void pushTiles(final int direction, int startingIndex)
+	public void pushTiles(final Direction direction, int startingIndex)
 	{	
 		for(int i = startingIndex; i < letterTiles.size(); i++)
 		{
@@ -258,7 +258,7 @@ public class TileRack extends GameObject
 		
 		if(mergeSpotted)
 		{
-		    pushTiles(LEFT, 0);
+		    pushTiles(Direction.LEFT, 0);
 		}
 		
 	}
@@ -267,7 +267,9 @@ public class TileRack extends GameObject
 	{
 	    for(LetterTile lt : letterTiles)
 	    {
-	        lt.setFlags(new boolean[4]);
+	        boolean[] newFlags = new boolean[4];
+	        newFlags[Direction.LEFT.value] = true;
+	        lt.setFlags(newFlags);
 	    }
 	}
 	

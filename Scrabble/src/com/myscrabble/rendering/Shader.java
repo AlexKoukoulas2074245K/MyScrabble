@@ -14,6 +14,24 @@ import com.myscrabble.managers.ResourceManager;
  */
 public class Shader
 {
+    public enum ShaderType
+    {
+        SHADING("/shaders/shading"),
+        COLORING("/shaders/coloring");
+        
+        private String fileName;
+        
+        private ShaderType(String name)
+        {
+            this.fileName = name;
+        }
+        
+        public String getFileName()
+        {
+            return fileName;
+        }
+    }
+    
 	private static final String VERTEX_EXT = ".vs";
 	private static final String FRAGMENT_EXT = ".fs";
 	private static final int MAX_DEBUG_STREAM_LENGTH = 1024;
@@ -24,10 +42,10 @@ public class Shader
 	private int vertexHandle;
 	private int fragmentHandle;
 	
-	public Shader(String fileName, ResourceManager rm)
+	public Shader(ShaderType type, ResourceManager rm)
 	{
 		createProgram();
-		loadContent(fileName, rm);
+		loadContent(type.getFileName(), rm);
 		compileProgram();
 		
 		uniformLocations = new HashMap<>();

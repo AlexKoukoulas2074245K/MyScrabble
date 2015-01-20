@@ -19,11 +19,21 @@ import com.myscrabble.util.RenderUtils;
  */
 public class LetterTile extends GameObject
 {
-	/* Tile Pushing Direction Flags */
-	public static final int LEFT  = 0;
-	public static final int RIGHT = 1;
-	public static final int UP    = 2;
-	public static final int DOWN  = 3;
+    public enum Direction
+    {
+        LEFT(0),
+        RIGHT(1),
+        UP(2),
+        DOWN(3);
+        
+        public int value;
+        
+        private Direction(int value)
+        {
+            this.value = value;
+        }
+    }
+
 	
 	/* Standard Tile Size (equals TileSize of Tile class) */
 	public static final int TILE_SIZE = Tile.TILE_SIZE;
@@ -82,10 +92,10 @@ public class LetterTile extends GameObject
 		movingGoalPos = -1;
 		
 		pushedFlags = new boolean[4];
-		pushedFlags[LEFT] = false;
-		pushedFlags[RIGHT] = false;
-		pushedFlags[UP] = false;
-		pushedFlags[DOWN] = false;
+		pushedFlags[Direction.LEFT.value]  = false;
+		pushedFlags[Direction.RIGHT.value] = false;
+		pushedFlags[Direction.UP.value]    = false;
+		pushedFlags[Direction.DOWN.value]  = false;
 		
 		loadTexture();
 	}
@@ -122,11 +132,11 @@ public class LetterTile extends GameObject
 	{
 		if(movingGoalPos != NO_MOVE_GOAL && movingGoalPos > x0)
 		{
-			x = approachPos(movingGoalPos, x, V_SPEED);
+			x = approach(movingGoalPos, x, V_SPEED);
 		}
 		else if(movingGoalPos != NO_MOVE_GOAL && movingGoalPos < x0)
 		{
-			x = approachNeg(movingGoalPos, x, V_SPEED);
+			x = approach(movingGoalPos, x, V_SPEED);
 		}
 			
 		if(movingGoalPos < x0 && x <= movingGoalPos)
@@ -151,16 +161,14 @@ public class LetterTile extends GameObject
 	{
 		if(highlightStatus == HIGHLIGHT_SELECTED)
 		{
-			y = approachNeg(y0 - TILE_SIZE / 2, y, V_SPEED);
+		    float goal = y0 - TILE_SIZE / 2;
+			y = approach(goal, y, V_SPEED);
 			
-			if(y <= y0 - TILE_SIZE / 2)
-			{
-				y = y0 - TILE_SIZE / 2;
-			}
 		}
 		else if(highlightStatus == HIGHLIGHT_DESELECTED)
 		{
-			y = approachPos(y0 + TILE_SIZE / 2, y, V_SPEED);
+		    float goal = y0 + TILE_SIZE / 2;
+			y = approach(goal, y, V_SPEED);
 			
 			if(y >= y0)
 			{
@@ -225,18 +233,18 @@ public class LetterTile extends GameObject
 	 * Before moving it asserts that the tile will
 	 * not move in the same direction twice in a row
 	 */
-	public void push(int direction)
+	public void push(Direction direction)
 	{
-		if(direction == LEFT && !pushedFlags[LEFT])
+		if(direction == Direction.LEFT && !pushedFlags[Direction.LEFT.value])
 		{
-			pushedFlags[RIGHT] = false;
-			pushedFlags[LEFT] = true;
+			pushedFlags[Direction.RIGHT.value] = false;
+			pushedFlags[Direction.LEFT.value] = true;
 			movingGoalPos = x - TILE_SIZE;
 		}
-		else if(direction == RIGHT && !pushedFlags[RIGHT])
+		else if(direction == Direction.RIGHT && !pushedFlags[Direction.RIGHT.value])
 		{
-			pushedFlags[RIGHT] = true;
-			pushedFlags[LEFT] = false;
+			pushedFlags[Direction.RIGHT.value] = true;
+			pushedFlags[Direction.LEFT.value] = false;
 			movingGoalPos = x + TILE_SIZE;
 		}	
 	}
@@ -273,9 +281,9 @@ public class LetterTile extends GameObject
 		return pushedFlags;
 	}
 	
-	public boolean canBeMoved(int direction)
+	public boolean canBeMoved(Direction direction)
 	{
-		return !pushedFlags[direction];
+		return !pushedFlags[direction.value];
 	}
 	
 	public int getPoints()
@@ -332,9 +340,9 @@ public class LetterTile extends GameObject
 		this.grabbed = grabbed;
 	}
 	
-	public void setPushDir(int direction, boolean status)
+	public void setPushDir(Direction direction, boolean status)
 	{
-		pushedFlags[direction] = status;
+		pushedFlags[direction.value] = status;
 	}
 	
 	public void setFlags(boolean[] pushedFlags)

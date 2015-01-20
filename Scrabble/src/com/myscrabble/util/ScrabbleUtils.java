@@ -76,8 +76,7 @@ public class ScrabbleUtils
 		}
 		
 		Collections.sort(result);
-		System.out.print(result);
-		System.out.println();
+
 		return result;
 	}
 	

@@ -1,5 +1,6 @@
 package com.myscrabble.entities;
 
+import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.ScrabbleDictionary;
@@ -125,9 +126,9 @@ public class Player
 		}
 		else if(!selLetterTile.getRect().intersects(tileRack.getRect()))
 		{
-			if(tileRack.tilesAreIdle())
+			if(tileRack.tilesAreIdle() && tileRack.getLetterTileFormationHole().getIndex() != tileRack.nTiles())
 			{
-				tileRack.pushTiles(LetterTile.LEFT, 0);
+				tileRack.pushTiles(Direction.LEFT, 0);
 			}
 		}
 		
@@ -219,14 +220,14 @@ public class Player
 					
 					for(int i = 0; i < indexOfTile; i++)
 					{
-						tileRack.getLetterTiles().get(i).setPushDir(LetterTile.LEFT, true);
+						tileRack.getLetterTiles().get(i).setPushDir(Direction.LEFT, true);
 					}
 					for(int i = indexOfTile; i < tileRack.getLetterTiles().size(); i++)
 					{
-						tileRack.getLetterTiles().get(i).setPushDir(LetterTile.LEFT, false);
+						tileRack.getLetterTiles().get(i).setPushDir(Direction.LEFT, false);
 					}
 					
-					tileRack.pushTiles(LetterTile.LEFT, indexOfTile + 1);
+					tileRack.pushTiles(Direction.LEFT, indexOfTile + 1);
 					
 					selectionTimer = new Timer(SELECTION_COOLDOWN);
 				}
@@ -252,7 +253,7 @@ public class Player
 	{
 		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
-			if(board.checkForTileWithdrawal())
+			if(board.checkForTileWithdrawal() && tileRack.nTiles() < TileRack.MAX_NO_TILES)
 			{
 			    LetterTile target = board.withdrawTile(this);
 				addTileToRack(target);

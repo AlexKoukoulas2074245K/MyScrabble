@@ -1,4 +1,4 @@
-package com.myscrabble.buttons;
+package com.myscrabble.uicomponents;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;

@@ -67,24 +67,21 @@ public abstract class GameObject
 	public void update(){}
 	public void render(){}
 	
-	protected float approachPos(float goal, float current, float delta)
+	protected float approach(float goal, float current, float delta)
 	{
-		if(current + delta < goal)
-		{
-			return current + delta;
-		}
-		
-		return goal;
-	}
-	
-	protected float approachNeg(float goal, float current, float delta)
-	{	
-		if(current - delta > -goal)
-		{
-			return current - delta;
-		}
-		
-		return goal;
+	    float difference = goal - current;
+	    
+	    if(difference > delta)
+	    {
+	        return current + delta;
+	    }
+	    
+	    if(difference < -delta)
+	    {
+	        return current - delta;
+	    }
+	    
+	    return goal;
 	}
 	
 	public float getX() 

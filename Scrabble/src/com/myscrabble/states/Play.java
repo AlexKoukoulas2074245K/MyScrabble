@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.opengl.Texture;
 
-import com.myscrabble.buttons.BWordSelection;
-import com.myscrabble.buttons.Button;
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
@@ -13,6 +11,9 @@ import com.myscrabble.entities.Player;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.uicomponents.BWordSelection;
+import com.myscrabble.uicomponents.Button;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 
@@ -28,6 +29,7 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
+	
 	private static final String SHADING_FACTOR_NAME = "darknessParam";
 	
 	/* All the GameObjects that need to be drawn and 
@@ -78,7 +80,8 @@ public class Play extends GameState
 		//TODO: remove
 		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
 		
-		shader = new Shader("/shaders/shader", gsm.getRes());
+		shader = new Shader(ShaderType.SHADING, gsm.getRes());
+		
 		darknessFactor = 1.0f;
 	}
 

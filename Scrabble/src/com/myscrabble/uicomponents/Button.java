@@ -1,4 +1,4 @@
-package com.myscrabble.buttons;
+package com.myscrabble.uicomponents;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
