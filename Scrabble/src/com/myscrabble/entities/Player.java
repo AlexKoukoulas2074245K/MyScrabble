@@ -79,6 +79,8 @@ public class Player
 		{
 			checkForLetterDrawAttempt();
 		}
+		
+		board.checkForColorPlaceholderInteraction();
 	}
 	
 	public void update()

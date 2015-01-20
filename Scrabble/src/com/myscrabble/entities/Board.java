@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.InputManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
@@ -24,6 +25,27 @@ import com.myscrabble.util.ScrabbleUtils;
 
 public class Board extends GameObject 
 {
+    public enum BoardColor
+    {
+        DARK_GREEN(54, 149, 57),
+        DARK_BLUE(70, 86, 107),
+        BROWN(92, 77, 56),
+        ORANGE(189, 141, 7),
+        PURPLE(90, 9, 97);
+        
+        private float[] colour;
+        
+        private BoardColor(int r, int g, int b)
+        {
+            colour = RenderUtils.getGLColor(r, g, b);
+        }
+        
+        public float[] getColor()
+        {
+            return colour;
+        }
+    }
+    
 	/* Board Dimensions */
 	public static final int WIDTH = 512;
 	public static final int HEIGHT = 512;
@@ -61,14 +83,17 @@ public class Board extends GameObject
 	
 	/* Texture Paths */
 	private static final String BOARD_TEX_PATH = "/board/board_trans" + STD_TEX_EXT;
-	private static final float[] BOARD_COLOR_RGB = RenderUtils.getGLColor(54, 149, 57);
 	
 	/* Texture Flags */
 	private static final int BOARD_TEXTURE = 0;
 	
+	private BoardColor backgroundColor;
+	
 	private Tilemap tilemap;
 	private TileIndicator tileIndicator;
 	private Shader coloringShader;
+	
+	private Rectangle[] colorPlaceholders;
 	
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
@@ -90,6 +115,10 @@ public class Board extends GameObject
 		playerFormations = new HashMap<Player, TileFormation>();
 		
 		coloringShader = new Shader(ShaderType.COLORING, gsm.getRes());
+		
+		backgroundColor = BoardColor.DARK_BLUE;
+		
+		createColorPlaceholders();
 	}
 	
 	@Override
@@ -102,15 +131,34 @@ public class Board extends GameObject
 	public void render()
 	{
 		drawColoredBackground();
+		drawColorPlaceholders();
 		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE), x, y);
 		tilemap.render();
 		tileIndicator.render();
 	}
 	
+	private void drawColorPlaceholders()
+	{
+	    coloringShader.useProgram();
+	    
+	    int i = 0;
+	    for(BoardColor element : BoardColor.values())
+	    {
+	        coloringShader.setUniform3f("inputColor", element.colour);
+	        RenderUtils.renderRectangle(colorPlaceholders[i].x, 
+	                                    colorPlaceholders[i].y, 
+	                                    colorPlaceholders[i].width, 
+	                                    colorPlaceholders[i].height);
+	        i++;
+	    }
+	       
+	    coloringShader.stopProgram();
+	}
+	
 	private void drawColoredBackground()
 	{
 	    coloringShader.useProgram();
-        coloringShader.setUniform3f("inputColor", BOARD_COLOR_RGB);
+        coloringShader.setUniform3f("inputColor", backgroundColor.getColor());
         RenderUtils.renderRectangle(x, y, getTexture(BOARD_TEXTURE).getTextureWidth(), getTexture(BOARD_TEXTURE).getTextureHeight());
         coloringShader.stopProgram();
 	}
@@ -168,6 +216,31 @@ public class Board extends GameObject
 		{
 			disableIndicator();
 		}
+	}
+	
+	/**
+	 * Checks whether a different colour selection
+	 * has been made for the background colour.
+	 * of the board.
+	 */
+	public void checkForColorPlaceholderInteraction()
+	{
+	    if(!MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
+	    {
+	        return;
+	    }
+	    
+	    int i = 0;
+	    
+	    for(BoardColor color : BoardColor.values())
+	    {
+	        if(colorPlaceholders[i].contains(MouseManager.getX(), MouseManager.getY()))
+	        {
+	            backgroundColor = color;
+	        }
+	        
+	        i++;
+	    }
 	}
 	
 	/**
@@ -302,6 +375,20 @@ public class Board extends GameObject
 		}
 		
 		playerFormations.get(playerRef).addTile(letterTile);
+	}
+	
+	private void createColorPlaceholders()
+	{
+	    colorPlaceholders = new Rectangle[BoardColor.values().length];
+	    
+	    int placeHolderX = (int)x - Tile.TILE_SIZE - Tile.TILE_SIZE / 2;
+	    int placeHolderY = (int)y;
+	    
+	    for(int i = 0; i < BoardColor.values().length; i++)
+	    {
+	        colorPlaceholders[i] = new Rectangle(placeHolderX, placeHolderY + i * (Tile.TILE_SIZE + Tile.TILE_SIZE/2), 
+	                                             Tile.TILE_SIZE, Tile.TILE_SIZE);
+	    }
 	}
 	
 	/**
