@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import org.newdawn.slick.opengl.Texture;
+
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
@@ -34,13 +36,17 @@ public class LetterBag extends GameObject
 	private static final int SEL_TEX     = 1;
 	
 	/* Positional Constants */
-	private static final int X_OFFSET = 604;
-	private static final int Y_OFFSET = 500;
+	private static final float X_OFFSET = 604;
+	private static final float Y_OFFSET = 500;
+	private static final float LETTER_X_OFFSET = X_OFFSET + 40;
+	private static final float LETTER_Y_OFFSET = Y_OFFSET + 80;
 	
 	/* A collection of letters that the players can draw from */
 	private ArrayList<Character> letters;
 	
 	private boolean highlighted;
+	
+	private Texture tex;
 	
 	public LetterBag(GameStateManager gsm)
 	{
@@ -52,6 +58,8 @@ public class LetterBag extends GameObject
 		highlighted = false;
 		x = X_OFFSET;
 		y = Y_OFFSET;
+	
+		tex = gsm.getRes().loadTexture("/tiles/0/A.png");
 	}
 	
 	@Override
@@ -65,6 +73,8 @@ public class LetterBag extends GameObject
 		{
 			RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
 		}
+		
+		RenderUtils.renderTexture(tex, LETTER_X_OFFSET, LETTER_Y_OFFSET);
 	}
 	
 	public char drawLetter()
