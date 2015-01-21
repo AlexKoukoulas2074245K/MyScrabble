@@ -48,6 +48,8 @@ public class Tile
 	{
 		if(!isEmpty)
 		{
+			letterTile.setX(x);
+			letterTile.setY(y);
 			letterTile.render();
 		}
 	}

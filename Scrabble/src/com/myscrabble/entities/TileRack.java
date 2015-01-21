@@ -39,11 +39,15 @@ public class TileRack extends GameObject
 		return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
 	}
 	 
-	/* Letter Tile Management (additions,current,deletions)*/
+	/* Core Letter Tiles on the rack*/
     private ArrayList<LetterTile> letterTiles;
+    
+    /* Removal through other ArrayList to 
+     * avoid concurrent modification exceptions */
     private ArrayList<LetterTile> tilesToRemove;
-    private HashMap<LetterTile, Integer> tilesToAdd; // <-- HashMap to enable setting and/or inserting  tiles
-                                                     // instead of just appending to the end.
+    /* Addition through a HashMap where key = LetterTile,
+     * value = index that the tile needs to be inserted at */
+    private HashMap<LetterTile, Integer> tilesToAdd; 
     
     /* Temporary storage of LetterTile attributes */
     private ArrayList<Float> tempStoredPositions;
@@ -86,7 +90,7 @@ public class TileRack extends GameObject
 	@Override
 	public void update()
 	{
-	    //System.out.println(this);
+		
 		coreTileUpdate();
 		
 		if(!tilesAreIdle())
@@ -118,16 +122,7 @@ public class TileRack extends GameObject
 	
 	private void coreTileUpdate()
 	{
-	    tilesAnimating = false;
-	    for(LetterTile lt : letterTiles)
-	    {
-	        if(lt.getDrawAnimating())
-	        {
-	            lt.updateDrawAnimation();
-	            tilesAnimating = true;
-	        }
-	    }
-	    
+		animatingTilesUpdate();
 	    if(tilesAnimating)
 	    {	        
 	        return;
@@ -143,6 +138,19 @@ public class TileRack extends GameObject
 		checkForMerges();
 	}
 	
+	private void animatingTilesUpdate()
+	{
+		tilesAnimating = false;
+	    for(LetterTile lt : letterTiles)
+	    {
+	        if(lt.getDrawAnimating())
+	        {
+	            lt.updateDrawAnimation();
+	            tilesAnimating = true;
+	        }
+	    }
+	}
+			
 	public void renderBack()
 	{
 		RenderUtils.renderTexture(getTexture(RACK_BACK), x, y);
@@ -293,9 +301,17 @@ public class TileRack extends GameObject
 	
 	public void drawLetterTile()
 	{
-		drawLetterTile(getLetterTileFormationHole().getIndex());
+		drawLetterTile(letterTiles.size());
 	}
 	
+	/**
+	 * 
+	 * @param index The index for the next letter
+	 * tile to be placed at.
+	 * <br>
+	 * Draws a LetterTile for the bag and places it
+	 * to the requested index
+	 */
 	public void drawLetterTile(int index)
 	{
 		letterTiles.add(letterBag.drawLetter(playerRef, index));
@@ -307,7 +323,7 @@ public class TileRack extends GameObject
 		char ch = lt.getLetter();
 		int points = lt.getPoints();
 		
-		LetterTile newTile = new LetterTile(gsm, playerRef, ch, points, getTilePos(index), lt.getDrawAnimating(), index);
+		LetterTile newTile = new LetterTile(gsm, playerRef, ch, points, lt.getDrawAnimating(), index);
 		newTile.setRecentlyAdded(true);
 		
 		tilesToAdd.put(newTile, index);
@@ -326,6 +342,13 @@ public class TileRack extends GameObject
 								   	 getTexture(RACK_BACK).getTextureHeight());
 	}
 	
+	/**
+	 * 
+	 * @param lt to be checked against
+	 * @return the number of collisions
+	 * of letter tiles currently on the rack
+	 * with the requested external lt.
+	 */
 	public int getNoCollisions(final LetterTile lt)
 	{
 		int noCollisions = 0;
@@ -341,6 +364,12 @@ public class TileRack extends GameObject
 		return noCollisions;
 	}
 	
+	/**
+	 * 
+	 * @param lt lt to be checked against.
+	 * @return the tiles on the rack that 
+	 * collide with the requested letter tile.
+	 */
 	public ArrayList<LetterTile> getCollidedTiles(final LetterTile lt)
 	{
 		ArrayList<LetterTile> result = new ArrayList<>();
@@ -436,7 +465,8 @@ public class TileRack extends GameObject
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < letterTiles.size(); i++)
 		{
-			sb.append(letterTiles.get(i).getLetter() + ": (" + letterTiles.get(i).getFlags()[0] + ", " +  letterTiles.get(i).getFlags()[1] +")  | ");
+			sb.append(letterTiles.get(i).getY());
+			sb.append("|");
 		}
 		
 		return sb.toString();

@@ -54,19 +54,24 @@ public class Player
 	}
 	
 	public void handleInput()
-	{
+	{	
+		/* Response of mouse hovering over the tile rack or game board holding a letter tile */
 		if(hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.LEFT_BUTTON))
 		{
 			checkAreaHovering();
 		}
+		/* Release of letter tile to either the rack or the game board*/
 		else if(hasSelectedLetterTile() && MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON))
 		{
 			releaseLetterTile();
 		}
+		/* Release of letter tile from game board to the tile rack */
 		else if(!hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.RIGHT_BUTTON))
 		{
 			checkForBoardWithdrawal();
 		}
+		/* If no letter tile is held letter tiles in the rack, the game board and the letter bag  
+		 * should respond to the mouse movement */
 		else if(!hasSelectedLetterTile())
 		{
 			highlightLetters();
@@ -75,6 +80,7 @@ public class Player
 			checkForBagHovering();
 		}
 		
+		/* Check for letter drawing request*/
 		if(!hasSelectedLetterTile() && MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON))
 		{
 			checkForLetterDrawAttempt();
@@ -85,7 +91,10 @@ public class Player
 	{
 		tileRack.update();
 		
-		if(tileRack.getTilesAnimating()) return;
+		if(tileRack.getTilesAnimating())
+		{
+			return;
+		}
 		
 		if(hasSelectedLetterTile())
 		{
@@ -110,7 +119,6 @@ public class Player
 			else if(board.getIndicator().getStatus() == TileIndicator.SUCCESS)
 			{
 				addTileToBoard();
-				System.out.println("Word : " + getCurrentWord() + " " + wordExists());
 			}
 		}
 		else
@@ -146,6 +154,10 @@ public class Player
 		}
 	}
 	
+	/**
+	 * Highlights the letter bag if
+	 * the cursor is hovering over it
+	 */
 	private void checkForBagHovering()
 	{
 		if(letterBag.getRect().contains(MouseManager.getX(), MouseManager.getY()))
@@ -158,6 +170,10 @@ public class Player
 		}
 	}
 	
+	/**
+	 * Highlights the letter tiles on the rack
+	 * in response to mouse hovering over them
+	 */
 	private void highlightLetters()
 	{
 				
@@ -250,7 +266,6 @@ public class Player
 				selLetterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);
 			}
 		}
-		//selectionTimer = new Timer(SELECTION_COOLDOWN);
 	}
 	
 	private void checkForBoardWithdrawal()

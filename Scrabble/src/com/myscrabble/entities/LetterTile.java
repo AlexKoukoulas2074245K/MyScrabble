@@ -71,12 +71,8 @@ public class LetterTile extends GameObject
 	private float aniGoalY;
 	private int finalIndex;
 	
-	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float x, float y, boolean drawAnimating, int index)
-	{
-		this(gsm, playerRef, letter, points, new float[]{x, y}, drawAnimating, index);
-	}
-	
-	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float[] pos, boolean drawAnimating, int index)
+	public LetterTile(GameStateManager gsm, Player playerRef, char letter,
+					       int points, boolean drawAnimating, int index)
 	{
 		super(gsm);
 		
@@ -86,21 +82,7 @@ public class LetterTile extends GameObject
 		this.drawAnimating = drawAnimating;
 		this.finalIndex = index;
 		
-		if(drawAnimating)
-		{
-    		this.aniGoalX = pos[0];
-    		this.aniGoalY = pos[1];
-    		this.x = LetterBag.LETTER_X_OFFSET;
-    		this.y = LetterBag.LETTER_Y_OFFSET;
-    		this.vy = LetterBag.JUMP_START;
-		}
-		else
-		{
-		    this.x = pos[0];
-		    this.y = pos[1];
-		}
-		this.x0 = x;
-		this.y0 = y;
+		positionalInitialization();
 		
 		highlightStatus = HIGHLIGHT_IDLE;
 		
@@ -110,14 +92,33 @@ public class LetterTile extends GameObject
 		movingGoalPos = -1;
 		
 		pushedFlags = new boolean[4];
-		pushedFlags[Direction.LEFT.value]  = false;
+		pushedFlags[Direction.LEFT.value]  = true;
 		pushedFlags[Direction.RIGHT.value] = false;
 		pushedFlags[Direction.UP.value]    = false;
 		pushedFlags[Direction.DOWN.value]  = false;
 		
 		loadTexture();
 	}
-	
+ 
+	private void positionalInitialization()
+	{
+		if(drawAnimating)
+		{
+    		this.aniGoalX = TileRack.getTilePos(finalIndex)[0];
+    		this.aniGoalY = TileRack.getTilePos(finalIndex)[1];
+    		this.x = LetterBag.LETTER_X_OFFSET;
+    		this.y = LetterBag.LETTER_Y_OFFSET;
+    		this.vy = LetterBag.JUMP_START;
+		}
+		else
+		{
+		    this.x = TileRack.getTilePos(finalIndex)[0];
+		    this.y = TileRack.getTilePos(finalIndex)[1];
+		}
+		this.x0 = x;
+		this.y0 = y;
+	}
+			
 	@Override
 	public void update()
 	{   
@@ -148,10 +149,13 @@ public class LetterTile extends GameObject
 	    if(x <= aniGoalX)
 	    {
 	        x = aniGoalX;
+	        x0 = x;
 	        y = aniGoalY;
+	        y0 = y;
 	        vx = 0;
             vy = 0;
 	        drawAnimating = false;
+	        highlightStatus = HIGHLIGHT_IDLE;
 	    }      
 	}
 	
@@ -206,11 +210,6 @@ public class LetterTile extends GameObject
 				highlightStatus = HIGHLIGHT_IDLE;
 			}
 		}
-	}
-	//TODO REMOVE!
-	public float getMoveGoal()
-	{
-		return movingGoalPos;
 	}
 	
 	private void updateGrabbed()

@@ -123,7 +123,7 @@ public class LetterBag extends GameObject
 		
 		int letterPoints = ScrabbleUtils.getValueOf(chosenLetter);
 		
-		return new LetterTile(gsm, playerRef, chosenLetter, letterPoints, TileRack.getTilePos(index), true, index);
+		return new LetterTile(gsm, playerRef, chosenLetter, letterPoints, true, index);
 	}
 	
 	private void fillBag()
