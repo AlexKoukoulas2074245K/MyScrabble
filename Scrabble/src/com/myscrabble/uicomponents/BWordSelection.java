@@ -2,7 +2,6 @@ package com.myscrabble.uicomponents;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.MouseManager;
 
 public class BWordSelection extends Button
 {

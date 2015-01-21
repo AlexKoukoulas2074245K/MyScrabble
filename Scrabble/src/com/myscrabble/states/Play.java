@@ -138,9 +138,9 @@ public class Play extends GameState
 		}
 		
 		for(GameObject go: gameObjects)
-		{
-			go.render();
-		}
+        {
+            go.render();
+        }
 		
 		for(Player player: players)
 		{

@@ -62,7 +62,6 @@ public class Shader
 	{
 		String vertexSource = rm.loadFileAsString(fileName + VERTEX_EXT);
 		String fragmentSource = rm.loadFileAsString(fileName + FRAGMENT_EXT);
-		System.out.println(fragmentSource);
 		glShaderSource(vertexHandle, vertexSource);
 		glShaderSource(fragmentHandle, fragmentSource);
 	}

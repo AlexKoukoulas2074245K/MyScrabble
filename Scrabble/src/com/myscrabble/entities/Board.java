@@ -5,10 +5,7 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 import java.awt.Rectangle;
 import java.util.HashMap;
 
-import org.lwjgl.opengl.GL11;
-
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.InputManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;

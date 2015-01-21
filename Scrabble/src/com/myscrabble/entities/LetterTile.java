@@ -65,22 +65,40 @@ public class LetterTile extends GameObject
 	
 	private boolean grabbed;
 	private boolean recentlyAdded;
+	private boolean drawAnimating;
 	
-	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float x, float y)
+	private float aniGoalX;
+	private float aniGoalY;
+	private int finalIndex;
+	
+	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float x, float y, boolean drawAnimating, int index)
 	{
-		this(gsm, playerRef, letter, points, new float[]{x, y});
+		this(gsm, playerRef, letter, points, new float[]{x, y}, drawAnimating, index);
 	}
 	
-	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float[] pos)
+	public LetterTile(GameStateManager gsm, Player playerRef, char letter, int points, float[] pos, boolean drawAnimating, int index)
 	{
 		super(gsm);
 		
 		this.playerRef = playerRef;
 		this.letter = letter;
 		this.points = points;
+		this.drawAnimating = drawAnimating;
+		this.finalIndex = index;
 		
-		this.x = pos[0];
-		this.y = pos[1];
+		if(drawAnimating)
+		{
+    		this.aniGoalX = pos[0];
+    		this.aniGoalY = pos[1];
+    		this.x = LetterBag.LETTER_X_OFFSET;
+    		this.y = LetterBag.LETTER_Y_OFFSET;
+    		this.vy = LetterBag.JUMP_START;
+		}
+		else
+		{
+		    this.x = pos[0];
+		    this.y = pos[1];
+		}
 		this.x0 = x;
 		this.y0 = y;
 		
@@ -102,8 +120,7 @@ public class LetterTile extends GameObject
 	
 	@Override
 	public void update()
-	{
-	
+	{   
 		if(highlightStatus != HIGHLIGHT_IDLE)
 		{
 			updateHighlight();
@@ -118,10 +135,24 @@ public class LetterTile extends GameObject
 		{
 			updateMoving();
 		}
+	}
 	
-//		x += vx;
-//		y += vy;
-		
+	public void updateDrawAnimation()
+	{
+	    vx = approach(LetterBag.getAppropriateXSpeed(finalIndex), vx, LetterBag.X_SPEED_INCS);
+	    x += vx;
+	    
+	    vy += LetterBag.GRAVITY;
+	    y += vy;
+	    
+	    if(x <= aniGoalX)
+	    {
+	        x = aniGoalX;
+	        y = aniGoalY;
+	        vx = 0;
+            vy = 0;
+	        drawAnimating = false;
+	    }      
 	}
 	
 	/**
@@ -325,6 +356,11 @@ public class LetterTile extends GameObject
 		return recentlyAdded;
 	}
 	
+	public boolean getDrawAnimating()
+	{
+	    return drawAnimating;
+	}
+	
 	public void setPlayerRef(Player playerRef)
 	{
 		this.playerRef = playerRef;
@@ -353,5 +389,10 @@ public class LetterTile extends GameObject
 	public void setRecentlyAdded(boolean recentlyAdded)
 	{
 		this.recentlyAdded = recentlyAdded;
+	}
+	
+	public void setDrawAnimating(boolean drawAnimating)
+	{
+	    this.drawAnimating = drawAnimating;
 	}
 }

@@ -23,6 +23,7 @@ public class TileRack extends GameObject
 {
 	/* Standard max number of tiles for a rack */
 	public static final int MAX_NO_TILES = 7;
+	public static final int MAX_INDEX = MAX_NO_TILES - 1;
 	
 	private static final String RACK_BACK_PATH = "/board/stand" + STD_TEX_EXT;
 	private static final String RACK_FRONT_PATH = "/board/standArm" + STD_TEX_EXT;
@@ -51,6 +52,8 @@ public class TileRack extends GameObject
     private LetterBag letterBag;
     private Player playerRef;
     private float frontY;
+    
+    private boolean tilesAnimating;
     
 	public TileRack(GameStateManager gsm, Player playerRef, LetterBag letterBag)
 	{
@@ -115,6 +118,21 @@ public class TileRack extends GameObject
 	
 	private void coreTileUpdate()
 	{
+	    tilesAnimating = false;
+	    for(LetterTile lt : letterTiles)
+	    {
+	        if(lt.getDrawAnimating())
+	        {
+	            lt.updateDrawAnimation();
+	            tilesAnimating = true;
+	        }
+	    }
+	    
+	    if(tilesAnimating)
+	    {	        
+	        return;
+	    }
+	    
 		storeTempAttribs();
 		
 		for(LetterTile lt : letterTiles)
@@ -280,11 +298,7 @@ public class TileRack extends GameObject
 	
 	public void drawLetterTile(int index)
 	{
-		char letter   = letterBag.drawLetter();
-		int letterValue = ScrabbleUtils.getValueOf(letter);
-		float[] pos = getTilePos(index);
-		
-		letterTiles.add(new LetterTile(gsm, playerRef, letter, letterValue, pos));
+		letterTiles.add(letterBag.drawLetter(playerRef, index));
 	}
 	
 	/* Add / Remove tiles from rack */
@@ -293,7 +307,7 @@ public class TileRack extends GameObject
 		char ch = lt.getLetter();
 		int points = lt.getPoints();
 		
-		LetterTile newTile = new LetterTile(gsm, playerRef, ch, points, getTilePos(index));
+		LetterTile newTile = new LetterTile(gsm, playerRef, ch, points, getTilePos(index), lt.getDrawAnimating(), index);
 		newTile.setRecentlyAdded(true);
 		
 		tilesToAdd.put(newTile, index);
@@ -340,6 +354,11 @@ public class TileRack extends GameObject
 		}
 		
 		return result;
+	}
+	
+	public boolean getTilesAnimating()
+	{
+	    return tilesAnimating;
 	}
 	
 	public int getTileIndex(LetterTile lt)

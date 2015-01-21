@@ -85,6 +85,8 @@ public class Player
 	{
 		tileRack.update();
 		
+		if(tileRack.getTilesAnimating()) return;
+		
 		if(hasSelectedLetterTile())
 		{
 			selLetterTile.update();
@@ -124,8 +126,10 @@ public class Player
 		{
 			tileRack.reformTiles(selLetterTile);
 		}
-		else if(!selLetterTile.getRect().intersects(tileRack.getRect()))
+		else if(!selLetterTile.getRect().intersects(tileRack.getRect()) && 
+		         tileRack.getLetterTileFormationHole() != null)
 		{
+		    
 			if(tileRack.tilesAreIdle() && tileRack.getLetterTileFormationHole().getIndex() != tileRack.nTiles())
 			{
 				tileRack.pushTiles(Direction.LEFT, 0);
