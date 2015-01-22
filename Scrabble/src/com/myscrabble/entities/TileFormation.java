@@ -53,6 +53,14 @@ public class TileFormation
 		fixIndices();
 	}
 	
+	public void releaseTiles()
+	{
+	    for(LetterTile lt : letterTiles)
+	    {
+	        lt.clearPlayerRef();
+	    }
+	}
+	
 	/**
 	 * 
 	 * @return All the letter tiles in the

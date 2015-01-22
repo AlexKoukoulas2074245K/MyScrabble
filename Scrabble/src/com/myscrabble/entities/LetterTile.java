@@ -115,7 +115,7 @@ public class LetterTile extends GameObject
 		else
 		{
 		    this.x = TileRack.getTilePos(finalIndex, playerRef.isHuman())[0];
-		    this.y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
+		    this.y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1]; 
 		}
 		this.x0 = x;
 		this.y0 = y;
@@ -127,6 +127,10 @@ public class LetterTile extends GameObject
 		if(highlightStatus != HIGHLIGHT_IDLE)
 		{
 			updateHighlight();
+		}
+		else
+		{
+		    y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
 		}
 		
 		if(grabbed)
@@ -366,6 +370,11 @@ public class LetterTile extends GameObject
 	public boolean getDrawAnimating()
 	{
 	    return drawAnimating;
+	}
+	
+	public void clearPlayerRef()
+	{
+	    playerRef = null;
 	}
 	
 	public void setPlayerRef(Player playerRef)

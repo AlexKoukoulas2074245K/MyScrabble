@@ -167,6 +167,19 @@ public class Board extends GameObject
 	
 	/**
 	 * 
+	 * @param player Player requesting move finalisation.
+	 * Finalises the player's move.
+	 * Also removes the player's formation from
+	 * playerFormations HashMap;
+	 */
+	public void makeMove(Player player)
+	{  
+	    playerFormations.get(player).releaseTiles();
+	    playerFormations.remove(player);
+	}
+	
+	/**
+	 * 
 	 * @param player To be cross checked with the letterTiles
 	 * on the board for equality in references <br>
 	 * Response to hovering over the gameboard without

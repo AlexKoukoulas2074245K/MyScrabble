@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.RenderUtils;
-import com.myscrabble.util.ScrabbleUtils;
 /**
  * 
  * @author Alex Koukoulas

@@ -2,13 +2,18 @@ package com.myscrabble.states;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.myscrabble.uicomponents.Button;
 import com.myscrabble.uicomponents.BWordSelection;
+
 import org.newdawn.slick.opengl.Texture;
+
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
+import com.myscrabble.entities.TileRack;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.rendering.Shader;
@@ -42,6 +47,9 @@ public class Play extends GameState
 	/* All active buttons */
 	private ArrayList<Button> buttons;
 	
+	/* Player Points */
+	private HashMap<Player, Integer> playerPoints;
+	
 	/* Instance of game Board */
 	private Board board;
 	
@@ -52,7 +60,10 @@ public class Play extends GameState
 	
 	/* Dictionary Reference */
 	private ScrabbleDictionary scrabbleDict;
-	 
+	
+	/* Current player index */
+	private int activePlayer;
+	
 	//TODO: remove
 	private Shader shader;
 	private float darknessFactor;
@@ -60,23 +71,9 @@ public class Play extends GameState
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
-		
-		scrabbleDict = new ScrabbleDictionary(gsm.getRes());
-		board = new Board(gsm);
-		letterBag = new LetterBag(gsm);
-		
-		players = new ArrayList<Player>();
-		players.add(new Player(gsm, board, scrabbleDict, letterBag, true));
-		players.get(0).setActive(true);
-		players.add(new Player(gsm, board, scrabbleDict, letterBag, false));
-		
-		gameObjects = new ArrayList<GameObject>();
-		gameObjects.add(board);
-		gameObjects.add(letterBag);
-		
-		buttons = new ArrayList<Button>();
-		buttons.add(new BWordSelection(gsm));
-		
+		activePlayer = 0;
+        
+		initCoreEntities();
 		
 		//TODO: remove
 		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
@@ -86,6 +83,33 @@ public class Play extends GameState
 		darknessFactor = 1.0f;
 	}
 
+	private void initCoreEntities()
+	{
+	    scrabbleDict = new ScrabbleDictionary();
+        board = new Board(gsm);
+        letterBag = new LetterBag(gsm);
+        
+        
+        players = new ArrayList<Player>();
+        players.add(new Player(gsm, board, scrabbleDict, letterBag, true));
+        players.get(activePlayer).setActive(true);
+        players.add(new Player(gsm, board, scrabbleDict, letterBag, false));
+        
+        gameObjects = new ArrayList<GameObject>();
+        gameObjects.add(board);
+        gameObjects.add(letterBag);
+        
+        buttons = new ArrayList<Button>();
+        buttons.add(new BWordSelection(gsm, this));
+        
+        playerPoints = new HashMap<Player, Integer>();
+        
+        for(Player player : players)
+        {
+            playerPoints.put(player, 0);
+        }
+	}
+	
 	@Override
 	public void handleInput() 
 	{	
@@ -143,6 +167,34 @@ public class Play extends GameState
 		clearShading();	
 	}
 	
+	public void finaliseMove()
+	{
+	    int claimedPoints = getActivePlayer().getCurrentPoints();
+	    addPoints(getActivePlayer(), claimedPoints);
+	    getActivePlayer().makeMove();
+	    endOfPlayersTurn();
+	}
+	
+	private void addPoints(Player player, int points)
+	{
+	    int currentPoints = playerPoints.get(player);
+	    playerPoints.replace(player, currentPoints + points);
+	}
+	
+	private void endOfPlayersTurn()
+	{
+	    getActivePlayer().setActive(false);
+	    activePlayer = 0;//activePlayer++;
+	    if(activePlayer > players.size() - 1)
+	    {
+	        activePlayer = 0;
+	    }
+	    getActivePlayer().setActive(true);
+	    int noTiles = getActivePlayer().getNoTiles();
+	    
+	    getActivePlayer().setDrawingAllowance(TileRack.MAX_NO_TILES - noTiles);
+	}
+	
 	private void applyShading()
 	{
 		shader.useProgram();
@@ -156,14 +208,6 @@ public class Play extends GameState
 	
 	private Player getActivePlayer()
 	{
-	    for(Player player : players)
-	    {
-	        if(player.isActive())
-	        {
-	            return player;
-	        }
-	    }
-	    
-	    return null;
+	    return players.get(activePlayer);
 	}    
 }

@@ -2,6 +2,7 @@ package com.myscrabble.uicomponents;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.states.Play;
 
 public class BWordSelection extends Button
 {
@@ -17,12 +18,15 @@ public class BWordSelection extends Button
 	private static final int VALID_NORMAL      = 0;
 	private static final int VALID_PRESSED     = 1;
 	
+	private Play playStateRef;
 	private String currentWordSelection;
 	private int currentWordPoints;
 	
-	public BWordSelection(GameStateManager gsm)
+	public BWordSelection(GameStateManager gsm, Play playStateRef)
 	{
 		super(BUTTON_NAME, gsm);
+		
+		this.playStateRef = playStateRef;
 		
 		status = INVALID;
 		
@@ -41,6 +45,7 @@ public class BWordSelection extends Button
 	public void executeFunction()
 	{
 	    System.out.println(currentWordSelection + ": " + currentWordPoints);
+	    playStateRef.finaliseMove();
 	}
 	
 	@Override

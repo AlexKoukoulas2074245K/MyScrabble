@@ -43,6 +43,9 @@ public class Player
 	/* Is this a human controlled player */
 	private boolean isHuman;
 	
+	/* Drawing allowance of the player */
+	private int drawingAllowance;
+	
 	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
 	{
 		this.board = board;
@@ -56,6 +59,7 @@ public class Player
 		isActive = false;
 		
 		selLetterTile = null;
+		drawingAllowance = 0;
 	}
 	
 	public void handleInput()
@@ -113,6 +117,22 @@ public class Player
 		}
 	}
 	
+    public void render()
+    {
+        tileRack.renderBack();
+        tileRack.renderFront();
+        
+        if(hasSelectedLetterTile())
+        {
+            selLetterTile.render();
+        }
+    }
+    
+    public void makeMove()
+    {
+        board.makeMove(this);
+    }
+    
 	private void releaseLetterTile()
 	{
 		if(selLetterTile.getRect().intersects(board.getRect()))
@@ -135,7 +155,6 @@ public class Player
 	
 	private void checkAreaHovering()
 	{
-	    
 		if(selLetterTile.getRect().intersects(tileRack.getRect()))
 		{
 			tileRack.reformTiles(selLetterTile);
@@ -300,9 +319,10 @@ public class Player
 	
 	private void checkForLetterDrawAttempt()
 	{
-		if(letterBag.getHighlighted() && tileRack.nTiles() < TileRack.MAX_NO_TILES)
+		if(letterBag.getHighlighted() && drawingAllowance > 0)
 		{
 			tileRack.drawLetterTile();
+			drawingAllowance--;
 		}
 	}
 	
@@ -326,15 +346,9 @@ public class Player
 		}
 	}
 	
-	public void render()
+	public int getNoTiles()
 	{
-		tileRack.renderBack();
-		tileRack.renderFront();
-		
-		if(hasSelectedLetterTile())
-		{
-			selLetterTile.render();
-		}
+	    return tileRack.nTiles();
 	}
 	
 	public boolean hasValidWord()
@@ -388,6 +402,11 @@ public class Player
     public void setActive(boolean isActive)
     {
         this.isActive = isActive;
+    }
+    
+    public void setDrawingAllowance(int drawingAllowance)
+    {
+        this.drawingAllowance = drawingAllowance;
     }
     
     public void setHuman(boolean isHuman)

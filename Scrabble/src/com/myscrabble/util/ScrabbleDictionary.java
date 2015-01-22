@@ -20,15 +20,15 @@ public class ScrabbleDictionary
 	private Set<String> words;
 	private String content;
 	
-	public ScrabbleDictionary(ResourceManager rm)
+	public ScrabbleDictionary()
 	{
-		loadContent(rm);
+		loadContent();
 		createSet();
 	}
 	
-	private void loadContent(ResourceManager rm)
+	private void loadContent()
 	{
-		content = rm.loadFileAsString(DICT_DIR);
+		content = ResourceManager.loadFileAsString(DICT_DIR);
 	}
 	
 	private void createSet()

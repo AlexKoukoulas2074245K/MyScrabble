@@ -9,8 +9,6 @@ import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
-import com.myscrabble.rendering.Shader;
-import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.RenderUtils;
 
 /**

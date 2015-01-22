@@ -47,8 +47,8 @@ public class ResourceManager
 	 * 
 	 * @param filePath of the file to open
 	 * @return the file contents as a Strings
-	 * (NOTE) static to be accessible to class
-	 * shaders.
+	 * (NOTE) static to be accessible to non game objects 
+	 * such as shader objects and ScrabbleDictionary objects.
 	 */
 	public static String loadFileAsString(final String filePath)
 	{

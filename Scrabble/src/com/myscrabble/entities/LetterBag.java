@@ -5,10 +5,7 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
-
-import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.util.RenderUtils;
