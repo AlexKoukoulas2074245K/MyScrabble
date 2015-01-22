@@ -104,4 +104,32 @@ public class RenderUtils
 		}
 		glPopMatrix();
 	}
+	
+	/**
+	 * 
+	 * @param deg To rotate the current matrix
+	 * @param x percentage of rotation on x axis
+	 * @param y percentage of rotation on y axis
+	 * @param z percentage of rotation on z axis
+	 */
+	public static void rotatef(float deg, float x, float y, float z)
+	{
+	    glRotatef(deg, x, y, z);
+	}
+	
+	/**
+	 * OpenGL wrapper method for pushMatrix()
+	 */
+	public static void pushMatrix()
+	{
+	    glPushMatrix();
+	}
+	
+	/**
+	 * OpenGL wrapper method for popMatrix()
+	 */
+	public static void popMatrix()
+	{
+	    glPopMatrix();
+	}
 }

@@ -37,13 +37,18 @@ public class Player
 	/* Reference to the letterBag used by all players */
 	private LetterBag letterBag;
 	
+	/* Is it this player's turn */
 	private boolean isActive;
 	
-	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag)
+	/* Is this a human controlled player */
+	private boolean isHuman;
+	
+	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
 	{
 		this.board = board;
 		this.scrabbleDict = scrabbleDict;
 		this.letterBag = letterBag;
+		this.isHuman = isHuman;
 		
 		selectionTimer = new Timer(SELECTION_COOLDOWN);
 		
@@ -336,19 +341,37 @@ public class Player
 		return wordExists() && wordIsValid();
 	}
 	
+    public boolean wordExists()
+    {
+        if(board.getPlayerRegistered(this))
+        {
+            return scrabbleDict.wordExists(board.getCurrentWord(this));
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public boolean wordIsValid()
+    {
+        return board.isCurrentFormationValid(this);
+    }
+    
+    /* Getters / Setters */
 	public boolean isActive()
 	{
 		return isActive;
 	}
 	
+	public boolean isHuman()
+	{
+	    return isHuman;
+	}
+	
 	public boolean hasSelectedLetterTile()
 	{
 		return selLetterTile != null;
-	}
-	
-	public void setActive(boolean isActive)
-	{
-		this.isActive = isActive;
 	}
 	
 	public String getCurrentWord()
@@ -361,20 +384,13 @@ public class Player
 	    return board.calculatePoints(this);
 	}
 	
-	public boolean wordExists()
-	{
-		if(board.getPlayerRegistered(this))
-		{
-			return scrabbleDict.wordExists(board.getCurrentWord(this));
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	public boolean wordIsValid()
-	{
-		return board.isCurrentFormationValid(this);
-	}
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
+    }
+    
+    public void setHuman(boolean isHuman)
+    {
+        this.isHuman = isHuman;
+    }
 }

@@ -66,7 +66,9 @@ public class Play extends GameState
 		letterBag = new LetterBag(gsm);
 		
 		players = new ArrayList<Player>();
-		players.add(new Player(gsm, board, scrabbleDict, letterBag));
+		players.add(new Player(gsm, board, scrabbleDict, letterBag, true));
+		players.get(0).setActive(true);
+		players.add(new Player(gsm, board, scrabbleDict, letterBag, false));
 		
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(board);
@@ -105,14 +107,11 @@ public class Play extends GameState
 	@Override
 	public void update() 
 	{	
-		for(Player player: players)
+		getActivePlayer().update();
+		
+		for(Button button : buttons)
 		{
-			player.update();
-			
-			for(Button button : buttons)
-			{
-				button.update(player);
-			}
+			button.update(getActivePlayer());
 		}
 		
 		for(GameObject go: gameObjects)
@@ -160,4 +159,17 @@ public class Play extends GameState
 	{
 		shader.stopProgram();
 	}
+	
+	private Player getActivePlayer()
+	{
+	    for(Player player : players)
+	    {
+	        if(player.isActive())
+	        {
+	            return player;
+	        }
+	    }
+	    
+	    return null;
+	}    
 }

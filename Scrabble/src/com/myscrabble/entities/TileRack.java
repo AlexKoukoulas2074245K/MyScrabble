@@ -25,8 +25,9 @@ public class TileRack extends GameObject
 	public static final int MAX_NO_TILES = 7;
 	public static final int MAX_INDEX = MAX_NO_TILES - 1;
 	
-	private static final String RACK_BACK_PATH = "/board/stand" + STD_TEX_EXT;
-	private static final String RACK_FRONT_PATH = "/board/standArm" + STD_TEX_EXT;
+	private static final String RACK_BACK_PATH = "/rack/stand" + STD_TEX_EXT;
+	private static final String RACK_FRONT_PATH = "/rack/standArm" + STD_TEX_EXT;
+	private static final String RACK_BACK_REV_PATH = "/rack/standRev" + STD_TEX_EXT;
 	
 	private static final int RACK_BACK = 0;
 	private static final int RACK_FRONT = 1;
@@ -34,6 +35,9 @@ public class TileRack extends GameObject
 	private static final float PLAYER_1_POS_X = 192.0f;
 	private static final float PLAYER_1_POS_Y = 592.0f;
 	
+	private static final float PLAYER_2_POS_X = PLAYER_1_POS_X;
+	private static final float PLAYER_2_POS_Y = 16.0f; 
+	        
 	public static float[] getTilePos(final int index)
 	{
 		return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
@@ -45,6 +49,7 @@ public class TileRack extends GameObject
     /* Removal through other ArrayList to 
      * avoid concurrent modification exceptions */
     private ArrayList<LetterTile> tilesToRemove;
+    
     /* Addition through a HashMap where key = LetterTile,
      * value = index that the tile needs to be inserted at */
     private HashMap<LetterTile, Integer> tilesToAdd; 
@@ -73,23 +78,43 @@ public class TileRack extends GameObject
 		tempStoredPositions = new ArrayList<Float>();
 		tempStoredFlags = new ArrayList<boolean[]>();
 		
-		addTexture(RACK_BACK, RACK_BACK_PATH);
-		addTexture(RACK_FRONT, RACK_FRONT_PATH);
+
 		
-		x = PLAYER_1_POS_X;
-		y = PLAYER_1_POS_Y;
-		
-		frontY = y + getTexture(RACK_BACK).getTextureHeight() - getTexture(RACK_FRONT).getTextureHeight();
-		
-		for(int i = 0; i < 7; i++)
+		if(playerRef.isHuman())
 		{
-			drawLetterTile(i);
+		    addTexture(RACK_BACK, RACK_BACK_PATH);
+		    addTexture(RACK_FRONT, RACK_FRONT_PATH);
+		    
+    		x = PLAYER_1_POS_X;
+    		y = PLAYER_1_POS_Y;
+    		
+	        frontY = y + getTexture(RACK_BACK).getTextureHeight() - getTexture(RACK_FRONT).getTextureHeight();
+	        
+	        for(int i = 0; i < 7; i++)
+	        {
+	            drawLetterTile(i);
+	        }
 		}
+		else
+		{
+		    addTexture(RACK_BACK, RACK_BACK_REV_PATH);
+		    addTexture(RACK_FRONT, RACK_FRONT_PATH);
+		    x = PLAYER_2_POS_X;
+		    y = PLAYER_2_POS_Y;
+		    
+		    frontY = y;
+		}
+		
+
 	}
 	
 	@Override
 	public void update()
 	{
+		if(!playerRef.isHuman())
+		{
+		    return;
+		}
 		
 		coreTileUpdate();
 		
@@ -153,7 +178,7 @@ public class TileRack extends GameObject
 			
 	public void renderBack()
 	{
-		RenderUtils.renderTexture(getTexture(RACK_BACK), x, y);
+	    RenderUtils.renderTexture(getTexture(RACK_BACK), x, y);
 		
 		for(LetterTile lt: letterTiles)
 		{
