@@ -120,13 +120,6 @@ public class Board extends GameObject
 	public void update()
 	{
 		tileIndicator.update();
-		if(playerFormations.size() == 1)
-		{
-		    for(Entry<Player, TileFormation> entry : playerFormations.entrySet())
-		    {
-		        System.out.println(entry.getValue().getWord());
-		    }
-		}
 	}
 	
 	@Override
@@ -330,6 +323,14 @@ public class Board extends GameObject
 	private void popFromFormation(LetterTile letterTile, Player playerRef)
 	{
 	    playerFormations.get(playerRef).removeTile(letterTile);
+	    if(playerFormations.get(playerRef).noRefTiles() == 0)
+	    {
+	    	playerFormations.get(playerRef).removeAllNeutrals();
+	    }
+	    else
+	    {
+	    	playerFormations.get(playerRef).removeUnaligned();
+	    }
 	}
 	
 	/**

@@ -2,7 +2,9 @@ package com.myscrabble.entities;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.myscrabble.util.ScrabbleUtils;
 
@@ -146,16 +148,112 @@ public class TileFormation
 		return false;
 	}
 	
+	/** Remove neutral tiles unaligned with
+	 * the current formation
+	 */
+	public void removeUnaligned()
+	{
+		ArrayList<LetterTile> tilesToRemove = new ArrayList<>();
+		
+		for(int i = 1; i < letterTiles.size(); i++)
+		{
+			if(!letterTiles.get(i).isNeutral())
+			{
+				continue;
+			}
+			
+			float xDistance = ScrabbleUtils.xDistanceBetween(letterTiles.get(i), letterTiles.get(i - 1));
+        	float yDistance = ScrabbleUtils.yDistanceBetween(letterTiles.get(i), letterTiles.get(i - 1));
+        	
+			if(direction == HORIZONTAL && 
+			  ((xDistance > Tile.TILE_SIZE) || (yDistance != 0)))
+			{
+				tilesToRemove.add(letterTiles.get(i));
+			}
+			else if(direction == VERTICAL && 
+				   ((yDistance > Tile.TILE_SIZE) || (xDistance != 0)))
+			{
+				tilesToRemove.add(letterTiles.get(i));
+			}
+			else if(direction == NONE && 
+					!((xDistance == Tile.TILE_SIZE && yDistance == 0) || 
+					  (xDistance == 0 && yDistance == Tile.TILE_SIZE)))
+			{
+				tilesToRemove.add(letterTiles.get(i));
+			}
+	               
+		}
+		
+		for(LetterTile lt : tilesToRemove)
+		{
+			letterTiles.remove(lt);
+		}
+		
+		tilesToRemove.clear();
+	}
+	
+	/**
+	 * Removes all the neutral tiles from the current
+	 * formation
+	 */
+	public void removeAllNeutrals()
+	{
+		ArrayList<LetterTile> tilesToRemove = new ArrayList<>();
+		
+		for(LetterTile lt : letterTiles)
+		{
+			if(lt.isNeutral())
+			{
+				tilesToRemove.add(lt);
+			}
+		}
+		
+		for(LetterTile lt : tilesToRemove)
+		{
+			letterTiles.remove(lt);
+		}
+		
+		tilesToRemove.clear();
+	}
+	
+	/**
+	 * 
+	 * @param neutralTiles All the neutral letter tiles on board.
+	 * Procedure: to avoid concurrent modification exceptions a linked
+	 * hash map is created to store temporarily the neutral tiles that
+	 * need to be added to the main letterTiles. To find the correct
+	 * neutrals for every letter tile currently in formation, all the neutrals
+	 * are checked against it on their x-distance and y-distance. If
+	 * the current direction of the formation is horizontal, any neutral
+	 * next to the letterTiles and of the same height with them will be 
+	 * added to the hash map. On the other hand if the current direction
+	 * is vertical, any tile on the same x and below or above the
+	 * letter tiles will be added to the hash map.
+	 */
 	public void checkForNeutrals(ArrayList<LetterTile> neutralTiles)
 	{
+		if(neutralTiles.size() == 0)
+		{
+			return;
+		}
+		
+	    removeUnaligned();
+	    defragmentFormation();	    
+	    fixIndices();
+	    updateDirection();
+	    
 	    LinkedHashMap<LetterTile, Integer> tilesToAdd = new LinkedHashMap<>();
 	    
 	    for(LetterTile lt : letterTiles)
 	    {
+	    	
 	        for(LetterTile neutral : neutralTiles)
 	        {
-	            if(ScrabbleUtils.xDistanceBetween(lt, neutral) == Tile.TILE_SIZE  && direction == HORIZONTAL ||
-	               ScrabbleUtils.yDistanceBetween(lt, neutral) == Tile.TILE_SIZE && direction == VERTICAL)
+	        	float xDistance = ScrabbleUtils.xDistanceBetween(lt, neutral);
+	        	float yDistance = ScrabbleUtils.yDistanceBetween(lt, neutral);
+	        	
+	            if((xDistance == Tile.TILE_SIZE && direction == HORIZONTAL && yDistance == 0) ||
+	               (yDistance == Tile.TILE_SIZE && direction == VERTICAL && xDistance == 0 ))
 	            {
 	                if((lt.getX() < neutral.getX() && direction == HORIZONTAL)|| 
 	                   (lt.getY() < neutral.getY() && direction == VERTICAL))
@@ -165,42 +263,57 @@ public class TileFormation
 	                else if((lt.getX() > neutral.getX() && direction == HORIZONTAL)|| 
 	                        (lt.getY() > neutral.getY() && direction == VERTICAL))
 	                {
-	                    tilesToAdd.put(neutral, letterTiles.indexOf(lt) - 1);
+	                	if(letterTiles.indexOf(lt) == 0)
+	                	{
+	                		tilesToAdd.put(neutral, 0);
+	                	}
+	                	else
+	                	{
+	                		tilesToAdd.put(neutral, letterTiles.indexOf(lt) - 1);
+	                	}
 	                }
+	            }
+	            else if(letterTiles.size() == 1 &&
+	            	   ((xDistance == Tile.TILE_SIZE && yDistance == 0) ||
+	            	    (xDistance == 0 && yDistance == Tile.TILE_SIZE)))
+	            {
+	            	System.out.println(neutral.getLetter() + ": " + neutral.getX() + ", " + neutral.getY() + " <> " + lt.getLetter() + ": " + lt.getX() + ", " + lt.getY());
+	            	if(lt.getX() < neutral.getX() || lt.getY() < neutral.getY())
+	            	{
+	            		tilesToAdd.put(neutral, 1);
+	            	}
+	            	else
+	            	{
+	            		tilesToAdd.put(neutral, 0);
+	            	}
 	            }
 	        }
 	    }
 	    
 	    for(Entry<LetterTile, Integer> entry : tilesToAdd.entrySet())
 	    {
-	        letterTiles.add(entry.getValue(), entry.getKey());
+	    	if(!letterTiles.contains(entry.getKey()))
+	    	{
+	    		letterTiles.add(entry.getValue(), entry.getKey());
+	    	}
 	    }
+	    
+	    tilesToAdd.clear();
+
+	    
+	    System.out.println(getWord());
 	}
 	
-//	private boolean replacementExists(LetterTile lt, Board board)
-//	{
-//	    float desiredX;
-//	    float desiredY;
-//	    
-//	    if(direction == HORIZONTAL)
-//	    {
-//	        desiredX = lt.getX() + Tile.TILE_SIZE;
-//	        desiredY = lt.getY();
-//	    }
-//	    else
-//	    {
-//	        desiredX = lt.getX();
-//	        desiredY = lt.getY() + Tile.TILE_SIZE;
-//	    }
-//	    
-//	    if(board.getLetterTile(desiredX, desiredY) != null)
-//	    {
-//	        System.out.println(board.getLetterTile(desiredX, desiredY).getLetter());
-//	    }
-//	    else
-//	    System.out.println("BAD");
-//	    return false;
-//	}
+	/**
+	 * Clears the letter tiles from any copies
+	 * of LetterTile objects(not just same letters)
+	 */
+	public void defragmentFormation()
+	{
+		Set<LetterTile> tempSet = new LinkedHashSet<>(letterTiles);
+		letterTiles.clear();
+		letterTiles.addAll(tempSet);
+	}
 	
 	/**
 	 * 
@@ -273,11 +386,11 @@ public class TileFormation
 	
 	private void updateDirection()
 	{
-		if(letterTiles.size() == 1)
+		if(noRefTiles() == 1)
 		{
 			resetDirection();
 		}
-		else if(letterTiles.size() == 2)
+		else if(noRefTiles() == 2)
 		{
 			decideDirection();
 		}
@@ -288,7 +401,7 @@ public class TileFormation
 	 * tile formation
 	 */
 	private void decideDirection()
-	{
+	{			
 		if(letterTiles.get(0).getY() == letterTiles.get(1).getY())
 		{
 			direction = HORIZONTAL;
@@ -297,6 +410,27 @@ public class TileFormation
 		{
 			direction = VERTICAL;
 		}
+	}
+	
+	/**
+	 * 
+	 * @return the number of 
+	 * letter tiles in the formation
+	 * containing a player reference
+	 * (i.e. not neutral)
+	 */
+	public int noRefTiles()
+	{
+		int count = 0;
+		for(LetterTile lt : letterTiles)
+		{
+			if(!lt.isNeutral())
+			{
+				count++;
+			}
+		}
+		
+		return count;
 	}
 	
 	private void resetDirection()
