@@ -3,7 +3,9 @@ package com.myscrabble.entities;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
@@ -118,6 +120,13 @@ public class Board extends GameObject
 	public void update()
 	{
 		tileIndicator.update();
+		if(playerFormations.size() == 1)
+		{
+		    for(Entry<Player, TileFormation> entry : playerFormations.entrySet())
+		    {
+		        System.out.println(entry.getValue().getWord());
+		    }
+		}
 	}
 	
 	@Override
@@ -310,7 +319,7 @@ public class Board extends GameObject
 	 */
 	public boolean isCurrentFormationValid(Player playerRef)
 	{
-		return playerFormations.get(playerRef).isValidFormation();
+		return playerFormations.get(playerRef).isValidFormation(this);
 	}
 	
 	/**
@@ -337,6 +346,12 @@ public class Board extends GameObject
 		}
 		
 		playerFormations.get(playerRef).addTile(letterTile);
+		playerFormations.get(playerRef).checkForNeutrals(getNeutralLetterTiles());
+	}
+	
+	public ArrayList<LetterTile> getNeutralLetterTiles()
+	{
+	    return tilemap.getNeutralLetterTiles();
 	}
 	
 	/**
@@ -357,6 +372,14 @@ public class Board extends GameObject
 	public TileIndicator getIndicator()
 	{
 		return tileIndicator;
+	}
+	
+	public LetterTile getLetterTile(float x, float y)
+	{
+	    int col = (int)((x - X_OFFSET - SIDE_WIDTH) / Tile.TILE_SIZE);
+	    int row = (int)((y - Y_OFFSET - SIDE_HEIGHT) / Tile.TILE_SIZE);
+	    
+	    return tilemap.getTile(col, row).getLetterTile();
 	}
 	
 	public boolean getEmptyLetter()

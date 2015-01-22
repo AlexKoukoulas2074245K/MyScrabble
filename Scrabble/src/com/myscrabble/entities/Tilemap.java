@@ -1,5 +1,7 @@
 package com.myscrabble.entities;
 
+import java.util.ArrayList;
+
 
 
 /**
@@ -70,6 +72,24 @@ public class Tilemap
 	    
 	    System.out.println("Tile not found!");
 	    return null;
+	}
+	
+	public ArrayList<LetterTile> getNeutralLetterTiles()
+	{
+	    ArrayList<LetterTile> result = new ArrayList<>();
+	    
+	    for(Tile[] allTiles : tiles)
+	    {
+	        for(Tile tile : allTiles)
+	        {
+	            if(tile.getLetterTile() != null && tile.getLetterTile().isNeutral())
+	            {
+	                result.add(tile.getLetterTile());
+	            }
+	        }
+	    }
+	    
+	    return result;
 	}
 	
 	/**

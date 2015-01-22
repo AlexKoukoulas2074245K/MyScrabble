@@ -308,6 +308,11 @@ public class LetterTile extends GameObject
 		return letter;
 	}
 	
+	public boolean isNeutral()
+	{
+	    return playerRef == null;
+	}
+	
 	public boolean getGrabbed()
 	{
 		return grabbed;

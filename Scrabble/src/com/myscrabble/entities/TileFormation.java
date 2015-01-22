@@ -1,6 +1,8 @@
 package com.myscrabble.entities;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import com.myscrabble.util.ScrabbleUtils;
 
@@ -106,9 +108,9 @@ public class TileFormation
 	 * are aligned in a horizontal or vertical line
 	 * in the game board
 	 */
-	public boolean isValidFormation()
+	public boolean isValidFormation(Board board)
 	{
-		return formationIsAligned() && !formationHasGaps();
+		return !formationHasGaps(board) && formationIsAligned();
 	}
 	
 	/**
@@ -119,8 +121,9 @@ public class TileFormation
 	 * between the tiles greater than the standard
 	 * tile size.
 	 */
-	private boolean formationHasGaps()
+	private boolean formationHasGaps(Board board)
 	{
+	    
 		if(letterTiles.size() == 1)
 		{
 			return false;
@@ -142,6 +145,62 @@ public class TileFormation
 		
 		return false;
 	}
+	
+	public void checkForNeutrals(ArrayList<LetterTile> neutralTiles)
+	{
+	    LinkedHashMap<LetterTile, Integer> tilesToAdd = new LinkedHashMap<>();
+	    
+	    for(LetterTile lt : letterTiles)
+	    {
+	        for(LetterTile neutral : neutralTiles)
+	        {
+	            if(ScrabbleUtils.xDistanceBetween(lt, neutral) == Tile.TILE_SIZE  && direction == HORIZONTAL ||
+	               ScrabbleUtils.yDistanceBetween(lt, neutral) == Tile.TILE_SIZE && direction == VERTICAL)
+	            {
+	                if((lt.getX() < neutral.getX() && direction == HORIZONTAL)|| 
+	                   (lt.getY() < neutral.getY() && direction == VERTICAL))
+	                {
+	                    tilesToAdd.put(neutral, letterTiles.indexOf(lt) + 1);
+	                }
+	                else if((lt.getX() > neutral.getX() && direction == HORIZONTAL)|| 
+	                        (lt.getY() > neutral.getY() && direction == VERTICAL))
+	                {
+	                    tilesToAdd.put(neutral, letterTiles.indexOf(lt) - 1);
+	                }
+	            }
+	        }
+	    }
+	    
+	    for(Entry<LetterTile, Integer> entry : tilesToAdd.entrySet())
+	    {
+	        letterTiles.add(entry.getValue(), entry.getKey());
+	    }
+	}
+	
+//	private boolean replacementExists(LetterTile lt, Board board)
+//	{
+//	    float desiredX;
+//	    float desiredY;
+//	    
+//	    if(direction == HORIZONTAL)
+//	    {
+//	        desiredX = lt.getX() + Tile.TILE_SIZE;
+//	        desiredY = lt.getY();
+//	    }
+//	    else
+//	    {
+//	        desiredX = lt.getX();
+//	        desiredY = lt.getY() + Tile.TILE_SIZE;
+//	    }
+//	    
+//	    if(board.getLetterTile(desiredX, desiredY) != null)
+//	    {
+//	        System.out.println(board.getLetterTile(desiredX, desiredY).getLetter());
+//	    }
+//	    else
+//	    System.out.println("BAD");
+//	    return false;
+//	}
 	
 	/**
 	 * 
