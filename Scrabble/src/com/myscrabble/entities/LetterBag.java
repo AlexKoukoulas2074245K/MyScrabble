@@ -30,11 +30,9 @@ public class LetterBag extends GameObject
 	
 	/* Texture Paths */
 	private static final String NORM_TEX_PATH = "/misc/scrabbleBag" + STD_TEX_EXT;
-	private static final String SEL_TEX_PATH  = "/misc/scrabbleBagSel" + STD_TEX_EXT;
 	
 	/* Textue Flags */
 	private static final int NORMAL_TEX  = 0;
-	private static final int SEL_TEX     = 1;
 	
 	/* Positional Constants */
 	private static final float X_OFFSET = 604;
@@ -100,14 +98,13 @@ public class LetterBag extends GameObject
 	{
 		if(highlighted)
 		{
-			RenderUtils.renderTexture(getTexture(SEL_TEX), x, y);
-		}
-		else
-		{
-			RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
+		    GameObject.highlightProgram.useProgram();
 		}
 		
-		//RenderUtils.renderTexture(tex, texX, texY);
+		RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
+		
+		GameObject.highlightProgram.stopProgram();
+		
 	}
 	
 	public LetterTile drawLetter(Player playerRef, int index)
@@ -123,7 +120,9 @@ public class LetterBag extends GameObject
 		
 		int letterPoints = ScrabbleUtils.getValueOf(chosenLetter);
 		
-		return new LetterTile(gsm, playerRef, chosenLetter, letterPoints, true, index);
+		boolean drawAnimating = playerRef.isHuman();
+		
+		return new LetterTile(gsm, playerRef, chosenLetter, letterPoints, drawAnimating, index);
 	}
 	
 	private void fillBag()
@@ -147,7 +146,6 @@ public class LetterBag extends GameObject
 	private void loadTextures()
 	{
 		addTexture(NORMAL_TEX, NORM_TEX_PATH);
-		addTexture(SEL_TEX, SEL_TEX_PATH);
 	}
 	
 	public void highlight(boolean highlighted)

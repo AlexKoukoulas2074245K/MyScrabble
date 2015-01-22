@@ -45,9 +45,11 @@ public class LetterTile extends GameObject
 	
 	/* Default texture path for all letters */
 	private static String DEFAULT_LETTER_PATH = "/tiles/" + Play.TILE_STYLE + "/";
+	private static String EMPTY_LETTER_PATH = DEFAULT_LETTER_PATH + "NONE" + STD_TEX_EXT;
 	
 	/* GameObject's textures HashMap key to texture */
 	private static final int LETTER_TEX = 0;
+	private static final int NONE_TEX = 1;
 	
 	/* No movement goal */
 	private static final int NO_MOVE_GOAL = -1;
@@ -104,16 +106,16 @@ public class LetterTile extends GameObject
 	{
 		if(drawAnimating)
 		{
-    		this.aniGoalX = TileRack.getTilePos(finalIndex)[0];
-    		this.aniGoalY = TileRack.getTilePos(finalIndex)[1];
+    		this.aniGoalX = TileRack.getTilePos(finalIndex, playerRef.isHuman())[0];
+    		this.aniGoalY = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
     		this.x = LetterBag.LETTER_X_OFFSET;
     		this.y = LetterBag.LETTER_Y_OFFSET;
     		this.vy = LetterBag.JUMP_START;
 		}
 		else
 		{
-		    this.x = TileRack.getTilePos(finalIndex)[0];
-		    this.y = TileRack.getTilePos(finalIndex)[1];
+		    this.x = TileRack.getTilePos(finalIndex, playerRef.isHuman())[0];
+		    this.y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
 		}
 		this.x0 = x;
 		this.y0 = y;
@@ -257,6 +259,11 @@ public class LetterTile extends GameObject
 		RenderUtils.renderTexture(getTexture(LETTER_TEX), x, y);
 	}
 	
+	public void emptyRender()
+	{
+	    RenderUtils.renderTexture(getTexture(NONE_TEX), x, y);
+	}
+	
 	/**
 	 * 
 	 * @param direction. The direction of the push
@@ -283,6 +290,7 @@ public class LetterTile extends GameObject
 	{
 		String fullPath = DEFAULT_LETTER_PATH + letter + STD_TEX_EXT;
 		addTexture(LETTER_TEX, fullPath);
+		addTexture(NONE_TEX, EMPTY_LETTER_PATH);
 	}
 	
 	/* Getters / Setters */

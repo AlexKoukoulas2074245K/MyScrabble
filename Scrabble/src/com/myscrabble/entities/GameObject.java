@@ -6,6 +6,8 @@ import java.util.HashMap;
 import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.Animation;
 
 /**
@@ -18,6 +20,9 @@ import com.myscrabble.util.Animation;
  */
 public abstract class GameObject 
 {
+    /* Class highlighting shader */
+    public static Shader highlightProgram = new Shader(ShaderType.HIGHLIGHTING);
+       
 	/* An instance of gsm is needed for I/O */
 	protected GameStateManager gsm;
 	

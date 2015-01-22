@@ -53,13 +53,14 @@ public class Player
 		selectionTimer = new Timer(SELECTION_COOLDOWN);
 		
 		tileRack = new TileRack(gsm, this, letterBag);
-		isActive = true;
+		isActive = false;
 		
 		selLetterTile = null;
 	}
 	
 	public void handleInput()
 	{	
+	 
 		/* Response of mouse hovering over the tile rack or game board holding a letter tile */
 		if(hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.LEFT_BUTTON))
 		{
@@ -134,7 +135,7 @@ public class Player
 	
 	private void checkAreaHovering()
 	{
-		
+	    
 		if(selLetterTile.getRect().intersects(tileRack.getRect()))
 		{
 			tileRack.reformTiles(selLetterTile);

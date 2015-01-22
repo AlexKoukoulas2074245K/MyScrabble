@@ -109,7 +109,7 @@ public class Board extends GameObject
 		
 		playerFormations = new HashMap<Player, TileFormation>();
 		
-		coloringShader = new Shader(ShaderType.COLORING, gsm.getRes());
+		coloringShader = new Shader(ShaderType.COLORING);
 		
 		backgroundColor = BoardColor.DARK_GREEN;
 	}

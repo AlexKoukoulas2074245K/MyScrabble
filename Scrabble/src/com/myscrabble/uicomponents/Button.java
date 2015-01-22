@@ -5,9 +5,12 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.opengl.Texture;
 
+import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.RenderUtils;
 
 /**
@@ -24,6 +27,7 @@ public abstract class Button
 	
 	/* Default directory for button textures */
 	public static final String BUTTON_TEX_DIR = "/misc/buttons/";
+	
 	
 	/* Instance of gsm */
 	protected GameStateManager gsm;
@@ -104,7 +108,13 @@ public abstract class Button
 	
 	public void render()
 	{
+	    if(highlighted)
+	    {
+	        GameObject.highlightProgram.useProgram();
+	    }
 		RenderUtils.renderTexture(textures.get(currentTexture), x, y);
+		
+		GameObject.highlightProgram.stopProgram();
 	}
 	
 	public Rectangle getRect()

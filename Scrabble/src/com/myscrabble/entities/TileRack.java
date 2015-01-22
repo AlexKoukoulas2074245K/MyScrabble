@@ -38,9 +38,16 @@ public class TileRack extends GameObject
 	private static final float PLAYER_2_POS_X = PLAYER_1_POS_X;
 	private static final float PLAYER_2_POS_Y = 16.0f; 
 	        
-	public static float[] getTilePos(final int index)
+	public static float[] getTilePos(final int index, final boolean isHuman)
 	{
-		return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
+	    if(isHuman)
+	    {
+	        return new float[]{PLAYER_1_POS_X + index * Tile.TILE_SIZE, PLAYER_1_POS_Y};
+	    }
+	    else
+	    {
+	        return new float[]{PLAYER_2_POS_X + index * Tile.TILE_SIZE, PLAYER_2_POS_Y};
+	    }
 	}
 	 
 	/* Core Letter Tiles on the rack*/
@@ -103,6 +110,11 @@ public class TileRack extends GameObject
 		    y = PLAYER_2_POS_Y;
 		    
 		    frontY = y;
+		    
+		    for(int i = 0; i < 7; i++)
+            {
+                drawLetterTile(i);
+            }
 		}
 		
 
@@ -182,7 +194,14 @@ public class TileRack extends GameObject
 		
 		for(LetterTile lt: letterTiles)
 		{
-			lt.render();
+		    if(playerRef.isHuman())
+		    {
+		        lt.render();
+		    }
+		    else
+		    {
+		        lt.emptyRender();
+		    }
 		}
 	}
 	
@@ -453,7 +472,7 @@ public class TileRack extends GameObject
 	{
 		if(letterTiles.size() == 0)
 		{
-			return TileRackHole.getDefaultHole();
+			return TileRackHole.getDefaultHole(playerRef);
 		}
 		else if(letterTiles.size() == MAX_NO_TILES) /* this should never happen */
 		{
@@ -461,9 +480,9 @@ public class TileRack extends GameObject
 		}
 		else
 		{
-			if(letterTiles.get(0).getX() != getTilePos(0)[0])
+			if(letterTiles.get(0).getX() != getTilePos(0, playerRef.isHuman())[0])
 			{
-				return TileRackHole.getDefaultHole();
+				return TileRackHole.getDefaultHole(playerRef);
 			}
 			
 			for(int i = 1; i < letterTiles.size(); i++)
@@ -471,16 +490,16 @@ public class TileRack extends GameObject
 				if(letterTiles.get(i).getCenterX() -
 				   letterTiles.get(i- 1).getCenterX() != LetterTile.TILE_SIZE)
 				{
-					return new TileRackHole(i, getTilePos(i));
+					return new TileRackHole(i, getTilePos(i, playerRef.isHuman()));
 				}
 			}
 			
 			if(letterTiles.size() < MAX_NO_TILES)
 			{
-				return new TileRackHole(letterTiles.size(), getTilePos(letterTiles.size()));
+				return new TileRackHole(letterTiles.size(), getTilePos(letterTiles.size(), playerRef.isHuman()));
 			}
 			
-			return TileRackHole.getDefaultHole();
+			return TileRackHole.getDefaultHole(playerRef);
 		}
 	}
 	
@@ -511,14 +530,14 @@ public class TileRack extends GameObject
  */
 class TileRackHole
 {
-	public static TileRackHole getDefaultHole()
+	public static TileRackHole getDefaultHole(Player playerRef)
 	{
-		return new TileRackHole(0, TileRack.getTilePos(0));
+		return new TileRackHole(0, TileRack.getTilePos(0, playerRef.isHuman()));
 	}
 	
-	public static boolean isDefaultHole(TileRackHole hole)
+	public static boolean isDefaultHole(TileRackHole hole, Player playerRef)
 	{
-		return hole.equals(getDefaultHole());
+		return hole.equals(getDefaultHole(playerRef));
 	}
 	
 	private int index;

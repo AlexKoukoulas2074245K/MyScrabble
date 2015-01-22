@@ -47,8 +47,10 @@ public class ResourceManager
 	 * 
 	 * @param filePath of the file to open
 	 * @return the file contents as a Strings
+	 * (NOTE) static to be accessible to class
+	 * shaders.
 	 */
-	public String loadFileAsString(final String filePath)
+	public static String loadFileAsString(final String filePath)
 	{
 		String fileDir = RES_DIR + filePath;
 		StringBuilder result  = new StringBuilder();

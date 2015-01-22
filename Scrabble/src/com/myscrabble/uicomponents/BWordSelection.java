@@ -15,8 +15,7 @@ public class BWordSelection extends Button
 	/* Texture Flags */
 	private static final int INVALID           = -1;
 	private static final int VALID_NORMAL      = 0;
-	private static final int VALID_HIGHLIGHT   = 1;
-	private static final int VALID_PRESSED     = 2;
+	private static final int VALID_PRESSED     = 1;
 	
 	private String currentWordSelection;
 	private int currentWordPoints;
@@ -78,18 +77,13 @@ public class BWordSelection extends Button
 	 */
 	private void selectTexture()
 	{
-		if(highlighted)
-		{
-			currentTexture = VALID_HIGHLIGHT;
-		}
 		if(pressed)
 		{
 			currentTexture = VALID_PRESSED;
 		}
-		
-		if(!highlighted && !pressed)
+		else
 		{
-			currentTexture = VALID_NORMAL;
+		    currentTexture = VALID_NORMAL;
 		}
 	}
 }

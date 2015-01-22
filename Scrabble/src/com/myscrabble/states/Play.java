@@ -81,7 +81,7 @@ public class Play extends GameState
 		//TODO: remove
 		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
 		
-		shader = new Shader(ShaderType.SHADING, gsm.getRes());
+		shader = new Shader(ShaderType.SHADING);
 		
 		darknessFactor = 1.0f;
 	}
@@ -90,13 +90,7 @@ public class Play extends GameState
 	public void handleInput() 
 	{	
 		
-		for(Player player: players)
-		{
-			if(player.isActive())
-			{
-				player.handleInput();
-			}
-		}
+		getActivePlayer().handleInput();
 		
 		for(Button b : buttons)
 		{

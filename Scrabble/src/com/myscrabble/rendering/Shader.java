@@ -17,7 +17,8 @@ public class Shader
     public enum ShaderType
     {
         SHADING("/shaders/shading"),
-        COLORING("/shaders/coloring");
+        COLORING("/shaders/coloring"),
+        HIGHLIGHTING("/shaders/highlight");
         
         private String fileName;
         
@@ -42,10 +43,10 @@ public class Shader
 	private int vertexHandle;
 	private int fragmentHandle;
 	
-	public Shader(ShaderType type, ResourceManager rm)
+	public Shader(ShaderType type)
 	{
 		createProgram();
-		loadContent(type.getFileName(), rm);
+		loadContent(type.getFileName());
 		compileProgram();
 		
 		uniformLocations = new HashMap<>();
@@ -58,10 +59,10 @@ public class Shader
 		fragmentHandle = glCreateShader(GL_FRAGMENT_SHADER);
 	}
 	
-	private void loadContent(String fileName, ResourceManager rm)
+	private void loadContent(String fileName)
 	{
-		String vertexSource = rm.loadFileAsString(fileName + VERTEX_EXT);
-		String fragmentSource = rm.loadFileAsString(fileName + FRAGMENT_EXT);
+		String vertexSource = ResourceManager.loadFileAsString(fileName + VERTEX_EXT);
+		String fragmentSource = ResourceManager.loadFileAsString(fileName + FRAGMENT_EXT);
 		glShaderSource(vertexHandle, vertexSource);
 		glShaderSource(fragmentHandle, fragmentSource);
 	}
