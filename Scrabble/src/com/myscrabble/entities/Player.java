@@ -1,8 +1,11 @@
 package com.myscrabble.entities;
 
+import ai.AIController;
+
 import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.states.Play;
 import com.myscrabble.util.ScrabbleDictionary;
 import com.myscrabble.util.Timer;
 
@@ -18,6 +21,13 @@ public class Player
 {
 	/* A cool down for the players selection (to avoid spamming left click on tile rack) */
 	private static final int SELECTION_COOLDOWN = 60; /* measured in frames */
+	
+	/* Reference to the current play state */
+	private Play playStateRef;
+	
+	/* An instance of AIController in case
+	 * this player is controlled by the computer */
+	private AIController aiController;
 	
 	/* The currently selected letter tile */
 	private LetterTile selLetterTile;
@@ -46,25 +56,28 @@ public class Player
 	/* Drawing allowance of the player */
 	private int drawingAllowance;
 	
-	public Player(GameStateManager gsm, Board board, ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
+	public Player(GameStateManager gsm, Play playStateRef, Board board, 
+				  ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
 	{
+		this.playStateRef = playStateRef;
 		this.board = board;
 		this.scrabbleDict = scrabbleDict;
 		this.letterBag = letterBag;
 		this.isHuman = isHuman;
 		
-		selectionTimer = new Timer(SELECTION_COOLDOWN);
-		
+		aiController = new AIController(Play.AI_LEVEL, this, board, scrabbleDict);
 		tileRack = new TileRack(gsm, this, letterBag);
+		
 		isActive = false;
 		
 		selLetterTile = null;
 		drawingAllowance = 0;
+		
+		selectionTimer = new Timer(SELECTION_COOLDOWN);
 	}
 	
 	public void handleInput()
-	{	
-	 
+	{	 
 		/* Response of mouse hovering over the tile rack or game board holding a letter tile */
 		if(hasSelectedLetterTile() && MouseManager.isButtonDown(MouseManager.LEFT_BUTTON))
 		{
@@ -95,6 +108,13 @@ public class Player
 		{
 			checkForLetterDrawAttempt();
 		}
+	}
+	
+	public void updateAI()
+	{
+		aiController.getSelection();
+		tileRack.updateState();
+		playStateRef.finaliseMove();
 	}
 	
 	public void update()
@@ -226,11 +246,9 @@ public class Player
 			return;
 		}
 		
-		if(tileRack.getRect().contains(MouseManager.getX(), MouseManager.getY()))
-		{
-			checkForSelectionInRack();
-		}
-		else if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
+		checkForSelectionInRack();
+		
+		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
 			checkForSelectionInBoard();
 		}
@@ -256,9 +274,9 @@ public class Player
 				if(lt.getHighlightStatus() == LetterTile.HIGHLIGHT_SELECTED ||
 				   lt.isRecentlyAdded())
 				{
+					
 					selLetterTile = lt;
 					selLetterTile.setGrabbed(true);
-					selLetterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);
 					
 					int indexOfTile = tileRack.getTileIndex(lt);
 					tileRack.removeTile(selLetterTile);
@@ -267,6 +285,7 @@ public class Player
 					{
 						tileRack.getLetterTiles().get(i).setPushDir(Direction.LEFT, true);
 					}
+					
 					for(int i = indexOfTile; i < tileRack.getLetterTiles().size(); i++)
 					{
 						tileRack.getLetterTiles().get(i).setPushDir(Direction.LEFT, false);
@@ -373,7 +392,6 @@ public class Player
         return board.isCurrentFormationValid(this);
     }
     
-    /* Getters / Setters */
 	public boolean isActive()
 	{
 		return isActive;
@@ -382,6 +400,11 @@ public class Player
 	public boolean isHuman()
 	{
 	    return isHuman;
+	}
+	
+	public TileRack getTileRack()
+	{
+		return tileRack;
 	}
 	
 	public boolean hasSelectedLetterTile()

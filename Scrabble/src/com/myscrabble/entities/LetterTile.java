@@ -128,10 +128,10 @@ public class LetterTile extends GameObject
 		{
 			updateHighlight();
 		}
-		else
-		{
-		    y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
-		}
+//		else
+//		{
+//		    y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
+//		}
 		
 		if(grabbed)
 		{
@@ -234,6 +234,11 @@ public class LetterTile extends GameObject
 	 */
 	public void highlightResponse(float mouseX, float mouseY)
 	{
+		if(drawAnimating)
+		{
+			return;
+		}
+		
 		if(getRect().contains(mouseX, mouseY))
 		{
 			if(highlightStatus != LetterTile.HIGHLIGHT_SELECTED && !recentlyAdded)

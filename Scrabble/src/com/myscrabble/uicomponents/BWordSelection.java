@@ -19,8 +19,6 @@ public class BWordSelection extends Button
 	private static final int VALID_PRESSED     = 1;
 	
 	private Play playStateRef;
-	private String currentWordSelection;
-	private int currentWordPoints;
 	
 	public BWordSelection(GameStateManager gsm, Play playStateRef)
 	{
@@ -44,7 +42,6 @@ public class BWordSelection extends Button
 	@Override
 	public void executeFunction()
 	{
-	    System.out.println(currentWordSelection + ": " + currentWordPoints);
 	    playStateRef.finaliseMove();
 	}
 	
@@ -53,14 +50,10 @@ public class BWordSelection extends Button
 	{
 		if(playerRef.hasValidWord())
 		{
-		    currentWordSelection = playerRef.getCurrentWord();
-		    currentWordPoints = playerRef.getCurrentPoints();
 			status = VALID;
 		}
 		else
 		{
-		    currentWordSelection = null;
-		    currentWordPoints = 0;
 			status = INVALID;
 		}
 	}

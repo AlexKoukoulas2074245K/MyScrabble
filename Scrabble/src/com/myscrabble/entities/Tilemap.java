@@ -74,6 +74,72 @@ public class Tilemap
 	    return null;
 	}
 	
+	/**
+	 * 
+	 * @param lt The LetterTile to check
+	 * @return the maximum from the number of horizontal
+	 * and vertical free tiles with lt being the origin
+	 */
+	public int getFreedomSpace(LetterTile lt)
+	{
+		int horFreedom = 0;
+		int verFreedom = 0;
+		
+		Tile tileHolder = getLetterTileHolder(lt);
+		int holderCol = tileHolder.getCol();
+		int holderRow = tileHolder.getRow();
+		
+		for(int i = holderCol + 1; i < Board.BOARD_COLS; i++)
+		{
+			if(isTileEmpty(i, holderRow))
+			{
+				horFreedom++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		for(int i = holderCol - 1; i >= 0; i--)
+		{
+			if(isTileEmpty(i, holderRow))
+			{
+				horFreedom++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		for(int i = holderRow + 1; i < Board.BOARD_COLS; i++)
+		{
+			if(isTileEmpty(i, holderCol))
+			{
+				verFreedom++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		for(int i = holderRow - 1; i >= 0; i--)
+		{
+			if(isTileEmpty(i, holderCol))
+			{
+				verFreedom++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		return horFreedom >= verFreedom ? horFreedom : verFreedom;
+	}
+	
 	public ArrayList<LetterTile> getNeutralLetterTiles()
 	{
 	    ArrayList<LetterTile> result = new ArrayList<>();

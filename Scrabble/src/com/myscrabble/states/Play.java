@@ -4,10 +4,9 @@ package com.myscrabble.states;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.myscrabble.uicomponents.Button;
-import com.myscrabble.uicomponents.BWordSelection;
-
 import org.newdawn.slick.opengl.Texture;
+
+import ai.AIController.AILevel;
 
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
@@ -18,6 +17,8 @@ import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.uicomponents.BWordSelection;
+import com.myscrabble.uicomponents.Button;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 
@@ -33,7 +34,7 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
-	
+	public static final AILevel AI_LEVEL = AILevel.AMATEUR;
 	private static final String SHADING_FACTOR_NAME = "darknessParam";
 	
 	/* All the GameObjects that need to be drawn and 
@@ -64,6 +65,9 @@ public class Play extends GameState
 	/* Current player index */
 	private int activePlayer;
 	
+	/* First round flags */
+	private boolean isFirstRound;
+	
 	//TODO: remove
 	private Shader shader;
 	private float darknessFactor;
@@ -71,7 +75,9 @@ public class Play extends GameState
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
+		
 		activePlayer = 0;
+        isFirstRound = true;
         
 		initCoreEntities();
 		
@@ -91,10 +97,10 @@ public class Play extends GameState
         
         
         players = new ArrayList<Player>();
-        players.add(new Player(gsm, board, scrabbleDict, letterBag, true));
+        players.add(new Player(gsm, this, board, scrabbleDict, letterBag, true));
         players.get(activePlayer).setActive(true);
-        players.add(new Player(gsm, board, scrabbleDict, letterBag, false));
-        
+        players.add(new Player(gsm, this, board, scrabbleDict, letterBag, false));
+
         gameObjects = new ArrayList<GameObject>();
         gameObjects.add(board);
         gameObjects.add(letterBag);
@@ -113,8 +119,13 @@ public class Play extends GameState
 	@Override
 	public void handleInput() 
 	{	
-		
-		getActivePlayer().handleInput();
+		for(Player player : players)
+		{
+			if(player.isHuman())
+			{
+				player.handleInput();
+			}
+		}
 		
 		for(Button b : buttons)
 		{
@@ -125,7 +136,14 @@ public class Play extends GameState
 	@Override
 	public void update() 
 	{	
-		getActivePlayer().update();
+		if(getActivePlayer().isHuman())
+		{
+			getActivePlayer().update();
+		}
+		else
+		{
+			getActivePlayer().updateAI();
+		}
 		
 		for(Button button : buttons)
 		{
@@ -167,10 +185,15 @@ public class Play extends GameState
 		clearShading();	
 	}
 	
+	/**
+	 * Request to move to the next
+	 * turn. Addition of points to the
+	 * respective player is also done
+	 * in this stage.
+	 */
 	public void finaliseMove()
 	{
-	    int claimedPoints = getActivePlayer().getCurrentPoints();
-	    addPoints(getActivePlayer(), claimedPoints);
+	    addPoints(getActivePlayer(), getActivePlayer().getCurrentPoints());
 	    getActivePlayer().makeMove();
 	    endOfPlayersTurn();
 	}
@@ -181,31 +204,53 @@ public class Play extends GameState
 	    playerPoints.replace(player, currentPoints + points);
 	}
 	
+	/**
+	 * Ends the active player's turn
+	 * and moves on to the next one.
+	 * Also resets the drawing allowance
+	 * of the next active player
+	 */
 	private void endOfPlayersTurn()
 	{
 	    getActivePlayer().setActive(false);
-	    activePlayer = 0;//activePlayer++;
+	    activePlayer++;
+	    
 	    if(activePlayer > players.size() - 1)
 	    {
 	        activePlayer = 0;
 	    }
+	    
 	    getActivePlayer().setActive(true);
 	    int noTiles = getActivePlayer().getNoTiles();
 	    
 	    getActivePlayer().setDrawingAllowance(TileRack.MAX_NO_TILES - noTiles);
 	}
 	
+	/**
+	 * Uses the shading program for
+	 * all entities that are rendered on screen
+	 * and sets appropriately the darkness factor
+	 * uniform.
+	 */
 	private void applyShading()
 	{
 		shader.useProgram();
 		shader.setUniform3f(SHADING_FACTOR_NAME, new float[]{darknessFactor, darknessFactor, darknessFactor});
 	}
 	
+	/**
+	 * Stops the usage of the shading program
+	 */
 	private void clearShading()
 	{
 		shader.stopProgram();
 	}
 	
+	/**
+	 * 
+	 * @return the currently
+	 * active player of the game
+	 */
 	private Player getActivePlayer()
 	{
 	    return players.get(activePlayer);

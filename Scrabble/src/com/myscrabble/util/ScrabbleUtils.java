@@ -3,6 +3,7 @@ package com.myscrabble.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 import com.myscrabble.entities.LetterTile;
 import com.myscrabble.entities.Tile;
@@ -59,6 +60,87 @@ public class ScrabbleUtils
 		return letterPoints.get(letter);
 	}
 	
+	/**
+	 * 
+	 * @param candidates The list of words to extract the biggest word from.
+	 * @return the word with the biggest length from the supplied
+	 * list.
+	 */
+	public static String getBiggestWord(ArrayList<String> candidates)
+	{
+		String max = new String();
+		
+		for(String candidate : candidates)
+		{
+			if(candidate.length() > max.length())
+			{
+				max = candidate;
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * 
+	 * @param candidates The list of words to extract the biggest common word from.
+	 * @param scrabbleDict Scrabble dictionary to extract common words.
+	 * @return the common word with the biggest length from the supplied.
+	 * list
+	 */
+	public static String getBiggestCommon(ArrayList<String> candidates, ScrabbleDictionary scrabbleDict)
+	{
+		String max = new String();
+		
+		for(String candidate : candidates)
+		{
+			if(candidate.length() > max.length() && scrabbleDict.isCommon(candidate))
+			{
+				max = candidate;
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * 
+	 * @param candidates The list of words to extract the first common word from.
+	 * @param scrabbleDict Scrabble dictionary to extract common words.
+	 * @return the first common word found in the supplied words list.
+	 */
+	public static String getFirstCommon(ArrayList<String> candidates, ScrabbleDictionary scrabbleDict)
+	{
+		for(String candidate : candidates)
+		{
+			if(scrabbleDict.isCommon(candidate))
+			{
+				return candidate;
+			}
+		}
+		
+		return new String();
+	}
+	
+	/**
+	 * 
+	 * @param candidates The list of words to extract a random word from.
+	 * @return A random word from the list of words supplied.
+	 */
+	public static String getRandomWord(ArrayList<String> candidates)
+	{
+		int randomIndex = new Random().nextInt(candidates.size());
+		
+		return candidates.get(randomIndex);
+	}
+	
+	/**
+	 * 
+	 * @param letterTiles ArrayList of Letter Tiles to feed the data from
+	 * @param direction the direction of the letter tiles
+	 * @return the ascending coordinates of all the letters tiles
+	 * in the supplied array list
+	 */
 	public static ArrayList<Float> getAscendingPositions(ArrayList<LetterTile> letterTiles, int direction)
 	{
 		ArrayList<Float> result = new ArrayList<>();
@@ -80,11 +162,23 @@ public class ScrabbleUtils
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param t1 
+	 * @param t2
+	 * @return absolute horizontal distance between the two letter tiles
+	 */
 	public static float xDistanceBetween(LetterTile t1, LetterTile t2)
 	{
 		return (float)Math.abs(t1.getX() - t2.getX());
 	}
 	
+	/**
+	 * 
+	 * @param t1 
+	 * @param t2
+	 * @return absolute vertical distance between the two letter tiles
+	 */
 	public static float yDistanceBetween(LetterTile t1, LetterTile t2)
 	{
 		return (float)Math.abs(t1.getY() - t2.getY());

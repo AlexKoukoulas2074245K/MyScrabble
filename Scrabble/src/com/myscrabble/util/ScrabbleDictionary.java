@@ -16,29 +16,51 @@ import com.myscrabble.managers.ResourceManager;
 public class ScrabbleDictionary
 {
 	private static final String DICT_DIR = "/specs/dictionary.dict";
+	private static final String COMMON_DIR = "/specs/common.dict";
 	
 	private Set<String> words;
-	private String content;
+	private Set<String> common;
+	
+	private String mainContent;
+	private String commonContent;
 	
 	public ScrabbleDictionary()
 	{
 		loadContent();
-		createSet();
+		createSets();
 	}
 	
 	private void loadContent()
 	{
-		content = ResourceManager.loadFileAsString(DICT_DIR);
+		mainContent = ResourceManager.loadFileAsString(DICT_DIR);
+		commonContent = ResourceManager.loadFileAsString(COMMON_DIR);
 	}
 	
-	private void createSet()
+	private void createSets()
 	{
 		words = new HashSet<String>();
 		
-		for(String word : content.split(System.lineSeparator()))
+		for(String word : mainContent.split(System.lineSeparator()))
 		{
 			words.add(word.toUpperCase());
 		}
+		
+		common = new HashSet<String>();
+		
+		for(String word : commonContent.split(System.lineSeparator()))
+		{
+			common.add(word.toUpperCase());
+		}
+	}
+	
+	/**
+	 * 
+	 * @return The whole set
+	 * of words
+	 */
+	public Set<String> getWords()
+	{
+		return words;
 	}
 	
 	/**
@@ -50,5 +72,16 @@ public class ScrabbleDictionary
 	public boolean wordExists(String word)
 	{
 		return words.contains(word);
+	}
+	
+	/**
+	 * 
+	 * @param word to check 
+	 * @return whether the word is present
+	 * in the common words dictionary
+	 */
+	public boolean isCommon(String word)
+	{
+		return common.contains(word);
 	}
 }

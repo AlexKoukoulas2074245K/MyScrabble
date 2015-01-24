@@ -5,7 +5,6 @@ import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
@@ -176,6 +175,12 @@ public class Board extends GameObject
 	 */
 	public void makeMove(Player player)
 	{  
+		//TODO: remove
+		if(playerFormations.get(player) == null)
+		{
+			return;
+		}
+		
 	    playerFormations.get(player).releaseTiles();
 	    playerFormations.remove(player);
 	}
@@ -278,6 +283,10 @@ public class Board extends GameObject
 	 */
 	public int calculatePoints(Player player)
 	{
+		//TODO: remove
+		if(playerFormations.get(player) == null)
+			return 0;
+		
 	    return ScrabbleUtils.calculatePoints(playerFormations.get(player).getTiles(), tilemap);
 	}
 	
@@ -353,6 +362,42 @@ public class Board extends GameObject
 	public ArrayList<LetterTile> getNeutralLetterTiles()
 	{
 	    return tilemap.getNeutralLetterTiles();
+	}
+	
+	/**
+	 * 
+	 * @param reqChar The requested character to look for in the field
+	 * @param word The word that is currently checked. 
+	 * @return A valid LetterTile which has both the requested
+	 * letter and has enough space next to it to fit the word supplied.
+	 */
+	public LetterTile getValidNeutral(char reqChar, String word)
+	{
+		ArrayList<LetterTile> candidates = new ArrayList<>();
+		
+		for(LetterTile neutral : getNeutralLetterTiles())
+		{
+			if(neutral.getLetter() == reqChar)
+			{
+				candidates.add(neutral);
+			}
+		}
+	
+		if(candidates.size() == 0)
+		{
+			return null;
+		}
+		
+		//TODO: maybe change in ai
+		for(LetterTile lt : candidates)
+		{
+			if(tilemap.getFreedomSpace(lt) >= word.length())
+			{
+				return lt;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

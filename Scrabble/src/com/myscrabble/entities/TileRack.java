@@ -134,6 +134,11 @@ public class TileRack extends GameObject
 			return;
 		}
 		
+		updateState();			
+	}
+	
+	public void updateState()
+	{
 		/** Remove tiles */
 		for(LetterTile lt : tilesToRemove)
 		{
@@ -153,7 +158,7 @@ public class TileRack extends GameObject
 		
 		resetFlags();
 		
-		tilesToAdd.clear();			
+		tilesToAdd.clear();
 	}
 	
 	private void coreTileUpdate()
