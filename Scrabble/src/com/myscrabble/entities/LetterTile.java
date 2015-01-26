@@ -80,8 +80,8 @@ public class LetterTile extends GameObject
 	private int finalIndex;
 	
 	/** AI exclusive fields */
-	private Movement aiMovementValue;
-	private boolean aiUsage; 
+	private Movement aiMovement;
+	private int[] aiDirectionFreedom;
 	
 	public LetterTile(GameStateManager gsm, Player playerRef, char letter,
 					       int points, boolean drawAnimating, int index)
@@ -111,8 +111,8 @@ public class LetterTile extends GameObject
 		
 		loadTexture();
 		
-		aiMovementValue = Movement.NONE;
-		aiUsage = false;
+		aiMovement = Movement.NONE;
+		
 	}
  
 	private void positionalInitialization()
@@ -141,10 +141,6 @@ public class LetterTile extends GameObject
 		{
 			updateHighlight();
 		}
-//		else
-//		{
-//		    y = TileRack.getTilePos(finalIndex, playerRef.isHuman())[1];
-//		}
 		
 		if(grabbed)
 		{
@@ -182,7 +178,7 @@ public class LetterTile extends GameObject
 	 * Updates the letterTile until it reaches
 	 * its position goal.
 	 */
-	private void updateMoving()
+	private void updateMoving() //TODO: CONTAINS DEBUGGING CODE
 	{
 		if(movingGoalPos != NO_MOVE_GOAL && movingGoalPos > x0)
 		{
@@ -190,6 +186,7 @@ public class LetterTile extends GameObject
 		}
 		else if(movingGoalPos != NO_MOVE_GOAL && movingGoalPos < x0)
 		{
+
 			x = approach(movingGoalPos, x, V_SPEED);
 		}
 			
@@ -323,14 +320,14 @@ public class LetterTile extends GameObject
 	
 	public Movement getAIMovement()
 	{
-	    return aiMovementValue;
+	    return aiMovement;
 	}
 	
-	public boolean getAIUsage()
+	public int[] getAIDirectionFreedom()
 	{
-	    return aiUsage;
+		return aiDirectionFreedom;
 	}
-	
+
 	public char getLetter()
 	{
 		return letter;
@@ -447,11 +444,11 @@ public class LetterTile extends GameObject
 	
 	public void setAIMovement(Movement aiMovement)
 	{
-	    this.aiMovementValue = aiMovement;
+	    this.aiMovement = aiMovement;
 	}
 	
-	public void setAIUsage(boolean aiUsage)
+	public void setAIDirectionFreedom(int[] aiDirectionFreedom)
 	{
-	    this.aiUsage = aiUsage;
+		this.aiDirectionFreedom = aiDirectionFreedom;
 	}
 }

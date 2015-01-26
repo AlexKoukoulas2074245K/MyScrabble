@@ -1,6 +1,9 @@
 package com.myscrabble.entities;
 
+import java.util.ArrayList;
+
 import ai.AIController;
+import ai.AIController.AIState;
 
 import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
@@ -112,9 +115,13 @@ public class Player
 	
 	public void updateAI()
 	{
-		aiController.getSelection();
-		tileRack.updateState();
-		playStateRef.finaliseMove();
+		aiController.update();
+		
+		if(aiController.getState() == AIState.FINISHING)
+		{
+			playStateRef.finaliseMove();
+			aiController.setState(AIState.WORD_SELECTION);
+		}
 	}
 	
 	public void update()
@@ -173,6 +180,14 @@ public class Player
 		}
 	}
 	
+	public void drawAllAI()
+	{
+		for(int i = 0; i < drawingAllowance; i++)
+		{
+			tileRack.drawLetterTile();
+		}
+	}
+	
 	private void checkAreaHovering()
 	{
 		if(selLetterTile.getRect().intersects(tileRack.getRect()))
@@ -183,7 +198,7 @@ public class Player
 		         tileRack.getLetterTileFormationHole() != null)
 		{
 		    
-			if(tileRack.tilesAreIdle() && tileRack.getLetterTileFormationHole().getIndex() != tileRack.nTiles())
+			if(tileRack.tilesAreIdle() && tileRack.getLetterTileFormationHole().getIndex() != tileRack.size())
 			{
 				tileRack.pushTiles(Direction.LEFT, 0);
 			}
@@ -316,7 +331,7 @@ public class Player
 	{
 		if(board.getRect().contains(MouseManager.getX(), MouseManager.getY()))
 		{
-			if(board.checkForTileWithdrawal() && tileRack.nTiles() < TileRack.MAX_NO_TILES)
+			if(board.checkForTileWithdrawal() && tileRack.size() < TileRack.MAX_NO_TILES)
 			{
 			    LetterTile target = board.withdrawTile(this);
 				addTileToRack(target);
@@ -358,7 +373,7 @@ public class Player
 	
 	private void addTileToRack(LetterTile letterTile)
 	{		
-		if(tileRack.nTiles() < TileRack.MAX_NO_TILES)
+		if(tileRack.size() < TileRack.MAX_NO_TILES)
 		{
 			tileRack.addTile(letterTile, tileRack.getLetterTileFormationHole().getIndex());
 			selLetterTile = null;
@@ -367,7 +382,7 @@ public class Player
 	
 	public int getNoTiles()
 	{
-	    return tileRack.nTiles();
+	    return tileRack.size();
 	}
 	
 	public boolean hasValidWord()
@@ -419,7 +434,14 @@ public class Player
 	
 	public int getCurrentPoints()
 	{
-	    return board.calculatePoints(this);
+		if(isHuman)
+		{
+			return board.calculatePoints(this);
+		}
+		else
+		{
+			return aiController.calculatePoints();
+		}
 	}
 	
     public void setActive(boolean isActive)

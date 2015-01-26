@@ -1,12 +1,15 @@
 package ai;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.LetterTile;
+import com.myscrabble.entities.LetterTile.Direction;
+import com.myscrabble.entities.LetterTile.Movement;
 import com.myscrabble.entities.Player;
+import com.myscrabble.entities.Tile;
 import com.myscrabble.entities.TileRack;
 import com.myscrabble.util.ScrabbleDictionary;
 import com.myscrabble.util.ScrabbleUtils;
@@ -35,18 +38,36 @@ public class AIController
 		}
 	}
 	
+	public enum AIState
+	{
+		WORD_SELECTION,
+		RACK_UPDATE,
+		VALIDATING,
+		FINISHING;
+	}
+	
 	/* The ability of this AI controller */
 	private AILevel aiLevel;
+	
+	/* The current state of this controller */
+	private AIState aiState;
 	
 	/* References to core objects */
 	private Player  aiPlayer;
 	private Board   board;
 	private ScrabbleDictionary dictionary;
 	
-	/* The letter tile which will be used from the game board
-	 * to complete the desired word
-	 */
-	private LetterTile missingLetterTile; 
+	/* The missing letter tiles per word that is are candidates */
+	private HashMap<String,LetterTile> missingTilePerWord; 
+	
+	/* The final selection for missing letter tile */
+	private LetterTile finalMissingTile;
+	
+	/* Reference to the last word selection done by this AI controller */
+	private ArrayList<LetterTile> lastAISelection;
+	
+
+	private int nextLetterTileIndex;
 	
 	public AIController(AILevel aiLevel, Player aiPlayer, Board board, ScrabbleDictionary dictionary)
 	{
@@ -54,11 +75,114 @@ public class AIController
 		this.aiPlayer = aiPlayer;
 		this.board = board;
 		this.dictionary = dictionary;
+
+		aiState = AIState.WORD_SELECTION;
+		nextLetterTileIndex = 0;
+		missingTilePerWord = new HashMap<>();
 	}
 	
-	public ArrayList<LetterTile> getSelection()
+	/**
+	 * 
+	 * @return the calculated points for the
+	 * last ai selection recorded
+	 */
+	public int calculatePoints()
 	{
+		return ScrabbleUtils.calculatePoints(lastAISelection, board.getTilemap());
+	}
+	
+	/**
+	 * Makes a move respective to the AI controlled 
+	 * player's level.
+	 */
+	public void update()
+	{	
+		if(aiState == AIState.WORD_SELECTION)
+		{
+			lastAISelection = getSelection();
+			aiState = AIState.RACK_UPDATE;
+		}
+		else if(aiState == AIState.RACK_UPDATE)
+		{	
+			if(aiPlayer.getTileRack().tilesAreIdle() &&
+			   nextLetterTileIndex != lastAISelection.size())
+			{
+				removeNextLetterTile();
+			}
+			
+			if(nextLetterTileIndex == lastAISelection.size() && 
+			   aiPlayer.getTileRack().tilesAreIdle())
+			{
+				aiState = AIState.VALIDATING;
+			}
+			
+			aiPlayer.getTileRack().update();
+		}
+		else if(aiState == AIState.VALIDATING)
+		{
+			validateLetterTiles();
+			aiState = AIState.FINISHING;
+		}
+	}
+	
+	private void removeNextLetterTile()
+	{
+		LetterTile nextLetterTile = lastAISelection.get(nextLetterTileIndex);
+		
+		if(aiPlayer.getTileRack().contains(nextLetterTile))
+		{
+			int ltIndex = aiPlayer.getTileRack().getTileIndex(nextLetterTile);
+			aiPlayer.getTileRack().removeTile(nextLetterTile);
+			aiPlayer.getTileRack().resetAllFlagsAI(ltIndex);
+			aiPlayer.getTileRack().pushTiles(Direction.LEFT, ltIndex + 1);
+			positionTile(nextLetterTile);
+		}
+		
+		nextLetterTileIndex++;
+	}
+	
+	private void positionTile(LetterTile lt)
+	{
+		if(finalMissingTile == null)
+		{
+			System.out.println("NO MOVE!?");
+			aiPlayer.makeMove();
+		}
+		
+		float boardLetterX = finalMissingTile.getX();
+		float boardLetterY = finalMissingTile.getY();
+		int boardLetterIndex = lastAISelection.indexOf(finalMissingTile);
+		int currentIndex = lastAISelection.indexOf(lt);
+		
+		if(finalMissingTile.getAIMovement() == Movement.HORIZONTAL)
+		{
+			lastAISelection.get(currentIndex).setX(boardLetterX + (currentIndex - boardLetterIndex) * Tile.TILE_SIZE);
+			lastAISelection.get(currentIndex).setY(boardLetterY);
+		}
+		else
+		{
+			lastAISelection.get(currentIndex).setX(boardLetterX);
+			lastAISelection.get(currentIndex).setY(boardLetterY + (currentIndex - boardLetterIndex) * Tile.TILE_SIZE);
+		}
+		
+		board.addLetterTileAI(lastAISelection.get(currentIndex));
+	}
+	
+	private void validateLetterTiles()
+	{		
+		finalMissingTile.setAIDirectionFreedom(null);
+		finalMissingTile.setAIMovement(Movement.NONE);
+		finalMissingTile = null;
+		missingTilePerWord.clear();
+		nextLetterTileIndex = 0;
+	}
+	
+	private ArrayList<LetterTile> getSelection()
+	{	
 	    String wordSelection = getWordSelection();
+	    System.out.println(wordSelection);
+	    finalMissingTile = missingTilePerWord.get(wordSelection);
+	    
 		char[] selection = wordSelection.toCharArray();
 		
 		ArrayList<LetterTile> result = new ArrayList<>();
@@ -67,26 +191,24 @@ public class AIController
 		
 		for(char character : selection)
 		{
-		    if(character == missingLetterTile.getLetter())
+		    if(character == finalMissingTile.getLetter())
 		    {
-		        result.add(missingLetterTile);
+		        result.add(finalMissingTile);
 		        continue;
 		    }
 			for(LetterTile lt : playerRack.getLetterTiles())
 			{
-				if(lt.getLetter() == character)
+				if(lt.getLetter() == character && !result.contains(lt))
 				{
 					result.add(lt);
-					playerRack.removeTile(lt);
 					break;
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
-	
+		
 	/**
 	 * 
 	 * @return The word selection made by the ai controller
@@ -118,7 +240,7 @@ public class AIController
 		
 		if(aiLevel == AILevel.AMATEUR)
 		{
-			return ScrabbleUtils.getFirstCommon(candidates, dictionary);
+			return ScrabbleUtils.getRandomCommon(candidates, dictionary);
 		}
 		else if(aiLevel == AILevel.ROOKIE)
 		{
@@ -143,7 +265,12 @@ public class AIController
 	 */
 	private boolean isValidWord(String currentLetters, String word)
 	{
-	    List<char[]> charList = Arrays.asList(currentLetters.toCharArray());
+	    List<Character> charList = new ArrayList<Character>();
+	    
+	    for(int i = 0; i < currentLetters.length(); i++)
+	    {
+	    	charList.add(currentLetters.charAt(i));
+	    }
 	    
 		boolean charOnBoardUsed = false;
 		
@@ -154,7 +281,7 @@ public class AIController
 				if(!charOnBoardUsed && board.getValidNeutral(word.charAt(i), word) != null)
 				{
 					charOnBoardUsed = true;
-					missingLetterTile = board.getValidNeutral(word.charAt(i), word);
+					missingTilePerWord.put(word, board.getValidNeutral(word.charAt(i), word));
 				}
 				else
 				{
@@ -163,7 +290,7 @@ public class AIController
 			}
 			else
 			{
-			    charList.remove(word.charAt(i));
+			    removeCharFromList(charList, word.charAt(i));
 			}
 		}
 		
@@ -174,15 +301,26 @@ public class AIController
 		
 		return false;
 	}
+	
+	private void removeCharFromList(List<Character> charList, char character)
+	{
+		for(int y = 0; y < charList.size(); y++)
+	    {
+	    	if(charList.get(y) == character)
+	    	{
+	    		charList.remove(y);
+	    		return;
+	    	}
+	    }
+	}
+	
+	public AIState getState()
+	{
+		return aiState;
+	}
+	
+	public void setState(AIState aiState)
+	{
+		this.aiState = aiState;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -115,18 +115,11 @@ public class TileRack extends GameObject
                 drawLetterTile(i);
             }
 		}
-		
-
 	}
 	
 	@Override
 	public void update()
-	{
-		if(!playerRef.isHuman())
-		{
-		    return;
-		}
-		
+	{	
 		coreTileUpdate();
 		
 		if(!tilesAreIdle())
@@ -164,6 +157,7 @@ public class TileRack extends GameObject
 	private void coreTileUpdate()
 	{
 		animatingTilesUpdate();
+		
 	    if(tilesAnimating)
 	    {	        
 	        return;
@@ -288,6 +282,14 @@ public class TileRack extends GameObject
 		for(int i = startingIndex; i < letterTiles.size(); i++)
 		{
 			letterTiles.get(i).push(direction);
+		}		
+	}
+	
+	public void resetAllFlagsAI(int startingIndex)
+	{
+		for(int i = startingIndex + 1; i < letterTiles.size(); i++)
+		{
+			letterTiles.get(i).setFlags(new boolean[4]);
 		}
 	}
 	
@@ -325,7 +327,6 @@ public class TileRack extends GameObject
 				mergeSpotted = true;
 			}
 		}
-		
 		
 		tempStoredPositions.clear();
 		tempStoredFlags.clear();
@@ -383,6 +384,11 @@ public class TileRack extends GameObject
 	}
 	
 	/* Getters / Setters */
+	public boolean contains(LetterTile lt)
+	{
+		return letterTiles.contains(lt);
+	}
+	
 	public Rectangle getRect()
 	{
 		return new Rectangle((int)x, (int)y - Tile.TILE_SIZE / 2,
@@ -456,7 +462,7 @@ public class TileRack extends GameObject
 		return true;
 	}
 	
-	public int nTiles()
+	public int size()
 	{
 		return letterTiles.size();
 	}

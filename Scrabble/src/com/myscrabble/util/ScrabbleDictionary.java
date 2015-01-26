@@ -1,5 +1,9 @@
 package com.myscrabble.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +33,7 @@ public class ScrabbleDictionary
 		loadContent();
 		createSets();
 	}
-	
+
 	private void loadContent()
 	{
 		mainContent = ResourceManager.loadFileAsString(DICT_DIR);

@@ -105,21 +105,25 @@ public class ScrabbleUtils
 	
 	/**
 	 * 
-	 * @param candidates The list of words to extract the first common word from.
+	 * @param candidates The list of words to extract a random common word from.
 	 * @param scrabbleDict Scrabble dictionary to extract common words.
-	 * @return the first common word found in the supplied words list.
+	 * @return a random common word found in the supplied words list.
 	 */
-	public static String getFirstCommon(ArrayList<String> candidates, ScrabbleDictionary scrabbleDict)
+	public static String getRandomCommon(ArrayList<String> candidates, ScrabbleDictionary scrabbleDict)
 	{
+		ArrayList<String> validCommonWords = new ArrayList<>();
+		
 		for(String candidate : candidates)
 		{
 			if(scrabbleDict.isCommon(candidate))
 			{
-				return candidate;
+				validCommonWords.add(candidate);
 			}
 		}
 		
-		return new String();
+		int randomIndex = new Random().nextInt(validCommonWords.size());
+		
+		return validCommonWords.get(randomIndex);
 	}
 	
 	/**

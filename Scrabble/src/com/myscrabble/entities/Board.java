@@ -255,12 +255,25 @@ public class Board extends GameObject
 	/**
 	 * 
 	 * @param letterTile the letterTile to be added to the current playerFormation
-	 * @param playerRef reference to the player that requeststed a letter addition
+	 * @param playerRef reference to the player that requested a letter addition
 	 */
 	public void addLetterTile(LetterTile letterTile, Player playerRef)
 	{
 		tilemap.addLetterTile(letterTile, tileIndicator);
 		addToFormation(letterTile, playerRef);
+	}
+	
+	/**
+	 * 
+	 * @param letterTile the letter tile to be added to the tile map
+	 * Adds the letterTile to the tile map without using the tileIndicator
+	 * and a tile formation as the letterTiles parameterized here have
+	 * been correctly positioned prior to this method. 
+	 */
+	public void addLetterTileAI(LetterTile letterTile)
+	{
+		tilemap.addLetterTile(letterTile);
+		letterTile.clearPlayerRef();
 	}
 	
 	public void disableIndicator()
@@ -269,6 +282,11 @@ public class Board extends GameObject
 	}
 	
 	/* Getters / Setters */
+	public Tilemap getTilemap()
+	{
+		return tilemap;
+	}
+	
 	public Rectangle getRect()
 	{
 		return new Rectangle((int)x + SIDE_WIDTH, (int)y + SIDE_HEIGHT, 

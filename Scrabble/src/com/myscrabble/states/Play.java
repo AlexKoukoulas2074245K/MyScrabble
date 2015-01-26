@@ -4,6 +4,7 @@ package com.myscrabble.states;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.lwjgl.opengl.Display;
 import org.newdawn.slick.opengl.Texture;
 
 import ai.AIController.AILevel;
@@ -15,6 +16,7 @@ import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileRack;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.uicomponents.BWordSelection;
@@ -34,8 +36,9 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
-	public static final AILevel AI_LEVEL = AILevel.AMATEUR;
+	public static final AILevel AI_LEVEL = AILevel.HARD;
 	private static final String SHADING_FACTOR_NAME = "darknessParam";
+	public static boolean LETTER_TILE_SLOWDOWN = false;
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
@@ -131,6 +134,21 @@ public class Play extends GameState
 		{
 			b.handleInput();
 		}
+		
+		//TODO: DEBUG REMOVE
+		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
+		{
+			System.out.println("Mouse at: " + MouseManager.getX() + ", " + MouseManager.getY());
+		}
+		
+		if(MouseManager.isButtonDown(MouseManager.RIGHT_BUTTON))
+		{
+			LETTER_TILE_SLOWDOWN = true;
+		}
+		else
+		{
+			LETTER_TILE_SLOWDOWN = false;
+		}
 	}
 
 	@Override
@@ -202,6 +220,7 @@ public class Play extends GameState
 	{
 	    int currentPoints = playerPoints.get(player);
 	    playerPoints.replace(player, currentPoints + points);
+	    System.out.println("Player " + players.indexOf(player) + ": " + playerPoints.get(player));
 	}
 	
 	/**
@@ -224,6 +243,11 @@ public class Play extends GameState
 	    int noTiles = getActivePlayer().getNoTiles();
 	    
 	    getActivePlayer().setDrawingAllowance(TileRack.MAX_NO_TILES - noTiles);
+	    
+	    if(!getActivePlayer().isHuman())
+	    {
+	    	getActivePlayer().drawAllAI();
+	    }
 	}
 	
 	/**

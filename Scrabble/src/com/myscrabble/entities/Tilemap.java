@@ -84,8 +84,11 @@ public class Tilemap
 	 */
 	public int getFreedomSpace(LetterTile lt)
 	{
-		int horFreedom = 0;
-		int verFreedom = 0;
+		//direction freedom accumulators
+		int verUpFreedom = 0;
+		int verDownFreedom = 0;
+		int horLeftFreedom = 0;
+		int horRightFreedom = 0;
 		
 		Tile tileHolder = getLetterTileHolder(lt);
 		int holderCol = tileHolder.getCol();
@@ -95,7 +98,7 @@ public class Tilemap
 		{
 			if(isTileEmpty(i, holderRow))
 			{
-				horFreedom++;
+				horRightFreedom++;
 			}
 			else
 			{
@@ -107,7 +110,7 @@ public class Tilemap
 		{
 			if(isTileEmpty(i, holderRow))
 			{
-				horFreedom++;
+				horLeftFreedom++;
 			}
 			else
 			{
@@ -119,7 +122,7 @@ public class Tilemap
 		{
 			if(isTileEmpty(i, holderCol))
 			{
-				verFreedom++;
+				verDownFreedom++;
 			}
 			else
 			{
@@ -131,7 +134,7 @@ public class Tilemap
 		{
 			if(isTileEmpty(i, holderCol))
 			{
-				verFreedom++;
+				verUpFreedom++;
 			}
 			else
 			{
@@ -139,15 +142,20 @@ public class Tilemap
 			}
 		}
 		
-		if(horFreedom >= verFreedom)
+		int totalHorFreedom = horLeftFreedom + horRightFreedom;
+		int totalVerFreedom = verUpFreedom + verDownFreedom;
+		
+		if(totalHorFreedom >= totalVerFreedom)
 		{
 		    lt.setAIMovement(Movement.HORIZONTAL);
-		    return horFreedom;
+		    lt.setAIDirectionFreedom(new int[]{horLeftFreedom, horRightFreedom});
+		    return totalHorFreedom;
 		}
 		else
 		{
 		    lt.setAIMovement(Movement.VERTICAL);
-		    return verFreedom;
+		    lt.setAIDirectionFreedom(new int[]{verUpFreedom, verDownFreedom});
+		    return totalVerFreedom;
 		}
 	}
 	
@@ -189,6 +197,24 @@ public class Tilemap
 		
 		/* reset tile indicator status to none */
 		tileIndicator.setStatus(TileIndicator.NONE);
+	}
+	
+	/**
+	 * 
+	 * @param letterTile To be added
+	 * Does not use tile indicator to find the 
+	 * correct position of that tile (i.e. the tile
+	 * needs to be in the correct position prior
+	 * to addition) 
+	 */
+	public void addLetterTile(LetterTile letterTile)
+	{
+		int targetCol = ((int)letterTile.getX() - Board.SIDE_WIDTH - Board.X_OFFSET) / Tile.TILE_SIZE;
+		int targetRow = ((int)letterTile.getY() - Board.SIDE_HEIGHT - Board.Y_OFFSET) / Tile.TILE_SIZE;
+		
+		Tile targetTile = getTile(targetCol, targetRow);
+		
+		targetTile.setTile(letterTile);
 	}
 	
 	private void createTilemap()
