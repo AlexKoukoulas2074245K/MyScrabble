@@ -33,7 +33,13 @@ public class LetterTile extends GameObject
             this.value = value;
         }
     }
-
+    
+    public enum Movement
+    {
+        NONE,
+        HORIZONTAL,
+        VERTICAL;
+    }
 	
 	/* Standard Tile Size (equals TileSize of Tile class) */
 	public static final int TILE_SIZE = Tile.TILE_SIZE;
@@ -73,6 +79,10 @@ public class LetterTile extends GameObject
 	private float aniGoalY;
 	private int finalIndex;
 	
+	/** AI exclusive fields */
+	private Movement aiMovementValue;
+	private boolean aiUsage; 
+	
 	public LetterTile(GameStateManager gsm, Player playerRef, char letter,
 					       int points, boolean drawAnimating, int index)
 	{
@@ -100,6 +110,9 @@ public class LetterTile extends GameObject
 		pushedFlags[Direction.DOWN.value]  = false;
 		
 		loadTexture();
+		
+		aiMovementValue = Movement.NONE;
+		aiUsage = false;
 	}
  
 	private void positionalInitialization()
@@ -270,7 +283,7 @@ public class LetterTile extends GameObject
 	
 	public void emptyRender()
 	{
-	    RenderUtils.renderTexture(getTexture(NONE_TEX), x, y);
+	    RenderUtils.renderTexture(getTexture(LETTER_TEX), x, y);
 	}
 	
 	/**
@@ -306,6 +319,16 @@ public class LetterTile extends GameObject
 	public Player getPlayerRef()
 	{
 		return playerRef;
+	}
+	
+	public Movement getAIMovement()
+	{
+	    return aiMovementValue;
+	}
+	
+	public boolean getAIUsage()
+	{
+	    return aiUsage;
 	}
 	
 	public char getLetter()
@@ -420,5 +443,15 @@ public class LetterTile extends GameObject
 	public void setDrawAnimating(boolean drawAnimating)
 	{
 	    this.drawAnimating = drawAnimating;
+	}
+	
+	public void setAIMovement(Movement aiMovement)
+	{
+	    this.aiMovementValue = aiMovement;
+	}
+	
+	public void setAIUsage(boolean aiUsage)
+	{
+	    this.aiUsage = aiUsage;
 	}
 }

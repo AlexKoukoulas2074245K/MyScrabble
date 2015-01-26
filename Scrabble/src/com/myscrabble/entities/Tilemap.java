@@ -2,6 +2,8 @@ package com.myscrabble.entities;
 
 import java.util.ArrayList;
 
+import com.myscrabble.entities.LetterTile.Movement;
+
 
 
 /**
@@ -137,7 +139,16 @@ public class Tilemap
 			}
 		}
 		
-		return horFreedom >= verFreedom ? horFreedom : verFreedom;
+		if(horFreedom >= verFreedom)
+		{
+		    lt.setAIMovement(Movement.HORIZONTAL);
+		    return horFreedom;
+		}
+		else
+		{
+		    lt.setAIMovement(Movement.VERTICAL);
+		    return verFreedom;
+		}
 	}
 	
 	public ArrayList<LetterTile> getNeutralLetterTiles()

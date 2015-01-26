@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.myscrabble.entities.LetterTile.Movement;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
@@ -359,6 +360,11 @@ public class Board extends GameObject
 		playerFormations.get(playerRef).checkForNeutrals(getNeutralLetterTiles());
 	}
 	
+	/**
+	 * 
+	 * @return All the neutral tiles on the
+	 * game board
+	 */
 	public ArrayList<LetterTile> getNeutralLetterTiles()
 	{
 	    return tilemap.getNeutralLetterTiles();
@@ -394,6 +400,10 @@ public class Board extends GameObject
 			if(tilemap.getFreedomSpace(lt) >= word.length())
 			{
 				return lt;
+			}   
+			else
+			{
+			    lt.setAIMovement(Movement.NONE);
 			}
 		}
 		

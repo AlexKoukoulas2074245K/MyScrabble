@@ -1,5 +1,6 @@
 package ai;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -42,6 +43,11 @@ public class AIController
 	private Board   board;
 	private ScrabbleDictionary dictionary;
 	
+	/* The letter tile which will be used from the game board
+	 * to complete the desired word
+	 */
+	private LetterTile missingLetterTile; 
+	
 	public AIController(AILevel aiLevel, Player aiPlayer, Board board, ScrabbleDictionary dictionary)
 	{
 		this.aiLevel = aiLevel;
@@ -52,13 +58,20 @@ public class AIController
 	
 	public ArrayList<LetterTile> getSelection()
 	{
-		char[] selection = getWordSelection().toCharArray();
+	    String wordSelection = getWordSelection();
+		char[] selection = wordSelection.toCharArray();
+		
 		ArrayList<LetterTile> result = new ArrayList<>();
 		
 		TileRack playerRack = aiPlayer.getTileRack();
 		
 		for(char character : selection)
 		{
+		    if(character == missingLetterTile.getLetter())
+		    {
+		        result.add(missingLetterTile);
+		        continue;
+		    }
 			for(LetterTile lt : playerRack.getLetterTiles())
 			{
 				if(lt.getLetter() == character)
@@ -130,22 +143,27 @@ public class AIController
 	 */
 	private boolean isValidWord(String currentLetters, String word)
 	{
+	    List<char[]> charList = Arrays.asList(currentLetters.toCharArray());
+	    
 		boolean charOnBoardUsed = false;
 		
 		for(int i = 0; i < word.length(); i++)
 		{
-			String charToString = String.valueOf(word.charAt(i));
-			
-			if(!currentLetters.contains(charToString))
+			if(!charList.contains(word.charAt(i)))
 			{
 				if(!charOnBoardUsed && board.getValidNeutral(word.charAt(i), word) != null)
 				{
 					charOnBoardUsed = true;
+					missingLetterTile = board.getValidNeutral(word.charAt(i), word);
 				}
 				else
 				{
 					return false;
 				}
+			}
+			else
+			{
+			    charList.remove(word.charAt(i));
 			}
 		}
 		
