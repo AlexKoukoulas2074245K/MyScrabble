@@ -128,7 +128,6 @@ public class AIController
 	
 	private void removeNextLetterTile()
 	{
-	    System.out.print(lastAISelection.size());
 		LetterTile nextLetterTile = lastAISelection.get(nextLetterTileIndex);
 		
 		if(aiPlayer.getTileRack().contains(nextLetterTile))
@@ -137,13 +136,11 @@ public class AIController
 			aiPlayer.getTileRack().removeTile(nextLetterTile);
 			aiPlayer.getTileRack().resetAllFlagsAI(ltIndex);
 			aiPlayer.getTileRack().pushTiles(Direction.LEFT, ltIndex + 1);
-		    System.out.print(" index inside = " + nextLetterTileIndex);
+			
 			positionTile(nextLetterTile);
 		}
 		
 		nextLetterTileIndex++;
-
-		System.out.println();
 	}
 	
 	private void positionTile(LetterTile lt)
@@ -196,7 +193,8 @@ public class AIController
 		
 		for(char character : selection)
 		{
-		    if(character == finalMissingTile.getLetter())
+		    if(character == finalMissingTile.getLetter() && !
+		       result.contains(finalMissingTile))
 		    {
 		        result.add(finalMissingTile);
 		        continue;
@@ -243,40 +241,6 @@ public class AIController
 			}
 		}
 		
-		//TODO: TEMP HACK -------------------------------------------
-		ArrayList<String> wordsToRemove = new ArrayList<>();
-		
-		for(String word : candidates)
-		{
-		    HashMap<Character, Integer> charCounts = new HashMap<>();
-		    
-		    for(int i = 0; i < word.length(); i++)
-		    {
-		        int charCount = charCount(word, word.charAt(i));
-		        
-		        if(charCounts.containsKey(word.charAt(i)))
-		        {
-		            continue;
-		        }
-		        else
-		        {
-		            charCounts.put(word.charAt(i), charCount);
-		        }
-		    }
-		    
-		    if(!containsDoubleCount(charCounts))
-		    {
-		        wordsToRemove.add(word);
-		    }
-		}
-		
-		for(String word : wordsToRemove)
-		{
-		    candidates.remove(word);
-		}
-		//--------------------------------------------------------------
-		
-		
 		if(aiLevel == AILevel.AMATEUR)
 		{
 			return ScrabbleUtils.getRandomCommon(candidates, dictionary);
@@ -294,36 +258,7 @@ public class AIController
 			return ScrabbleUtils.getBiggestWord(candidates);
 		}
 	}
-	
-	//TODO: remove
-	private int charCount(String word, char character)
-	{
-	    int result = 0;
-	    
-	    for(int i = 0; i < word.length(); i++)
-	    {
-	        if(word.charAt(i) == character)
-	        {
-	            result++;
-	        }
-	    }
-	    
-	    return result;
-	}
-	
-	//TODO: same
-	private boolean containsDoubleCount(HashMap<Character, Integer> counts)
-	{
-	    for(Entry<Character, Integer> entry : counts.entrySet())
-	    {
-	        if(entry.getValue() >= 2)
-	        {
-	            return true;
-	        }
-	    }
-	    
-	    return false;
-	}
+
 	
 	/**
 	 * 
@@ -374,14 +309,6 @@ public class AIController
 	private void removeCharFromList(List<Character> charList, char character)
 	{
 	    charList.remove(charList.indexOf(character));
-//		for(int y = 0; y < charList.size(); y++)
-//	    {
-//	    	if(charList.get(y) == character)
-//	    	{
-//	    		charList.remove(y);
-//	    		return;
-//	    	}
-//	    }
 	}
 	
 	public AIState getState()

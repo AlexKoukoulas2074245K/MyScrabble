@@ -417,7 +417,10 @@ public class Board extends GameObject
 		{
 			if(tilemap.getFreedomSpace(lt) >= word.length())
 			{
-				return lt;
+			    if(validatedEdgeIndices(lt, word, reqChar))
+			    {
+			        return lt;
+			    }
 			}   
 			else
 			{
@@ -426,6 +429,20 @@ public class Board extends GameObject
 		}
 		
 		return null;
+	}
+	
+	private boolean validatedEdgeIndices(LetterTile lt, String word, char reqChar)
+	{
+	    int neutralIndexInWord = word.indexOf(reqChar);
+	    
+        if(lt.getAIDirectionFreedom()[0] >= neutralIndexInWord &&
+           lt.getAIDirectionFreedom()[1] >= (word.length() - 1 - neutralIndexInWord))
+        {
+            return true;
+        }
+	        
+	    lt.setAIMovement(Movement.NONE);
+	    return false;
 	}
 	
 	/**

@@ -94,9 +94,10 @@ public class Tilemap
 		int holderCol = tileHolder.getCol();
 		int holderRow = tileHolder.getRow();
 		
-		for(int i = holderCol + 1; i < Board.BOARD_COLS; i++)
+		for(int i = holderCol + 1; i < Board.BOARD_COLS - 1; i++)
 		{
-			if(isTileEmpty(i, holderRow))
+			if(isTileEmptyAI(i, holderRow) && isTileEmptyAI(i + 1, holderRow) &&
+			   isTileEmptyAI(i, holderRow + 1) && isTileEmptyAI(i, holderRow - 1))
 			{
 				horRightFreedom++;
 			}
@@ -106,9 +107,10 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderCol - 1; i >= 0; i--)
+		for(int i = holderCol - 1; i >= 1; i--)
 		{
-			if(isTileEmpty(i, holderRow))
+			if(isTileEmptyAI(i, holderRow) && isTileEmptyAI(i - 1, holderRow) &&
+			   isTileEmptyAI(i, holderRow + 1) && isTileEmptyAI(i, holderRow - 1))
 			{
 				horLeftFreedom++;
 			}
@@ -118,9 +120,10 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderRow + 1; i < Board.BOARD_COLS; i++)
+		for(int i = holderRow + 1; i < Board.BOARD_ROWS - 1; i++)
 		{
-			if(isTileEmpty(i, holderCol))
+			if(isTileEmptyAI(holderCol, i) && isTileEmptyAI(holderCol, i + 1) &&
+			   isTileEmptyAI(holderCol + 1, i) && isTileEmptyAI(holderCol - 1, i))
 			{
 				verDownFreedom++;
 			}
@@ -130,9 +133,10 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderRow - 1; i >= 0; i--)
+		for(int i = holderRow - 1; i >= 1; i--)
 		{
-			if(isTileEmpty(i, holderCol))
+			if(isTileEmptyAI(holderCol, i) && isTileEmptyAI(holderCol, i - 1) &&
+			   isTileEmptyAI(holderCol + 1, i) && isTileEmptyAI(holderCol - 1, i))
 			{
 				verUpFreedom++;
 			}
@@ -231,9 +235,23 @@ public class Tilemap
 	}
 	
 	/* Getters / Setters */
-	public boolean isTileEmpty(int x, int y)
+	public boolean isTileEmptyAI(int x, int y)
 	{
+	    if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
+	    {
+	        return true;
+	    }
+	    
 		return getTile(x, y).isEmpty();
 	}
 	
+	public boolean isTileEmpty(int x, int y)
+    {
+        if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
+        {
+            return false;
+        }
+        
+        return getTile(x, y).isEmpty();
+    }
 }

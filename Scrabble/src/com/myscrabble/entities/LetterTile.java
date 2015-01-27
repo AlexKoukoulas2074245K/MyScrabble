@@ -3,6 +3,7 @@ package com.myscrabble.entities;
 import static com.myscrabble.managers.ResourceManager.STD_TEX_EXT;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
@@ -220,9 +221,10 @@ public class LetterTile extends GameObject
 		{
 		    float goal = y0 + TILE_SIZE / 2;
 			y = approach(goal, y, V_SPEED);
-			
+						
 			if(y >= y0)
 			{
+			    y = y0;
 				highlightStatus = HIGHLIGHT_IDLE;
 			}
 		}
@@ -276,6 +278,17 @@ public class LetterTile extends GameObject
 	public void render()
 	{		
 		RenderUtils.renderTexture(getTexture(LETTER_TEX), x, y);
+	}
+	
+	@Override
+	public String toString()
+	{
+	    if(highlightStatus == LetterTile.HIGHLIGHT_SELECTED)
+	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is SELECTED";
+	    else if(highlightStatus == LetterTile.HIGHLIGHT_DESELECTED)
+	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is DESELECTED";
+	    else
+	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is IDLE";
 	}
 	
 	public void emptyRender()
