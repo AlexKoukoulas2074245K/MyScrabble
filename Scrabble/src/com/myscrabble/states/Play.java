@@ -4,7 +4,9 @@ package com.myscrabble.states;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
 import ai.AIController.AILevel;
@@ -36,7 +38,7 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
-	public static final AILevel AI_LEVEL = AILevel.HARD;
+	public static final AILevel AI_LEVEL = AILevel.INTERMEDIATE;
 	private static final String SHADING_FACTOR_NAME = "darknessParam";
 	public static boolean LETTER_TILE_SLOWDOWN = false;
 	
@@ -184,7 +186,6 @@ public class Play extends GameState
 								  Main.getNormalDimensions()[0], 
 								  Main.getNormalDimensions()[1]);
 		
-		
 		for(Button button : buttons)
 		{
 			button.render();
@@ -200,7 +201,7 @@ public class Play extends GameState
 			player.render();
 		}
 		
-		clearShading();	
+		clearShading();
 	}
 	
 	/**

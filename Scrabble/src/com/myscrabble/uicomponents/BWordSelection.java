@@ -14,9 +14,10 @@ public class BWordSelection extends Button
 	private static final int Y_OFFSET = 340;
 	
 	/* Texture Flags */
-	private static final int INVALID           = -1;
-	private static final int VALID_NORMAL      = 0;
-	private static final int VALID_PRESSED     = 1;
+	private static final int PASS_NORMAL      = 0;
+	private static final int PASS_PRESSED     = 1;
+	private static final int VALID_NORMAL     = 2;
+	private static final int VALID_PRESSED    = 3;
 	
 	private Play playStateRef;
 	
@@ -34,15 +35,13 @@ public class BWordSelection extends Button
 	
 	public void handleInput()
 	{
-		if(status == INVALID) return;
-		
 		super.handleInput();
 	}
 
 	@Override
 	public void executeFunction()
 	{
-	    playStateRef.finaliseMove();
+		playStateRef.finaliseMove();
 	}
 	
 	@Override
@@ -61,11 +60,8 @@ public class BWordSelection extends Button
 	@Override
 	public void render()
 	{
-		if(status == VALID)
-		{
-			selectTexture();
-			super.render();
-		}
+		selectTexture();
+		super.render();
 	}
 	
 	/**
@@ -77,11 +73,11 @@ public class BWordSelection extends Button
 	{
 		if(pressed)
 		{
-			currentTexture = VALID_PRESSED;
+			currentTexture = status == INVALID ? PASS_PRESSED : VALID_PRESSED;
 		}
 		else
 		{
-		    currentTexture = VALID_NORMAL;
+		    currentTexture = status == INVALID ? PASS_NORMAL : VALID_NORMAL;
 		}
 	}
 }

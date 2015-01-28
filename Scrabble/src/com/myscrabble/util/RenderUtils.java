@@ -67,24 +67,48 @@ public class RenderUtils
 	 * @param y y-offset to start rendering
 	 * @param width the final width of the texture(defaults to the texture's own width if left blank)
 	 * @param height the final height of the texture(default to the texture's own height if left blank)
+	 * Does not specify center rendering.
+	 * false will be passed to the core method for the centerRendering parameter. 
 	 */
 	public static void renderTexture(final Texture tex, final float x, final float y, final float width, final float height)
+	{
+		renderTexture(tex, x, y, width, height, false);
+	}
+	
+	/**
+	 * 
+	 * @param tex Texture to be rendered
+	 * @param x x-offset to start rendering
+	 * @param y y-offset to start rendering
+	 * @param width the final width of the texture(defaults to the texture's own width if left blank)
+	 * @param height the final height of the texture(default to the texture's own height if left blank)
+	 * @param centerRendering whether or not the texture will be rendered with its center as the origin
+	 * or the top left corner as the origin
+	 */
+	public static void renderTexture(final Texture tex, final float x, final float y, final float width, final float height, boolean centerRendering)
 	{
 		/** Creates the vertices depending on center request or not */
 		float[][] quadVertices;
 
-		
-		quadVertices = new float[][]{{x        , y         }, 									  
-							  		 {x + width, y         },
-							  		 {x + width, y + height},
-							  		 {x        , y + height}};
-	
+		if(centerRendering)
+		{
+			quadVertices = new float[][]{{x - width / 2, y - height / 2}, 									  
+								  		 {x + width / 2, y - height / 2},
+								  		 {x + width / 2, y + height / 2},
+								  		 {x - width / 2, y + height / 2}};
+		}
+		else
+		{
+			quadVertices = new float[][]{{x        , y         }, 									  
+								  		 {x + width, y         },
+								  		 {x + width, y + height},
+								  		 {x        , y + height}};
+		}
 		
 		/** Renders the texture on top of the rectangle */
 		glPushMatrix();
 		{
 			tex.bind();
-
 			
 			glBegin(GL_QUADS);
 			{

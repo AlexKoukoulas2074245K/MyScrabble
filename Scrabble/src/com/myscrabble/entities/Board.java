@@ -180,7 +180,7 @@ public class Board extends GameObject
 	 */
 	public void makeMove(Player player)
 	{  
-	    if(player.isHuman())
+	    if(player.isHuman() && playerFormations.containsKey(player))
 	    {
 	        playerFormations.get(player).releaseTiles();
 	        playerFormations.remove(player);
@@ -303,6 +303,11 @@ public class Board extends GameObject
 	 */
 	public int calculatePoints(Player player)
 	{
+		if(!playerFormations.containsKey(player))
+		{
+			return 0;
+		}
+		
 	    return ScrabbleUtils.calculatePoints(playerFormations.get(player).getTiles(), tilemap);
 	}
 	

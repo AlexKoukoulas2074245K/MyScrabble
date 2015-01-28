@@ -2,6 +2,7 @@ package ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -68,6 +69,8 @@ public class AIController
 	/* Reference to the last word selection done by this AI controller */
 	private ArrayList<LetterTile> lastAISelection;
 	
+	/* Holds the previous word selections that need to be avoided */
+	private HashSet<String> blacklist;
 
 	private int nextLetterTileIndex;
 	
@@ -81,6 +84,7 @@ public class AIController
 		aiState = AIState.WORD_SELECTION;
 		nextLetterTileIndex = 0;
 		missingTilePerWord = new HashMap<>();
+		blacklist = new HashSet<>();
 	}
 	
 	/**
@@ -137,6 +141,13 @@ public class AIController
 	
 	private void removeNextLetterTile()
 	{
+		if(finalMissingTile.getAIMovement() == Movement.NONE)
+		{
+			System.out.println("PASS");
+			cancelTurn();
+			return;
+		}
+		
 		LetterTile nextLetterTile = lastAISelection.get(nextLetterTileIndex);
 		
 		if(aiPlayer.getTileRack().contains(nextLetterTile))
@@ -153,7 +164,7 @@ public class AIController
 	}
 	
 	private void positionTile(LetterTile lt)
-	{
+	{	
 		float boardLetterX = finalMissingTile.getX();
 		float boardLetterY = finalMissingTile.getY();
 		int boardLetterIndex = lastAISelection.indexOf(finalMissingTile);
@@ -191,13 +202,9 @@ public class AIController
 	{	
 	    String wordSelection = getWordSelection();
 	    
-	    finalMissingTile = missingTilePerWord.get(wordSelection);
+	    blacklist.add(wordSelection);
 	    
-	    if(finalMissingTile == null ||
-	       finalMissingTile.getAIMovement() == Movement.NONE)
-	    {
-	        cancelTurn();
-	    }
+	    finalMissingTile = missingTilePerWord.get(wordSelection);
 	    
 		char[] selection = wordSelection.toCharArray();
 		
@@ -252,6 +259,14 @@ public class AIController
 			if(isValidWord(currentLetters, word))
 			{
 				candidates.add(word);
+			}
+		}
+		
+		for(String word : blacklist)
+		{
+			if(candidates.contains(word))
+			{
+				candidates.remove(word);
 			}
 		}
 		

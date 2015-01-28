@@ -121,6 +121,11 @@ public class ScrabbleUtils
 			}
 		}
 		
+		if(validCommonWords.size() == 0)
+		{
+			return getRandomWord(candidates);
+		}
+		
 		int randomIndex = new Random().nextInt(validCommonWords.size());
 		
 		return validCommonWords.get(randomIndex);

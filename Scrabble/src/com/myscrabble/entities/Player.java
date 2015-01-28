@@ -117,10 +117,14 @@ public class Player
 	{
 		aiController.update();
 		
-		if(aiController.getState() == AIState.FINISHING ||
-		   aiController.getState() == AIState.PASS)
+		if(aiController.getState() == AIState.FINISHING)
 		{
 			playStateRef.finaliseMove();
+			aiController.setState(AIState.WORD_SELECTION);
+		}
+		else if(aiController.getState() == AIState.PASS)
+		{
+			pass();
 			aiController.setState(AIState.WORD_SELECTION);
 		}
 	}
@@ -159,6 +163,11 @@ public class Player
     public void makeMove()
     {
         board.makeMove(this);
+    }
+    
+    public void pass()
+    {
+    	playStateRef.finaliseMove();
     }
     
 	private void releaseLetterTile()

@@ -106,7 +106,7 @@ public abstract class Button
 	
 	public void render()
 	{
-	    if(highlighted)
+	    if(highlighted && !pressed)
 	    {
 	        GameObject.highlightProgram.useProgram();
 	    }
