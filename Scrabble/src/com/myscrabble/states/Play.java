@@ -248,6 +248,11 @@ public class Play extends GameState
 	    {
 	    	getActivePlayer().drawAllAI();
 	    }
+	    
+	    if(board.isFirstRound())
+	    {
+	        board.setFirstRound(false);
+	    }
 	}
 	
 	/**

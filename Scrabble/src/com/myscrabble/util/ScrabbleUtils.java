@@ -215,7 +215,7 @@ public class ScrabbleUtils
 	            result += letterPoints;
 	        }
 	        
-	        if(tileType == Tile.DOUBLE_WORD)
+	        if(tileType == Tile.DOUBLE_WORD || tileType == Tile.MIDDLE_TILE)
 	        {
 	            modifier += 2; 
 	        }

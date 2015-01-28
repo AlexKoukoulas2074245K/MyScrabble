@@ -44,7 +44,8 @@ public class AIController
 		WORD_SELECTION,
 		RACK_UPDATE,
 		VALIDATING,
-		FINISHING;
+		FINISHING,
+		PASS;
 	}
 	
 	/* The ability of this AI controller */
@@ -89,7 +90,14 @@ public class AIController
 	 */
 	public int calculatePoints()
 	{
-		return ScrabbleUtils.calculatePoints(lastAISelection, board.getTilemap());
+	    if(aiState == AIState.PASS)
+	    {
+	        return 0;
+	    }
+	    else
+	    {
+	        return ScrabbleUtils.calculatePoints(lastAISelection, board.getTilemap());
+	    }
 	}
 	
 	/**
@@ -101,6 +109,7 @@ public class AIController
 		if(aiState == AIState.WORD_SELECTION)
 		{
 			lastAISelection = getSelection();
+			
 			aiState = AIState.RACK_UPDATE;
 		}
 		else if(aiState == AIState.RACK_UPDATE)
@@ -145,12 +154,6 @@ public class AIController
 	
 	private void positionTile(LetterTile lt)
 	{
-		if(finalMissingTile == null)
-		{
-			System.out.println("NO MOVE!?");
-			aiPlayer.makeMove();
-		}
-		
 		float boardLetterX = finalMissingTile.getX();
 		float boardLetterY = finalMissingTile.getY();
 		int boardLetterIndex = lastAISelection.indexOf(finalMissingTile);
@@ -179,11 +182,22 @@ public class AIController
 		nextLetterTileIndex = 0;
 	}
 	
+	private void cancelTurn()
+	{
+	    aiState = AIState.PASS;
+	}
+	
 	private ArrayList<LetterTile> getSelection()
 	{	
 	    String wordSelection = getWordSelection();
-	    System.out.println(wordSelection);
+	    
 	    finalMissingTile = missingTilePerWord.get(wordSelection);
+	    
+	    if(finalMissingTile == null ||
+	       finalMissingTile.getAIMovement() == Movement.NONE)
+	    {
+	        cancelTurn();
+	    }
 	    
 		char[] selection = wordSelection.toCharArray();
 		

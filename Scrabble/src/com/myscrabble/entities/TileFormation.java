@@ -112,7 +112,14 @@ public class TileFormation
 	 */
 	public boolean isValidFormation(Board board)
 	{
-		return !formationHasGaps(board) && formationIsAligned();
+	    if(board.isFirstRound())
+	    {
+	        return !formationHasGaps(board) && formationIsAligned() && middleTilePresent(board);
+	    }
+	    else
+	    {
+	        return !formationHasGaps(board) && formationIsAligned() && nNeutralTiles() > 0;
+	    }
 	}
 	
 	/**
@@ -386,11 +393,11 @@ public class TileFormation
 	
 	private void updateDirection()
 	{
-		if(noRefTiles() == 1)
+		if(nRefTiles() == 1)
 		{
 			resetDirection();
 		}
-		else if(noRefTiles() == 2)
+		else if(nRefTiles() == 2)
 		{
 			decideDirection();
 		}
@@ -419,7 +426,7 @@ public class TileFormation
 	 * containing a player reference
 	 * (i.e. not neutral)
 	 */
-	public int noRefTiles()
+	public int nRefTiles()
 	{
 		int count = 0;
 		for(LetterTile lt : letterTiles)
@@ -431,6 +438,30 @@ public class TileFormation
 		}
 		
 		return count;
+	}
+	
+	/**
+	 * 
+	 * @return the number of
+	 * neutral tiles in the formation
+	 */
+	public int nNeutralTiles()
+	{
+	    return letterTiles.size() - nRefTiles();
+	}
+	
+	private boolean middleTilePresent(Board board)
+	{
+	    for(LetterTile lt : letterTiles)
+	    {
+	        if(board.getTilemap().getLetterTileHolder(lt) != null &&
+	           board.getTilemap().getLetterTileHolder(lt).getType() == Tile.MIDDLE_TILE)
+	        {
+	            return true;
+	        }
+	    }
+	    
+	    return false;
 	}
 	
 	private void resetDirection()

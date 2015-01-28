@@ -70,7 +70,7 @@ public class Board extends GameObject
 		{ 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 },
 		{ 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 3 , 0 , 0 },
 		{ 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 2 , 0 , 0 , 0 },
-		{ 5 , 0 , 0 , 2 , 0 , 0 , 0 , 4 , 0 , 0 , 2 , 0 , 0 , 0 , 5 },
+		{ 5 , 0 , 0 , 2 , 0 , 0 , 0 , 9 , 0 , 0 , 2 , 0 , 0 , 0 , 5 },
 		{ 0 , 0 , 2 , 0 , 0 , 0 , 2 , 0 , 2 , 0 , 0 , 2 , 0 , 0 , 0 },
 		{ 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 3 , 0 , 0 , 3 , 0 , 0 },
 		{ 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 , 0 , 4 , 0 , 0 , 0 , 0 },
@@ -97,6 +97,8 @@ public class Board extends GameObject
 	 * the board by a player) */
 	private HashMap<Player, TileFormation> playerFormations;
 	
+	private boolean isFirstRound;
+	
 	public Board(GameStateManager gsm)
 	{
 		super(gsm);
@@ -114,6 +116,8 @@ public class Board extends GameObject
 		coloringShader = new Shader(ShaderType.COLORING);
 		
 		backgroundColor = BoardColor.DARK_GREEN;
+		
+		isFirstRound = true;
 	}
 	
 	@Override
@@ -176,14 +180,11 @@ public class Board extends GameObject
 	 */
 	public void makeMove(Player player)
 	{  
-		//TODO: remove
-		if(playerFormations.get(player) == null)
-		{
-			return;
-		}
-		
-	    playerFormations.get(player).releaseTiles();
-	    playerFormations.remove(player);
+	    if(player.isHuman())
+	    {
+	        playerFormations.get(player).releaseTiles();
+	        playerFormations.remove(player);
+	    }
 	}
 	
 	/**
@@ -302,10 +303,6 @@ public class Board extends GameObject
 	 */
 	public int calculatePoints(Player player)
 	{
-		//TODO: remove
-		if(playerFormations.get(player) == null)
-			return 0;
-		
 	    return ScrabbleUtils.calculatePoints(playerFormations.get(player).getTiles(), tilemap);
 	}
 	
@@ -351,7 +348,7 @@ public class Board extends GameObject
 	private void popFromFormation(LetterTile letterTile, Player playerRef)
 	{
 	    playerFormations.get(playerRef).removeTile(letterTile);
-	    if(playerFormations.get(playerRef).noRefTiles() == 0)
+	    if(playerFormations.get(playerRef).nRefTiles() == 0)
 	    {
 	    	playerFormations.get(playerRef).removeAllNeutrals();
 	    }
@@ -473,6 +470,11 @@ public class Board extends GameObject
 	    return tilemap.getTile(col, row).getLetterTile();
 	}
 	
+	public boolean isFirstRound()
+	{
+	    return isFirstRound;
+	}
+	
 	public boolean getEmptyLetter()
 	{
 		return getTileOnMouse().isEmpty();
@@ -506,5 +508,10 @@ public class Board extends GameObject
 	public int getTransfMouseRow()
 	{
 		return getTransfMouseY() / Tile.TILE_SIZE - 1;
+	}
+	
+	public void setFirstRound(boolean isFirstRound)
+	{
+	    this.isFirstRound = isFirstRound;
 	}
 }

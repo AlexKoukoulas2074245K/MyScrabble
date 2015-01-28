@@ -117,7 +117,8 @@ public class Player
 	{
 		aiController.update();
 		
-		if(aiController.getState() == AIState.FINISHING)
+		if(aiController.getState() == AIState.FINISHING ||
+		   aiController.getState() == AIState.PASS)
 		{
 			playStateRef.finaliseMove();
 			aiController.setState(AIState.WORD_SELECTION);

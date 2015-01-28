@@ -23,6 +23,7 @@ public class Tile
 	public static final int TRIPLE_LETTER = 3;
 	public static final int DOUBLE_WORD   = 4;
 	public static final int TRIPLE_WORD   = 5;
+	public static final int MIDDLE_TILE   = 9;
 	
 	private LetterTile letterTile;
 	

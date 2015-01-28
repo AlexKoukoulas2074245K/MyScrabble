@@ -149,17 +149,26 @@ public class Tilemap
 		int totalHorFreedom = horLeftFreedom + horRightFreedom;
 		int totalVerFreedom = verUpFreedom + verDownFreedom;
 		
-		if(totalHorFreedom >= totalVerFreedom)
+		if(totalHorFreedom >= totalVerFreedom && 
+		   isTileEmpty(holderCol + 1, holderRow) && 
+		   isTileEmpty(holderCol - 1, holderRow))
 		{
 		    lt.setAIMovement(Movement.HORIZONTAL);
+		    
 		    lt.setAIDirectionFreedom(new int[]{horLeftFreedom, horRightFreedom});
 		    return totalHorFreedom;
 		}
-		else
+		else if(totalHorFreedom < totalVerFreedom &&
+		        isTileEmpty(holderCol, holderRow + 1) &&
+		        isTileEmpty(holderCol, holderRow - 1))
 		{
 		    lt.setAIMovement(Movement.VERTICAL);
 		    lt.setAIDirectionFreedom(new int[]{verUpFreedom, verDownFreedom});
 		    return totalVerFreedom;
+		}
+		else
+		{
+		    return 0;
 		}
 	}
 	
