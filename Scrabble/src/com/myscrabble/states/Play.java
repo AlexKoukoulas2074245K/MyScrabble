@@ -38,7 +38,7 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
-	public static final AILevel AI_LEVEL = AILevel.INTERMEDIATE;
+	public static final AILevel AI_LEVEL = AILevel.HARD;
 	private static final String SHADING_FACTOR_NAME = "darknessParam";
 	public static boolean LETTER_TILE_SLOWDOWN = false;
 	

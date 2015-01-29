@@ -50,6 +50,17 @@ public class ScrabbleUtils
 		letterPoints.put('Y', 4);  letterPoints.put('Z', 10); 
 	}
 	
+	/**
+	 * Length of Arc =  pi * r
+	 * public static Vector2f PointOnCircle(float radius, float angleInDegrees, Vector2f origin)
+	 * {
+	 *     //convert from degrees to readians via multiplication by PI/180
+	 *     float x = (float)(radius * Math.cos(angleInDegrees * Math.PI / 180f)) + origin.x;
+	 *     float y = (float)(radius * Math.sin(angleInDegrees * Math.PI / 180f)) + origin.y;
+	 *     
+	 *     return new Vector2f(x, y);
+	 * }
+	 */
 	public static Integer getNumberOf(final char letter)
 	{
 		return noLetters.get(letter);
