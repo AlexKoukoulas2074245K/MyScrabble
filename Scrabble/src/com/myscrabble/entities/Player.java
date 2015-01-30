@@ -1,7 +1,5 @@
 package com.myscrabble.entities;
 
-import java.util.ArrayList;
-
 import ai.AIController;
 import ai.AIController.AIState;
 
@@ -24,6 +22,11 @@ public class Player
 {
 	/* A cool down for the players selection (to avoid spamming left click on tile rack) */
 	private static final int SELECTION_COOLDOWN = 60; /* measured in frames */
+	private static final String AI_NAME = "AI Player";
+	private static final String DEFAULT_PLAYER_NAME = "Player 1";
+	
+	/* Name of the player */
+	private String name;
 	
 	/* Reference to the current play state */
 	private Play playStateRef;
@@ -70,6 +73,8 @@ public class Player
 		
 		aiController = new AIController(Play.AI_LEVEL, this, board, scrabbleDict);
 		tileRack = new TileRack(gsm, this, letterBag);
+		
+		name = isHuman ? DEFAULT_PLAYER_NAME : AI_NAME;
 		
 		isActive = false;
 		
@@ -420,6 +425,11 @@ public class Player
 	public boolean isActive()
 	{
 		return isActive;
+	}
+	
+	public String getName()
+	{
+	    return name;
 	}
 	
 	public boolean isHuman()

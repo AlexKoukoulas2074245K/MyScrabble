@@ -141,10 +141,9 @@ public class AIController
 	
 	private void removeNextLetterTile()
 	{
-		if(finalMissingTile.getAIMovement() == Movement.NONE)
+		if(finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
 		{
-			System.out.println("PASS");
-			cancelTurn();
+			aiState = AIState.WORD_SELECTION;
 			return;
 		}
 		
@@ -185,12 +184,16 @@ public class AIController
 	}
 	
 	private void validateLetterTiles()
-	{		
-		finalMissingTile.setAIDirectionFreedom(null);
-		finalMissingTile.setAIMovement(Movement.NONE);
-		finalMissingTile = null;
-		missingTilePerWord.clear();
-		nextLetterTileIndex = 0;
+	{
+	    if(finalMissingTile != null)
+	    {
+    		finalMissingTile.setAIDirectionFreedom(null);
+    		finalMissingTile.setAIMovement(Movement.NONE);
+    		finalMissingTile = null;
+	    }
+	    
+	    missingTilePerWord.clear();
+        nextLetterTileIndex = 0;
 	}
 	
 	private void cancelTurn()

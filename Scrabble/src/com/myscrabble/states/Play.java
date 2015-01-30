@@ -23,6 +23,7 @@ import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.uicomponents.BWordSelection;
 import com.myscrabble.uicomponents.Button;
+import com.myscrabble.uicomponents.ScoreDisplay;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 
@@ -58,6 +59,9 @@ public class Play extends GameState
 	
 	/* Instance of game Board */
 	private Board board;
+	
+	/* Score Display instance */
+	private ScoreDisplay scoreDisplay;
 	
 	/* Letter bag */
 	private LetterBag letterBag;
@@ -113,12 +117,17 @@ public class Play extends GameState
         buttons = new ArrayList<Button>();
         buttons.add(new BWordSelection(gsm, this));
         
+        scoreDisplay = new ScoreDisplay(gsm.getRes());
+        
         playerPoints = new HashMap<Player, Integer>();
         
         for(Player player : players)
         {
             playerPoints.put(player, 0);
         }
+        
+        scoreDisplay.setPlayerPoints(playerPoints);
+        
 	}
 	
 	@Override
@@ -137,19 +146,9 @@ public class Play extends GameState
 			b.handleInput();
 		}
 		
-		//TODO: DEBUG REMOVE
 		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
 		{
-			System.out.println("Mouse at: " + MouseManager.getX() + ", " + MouseManager.getY());
-		}
-		
-		if(MouseManager.isButtonDown(MouseManager.RIGHT_BUTTON))
-		{
-			LETTER_TILE_SLOWDOWN = true;
-		}
-		else
-		{
-			LETTER_TILE_SLOWDOWN = false;
+		    System.out.println(MouseManager.getX() + ", " + MouseManager.getY());
 		}
 	}
 
@@ -200,6 +199,8 @@ public class Play extends GameState
 		{
 			player.render();
 		}
+		
+		scoreDisplay.render();
 		
 		clearShading();
 	}
