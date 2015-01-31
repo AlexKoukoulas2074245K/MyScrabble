@@ -3,6 +3,7 @@ package com.myscrabble.states;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -16,6 +17,8 @@ import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileRack;
+import com.myscrabble.fx.Effect;
+import com.myscrabble.fx.PassAnimation;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
@@ -56,6 +59,10 @@ public class Play extends GameState
 	
 	/* Player Points */
 	private HashMap<Player, Integer> playerPoints;
+	
+	/* Game Effects */
+	private HashSet<Effect> effects;
+	private HashSet<Effect> effectsToRemove;
 	
 	/* Instance of game Board */
 	private Board board;
@@ -117,17 +124,17 @@ public class Play extends GameState
         buttons = new ArrayList<Button>();
         buttons.add(new BWordSelection(gsm, this));
         
-        scoreDisplay = new ScoreDisplay(gsm.getRes());
+        scoreDisplay = new ScoreDisplay(gsm.getRes(), players.get(0), players.get(1));
         
         playerPoints = new HashMap<Player, Integer>();
+        
+        effects = new HashSet<Effect>();
+        effectsToRemove = new HashSet<Effect>();
         
         for(Player player : players)
         {
             playerPoints.put(player, 0);
         }
-        
-        scoreDisplay.setPlayerPoints(playerPoints);
-        
 	}
 	
 	@Override
@@ -173,6 +180,28 @@ public class Play extends GameState
 		{
 			go.update();
 		}
+		
+		for(Effect effect : effects)
+		{
+			effect.update();
+			
+			if(effect.isFinished())
+			{
+				effectsToRemove.add(effect);
+			}
+		}
+		
+		if(effectsToRemove.size() > 0)
+		{
+			for(Effect effect : effectsToRemove)
+			{
+				effects.remove(effect);
+			}
+			
+			effectsToRemove.clear();
+		}
+		
+		scoreDisplay.update();
 	}
 
 	@Override
@@ -200,6 +229,11 @@ public class Play extends GameState
 			player.render();
 		}
 		
+		for(Effect effect : effects)
+		{
+			effect.render();
+		}
+		
 		scoreDisplay.render();
 		
 		clearShading();
@@ -211,18 +245,16 @@ public class Play extends GameState
 	 * respective player is also done
 	 * in this stage.
 	 */
-	public void finaliseMove()
+	public void finaliseMove(boolean passed)
 	{
-	    addPoints(getActivePlayer(), getActivePlayer().getCurrentPoints());
+		if(passed)
+		{
+			effects.add(new PassAnimation(gsm.getRes(), getActivePlayer().getName()));
+		}
+		
+	    scoreDisplay.addPoints(getActivePlayer().getCurrentPoints(), getActivePlayer());
 	    getActivePlayer().makeMove();
 	    endOfPlayersTurn();
-	}
-	
-	private void addPoints(Player player, int points)
-	{
-	    int currentPoints = playerPoints.get(player);
-	    playerPoints.replace(player, currentPoints + points);
-	    System.out.println("Player " + players.indexOf(player) + ": " + playerPoints.get(player));
 	}
 	
 	/**

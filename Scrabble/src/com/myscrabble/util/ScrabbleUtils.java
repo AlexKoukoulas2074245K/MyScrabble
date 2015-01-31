@@ -73,6 +73,28 @@ public class ScrabbleUtils
 	
 	/**
 	 * 
+	 * @param input to be reversed
+	 * @return the input String reversed
+	 */
+	public static String reverse(String input)
+	{
+		char[] components = input.toCharArray();
+		
+		int n = components.length - 1;
+		
+		for(int j = (n - 1) >> 1; j >= 0; j--)
+		{
+			char temp = components[j];
+			char temp2 = components[n - j];
+			components[j] = temp2;
+			components[n - j] = temp;
+		}
+		
+		return new String(components);
+	}
+	
+	/**
+	 * 
 	 * @param candidates The list of words to extract the biggest word from.
 	 * @return the word with the biggest length from the supplied
 	 * list.

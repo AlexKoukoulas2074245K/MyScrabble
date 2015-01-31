@@ -1,6 +1,5 @@
 package com.myscrabble.uicomponents;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -22,62 +21,113 @@ import com.myscrabble.util.RenderUtils;
  */
 public class ScoreDisplay 
 {
+	private static final int FONT_SIZE = 24;
+	private static final String REG_FONT_NAME = "font_regular";
+	
     private static final String TEX_DIR = "/misc/score/";
     private static final int DEFAULT_STYLE = 1;
     
-    private static final float TEXTURE_MARGIN = 40.0f;
-    private static final float[] renderingPos1 = new float[]{584.0f, 66.0f};
-    private static final float[] renderingPos2 = new float[]{584.0f, 140.0f};
+    private static final float TEXTURE_MARGIN   = 40.0f;
+    private static final float[] renderingPos1  = new float[]{600.0f, 96.0f};
+    private static final float[] renderingPos2  = new float[]{600.0f, 200.0f};
+    private static final float[] player1NamePos = new float[]{610,66};
+    private static final float[] player2NamePos = new float[]{610,170};
+    
+    private static final Color PLAYER_NAME_COL  = new Color(218, 255, 128);
+    private static final float SCORE_SPEED = 0.4f;
     
     private ResourceManager rm;
-    private HashMap<Player, Integer> playerPoints;
     private ArrayList<Texture> scoreTextures;
     
-    private char[] player1Comps;
-    private char[] player2Comps;
+    private TrueTypeFont regFont;
+    
+    private HashMap<Player, Float> currentPoints;
+    private HashMap<Player, Float> pointsToAdd;
+    private Player player1Ref;
+    private Player player2Ref;
     
     private int style;
-    private TrueTypeFont font;
     
-    public ScoreDisplay(ResourceManager rm)
+    public ScoreDisplay(ResourceManager rm, Player player1Ref, Player player2Ref)
     {
         this.rm = rm;
+        
+        this.player1Ref = player1Ref;
+        this.player2Ref = player2Ref;
+        initPointMaps(player1Ref, player2Ref);
+        
         style = DEFAULT_STYLE;
         scoreTextures = rm.getAllTextures(TEX_DIR + style);
         
-        Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
-        font = new TrueTypeFont(awtFont, false);
+        loadFonts();
+    }
+    
+    private void initPointMaps(Player player1Ref, Player player2Ref)
+    {
+    	currentPoints = new HashMap<Player, Float>();
+    	currentPoints.put(player1Ref, 0.0f);
+    	currentPoints.put(player2Ref, 0.0f);
+    	
+    	pointsToAdd = new HashMap<Player, Float>();    	
+    	pointsToAdd.put(player1Ref, 0.0f);
+    	pointsToAdd.put(player2Ref, 0.0f);
+    }
+    
+    private void loadFonts()
+    {
+    	regFont  = rm.loadFont(REG_FONT_NAME, FONT_SIZE, true);
     }
     
     public void update()
     {
-        
+    	for(Entry<Player, Float> entry : pointsToAdd.entrySet())
+    	{
+    		float scoreToAdd = entry.getValue();
+    		float currentScore = currentPoints.get(entry.getKey());
+    		
+    		if(entry.getValue() > 0)
+    		{
+    			scoreToAdd -= SCORE_SPEED;
+    			currentScore += SCORE_SPEED;
+    		}
+    		
+    		entry.setValue(scoreToAdd);
+    		currentPoints.replace(entry.getKey(), currentScore);
+    	}
     }
     
     public void render()
     {
         renderPlayerScore();
-        
-        GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-        font.drawString(200, 200, "ALEX", Color.cyan);
-        GL11.glPopAttrib();
+        renderPlayerNames();
     }
     
     private void renderPlayerScore()
     {
-        for(Entry<Player, Integer> entry : playerPoints.entrySet())
-        {
-            char[] scoreComps = getComponents(entry.getValue());
-            
-            float[] renderingPos = entry.getKey().getName().equals("Player 1") ? renderingPos1 : renderingPos2;
-            
-            for(int i = 0; i < scoreComps.length; i++)
-            {
-                Texture currentTexture = scoreTextures.get(Integer.parseInt(String.valueOf(scoreComps[i]))); 
-                RenderUtils.renderTexture(currentTexture, renderingPos[0] + i * TEXTURE_MARGIN, renderingPos[1]);
-            }
         
+        char[] score1Comps = getComponents((int)((float)currentPoints.get(player1Ref)));
+        
+        for(int i = 0; i < score1Comps.length; i++)
+        {
+            Texture currentTexture = scoreTextures.get(Integer.parseInt(String.valueOf(score1Comps[i]))); 
+            RenderUtils.renderTexture(currentTexture, renderingPos1[0] + i * TEXTURE_MARGIN, renderingPos1[1]);
         }
+        
+        char[] score2Comps = getComponents((int)((float)currentPoints.get(player2Ref)));
+        
+        for(int i = 0; i < score2Comps.length; i++)
+        {
+            Texture currentTexture = scoreTextures.get(Integer.parseInt(String.valueOf(score2Comps[i]))); 
+            RenderUtils.renderTexture(currentTexture, renderingPos2[0] + i * TEXTURE_MARGIN, renderingPos2[1]);
+        }
+    }
+    
+    private void renderPlayerNames()
+    {
+        GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+        regFont.drawString(player1NamePos[0], player1NamePos[1], player1Ref.getName(), PLAYER_NAME_COL);
+        regFont.drawString(player2NamePos[0], player2NamePos[1], player2Ref.getName(), PLAYER_NAME_COL);
+        GL11.glPopAttrib();
     }
     
     private char[] getComponents(Integer score)
@@ -104,8 +154,8 @@ public class ScoreDisplay
         return result;
     }
     
-    public void setPlayerPoints(HashMap<Player, Integer> playerPoints)
+    public void addPoints(int points, Player player)
     {
-        this.playerPoints = playerPoints;
-    }    
+    	pointsToAdd.replace(player, pointsToAdd.get(player) + points);
+    }
 }

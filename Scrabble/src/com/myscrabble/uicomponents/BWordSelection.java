@@ -10,8 +10,8 @@ public class BWordSelection extends Button
 	/* Standard button name */
 	private static final String BUTTON_NAME = "wordSelection";
 	
-	private static final int X_OFFSET = 612;
-	private static final int Y_OFFSET = 340;
+	private static final int X_OFFSET = 600;
+	private static final int Y_OFFSET = 300;
 	
 	/* Texture Flags */
 	private static final int PASS_NORMAL      = 0;
@@ -41,7 +41,7 @@ public class BWordSelection extends Button
 	@Override
 	public void executeFunction()
 	{
-		playStateRef.finaliseMove();
+		playStateRef.finaliseMove(status == INVALID);
 	}
 	
 	@Override

@@ -35,7 +35,7 @@ public class LetterBag extends GameObject
 	private static final float X_OFFSET = 604;
 	private static final float Y_OFFSET = 500;
 	public static final float LETTER_X_OFFSET = X_OFFSET + 40;
-	public static final float LETTER_Y_OFFSET = 592;
+	public static final float LETTER_Y_OFFSET = Y_OFFSET + 92;
 	
 	/* Drawing Animation Variables */
 	public static final float MAX_X_SPEED = -5f;

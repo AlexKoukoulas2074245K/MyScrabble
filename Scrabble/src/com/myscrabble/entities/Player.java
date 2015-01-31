@@ -124,7 +124,7 @@ public class Player
 		
 		if(aiController.getState() == AIState.FINISHING)
 		{
-			playStateRef.finaliseMove();
+			playStateRef.finaliseMove(false);
 			aiController.setState(AIState.WORD_SELECTION);
 		}
 		else if(aiController.getState() == AIState.PASS)
@@ -172,7 +172,7 @@ public class Player
     
     public void pass()
     {
-    	playStateRef.finaliseMove();
+    	playStateRef.finaliseMove(true);
     }
     
 	private void releaseLetterTile()

@@ -1,13 +1,20 @@
 package com.myscrabble.managers;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.sound.midi.SysexMessage;
+
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -27,11 +34,14 @@ public class ResourceManager
 	public static final String STD_TEX_EXT = ".png";
 	private static final String STD_TEX_EXT_UPPER = "PNG";
 	private static final String INVALID_EXT = ".db";
+	private static final String FONT_EXT = ".ttf";
 	
 	private static final String RES_DIR = "res";
 	private static final String TEX_DIR = RES_DIR + "/tex";
+	private static final String FONT_DIR = "/fonts/";
 	
 	private HashMap<String, Texture> loadedTextures;
+	private HashMap<String, TrueTypeFont> loadedFonts;
 	
 	public ResourceManager()
 	{
@@ -41,6 +51,7 @@ public class ResourceManager
 	public ResourceManager(final String rootDir)
 	{		
 		loadedTextures = new HashMap<>();
+		loadedFonts = new HashMap<>();
 	}
 	
 	/**
@@ -203,4 +214,43 @@ public class ResourceManager
 		
 		return tex;
 	}
+	
+    /**
+     * 
+     * @param fontName The fontName to be searched in the fonts directory
+     * @param fontSize The desired font size
+     * @param antiAlias Whether anti-aliasing will be used or not
+     * @return The corresponding openGL-context-friendly TrueType font that
+     * will be used for String rendering
+     */
+    public TrueTypeFont loadFont(String fontName, float fontSize, boolean antiAlias)
+    {
+    	if(loadedFonts.containsKey(fontName))
+    	{
+    		return loadedFonts.get(fontName);
+    	}
+    	
+        TrueTypeFont result = null;
+        
+        try(InputStream in = getClass().getResourceAsStream(FONT_DIR + fontName + FONT_EXT))
+        {
+            Font awtFont = Font.createFont(Font.TRUETYPE_FONT, in);
+            awtFont = awtFont.deriveFont(fontSize);
+            result = new TrueTypeFont(awtFont, antiAlias);
+        }
+        catch (IOException e) 
+        {
+            System.err.println("Font not found: \"" + fontName + "\"");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        catch (FontFormatException e) 
+        {
+            System.err.println("Error while formatting font: \"" + fontName + "\"");
+            e.printStackTrace();
+        }
+        
+        loadedFonts.put(fontName, result);
+        return result;
+    }
 }
