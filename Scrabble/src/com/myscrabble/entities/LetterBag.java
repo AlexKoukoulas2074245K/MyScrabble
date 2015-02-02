@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.MouseManager;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
 
@@ -27,9 +28,11 @@ public class LetterBag extends GameObject
 	
 	/* Texture Paths */
 	private static final String NORM_TEX_PATH = "/misc/scrabbleBag" + STD_TEX_EXT;
+	private static final String EMPTY_TEX_PATH = "/misc/scrabbleBagEmpty" + STD_TEX_EXT;
 	
 	/* Textue Flags */
 	private static final int NORMAL_TEX  = 0;
+	private static final int EMPTY_TEX   = 1;
 	
 	/* Positional Constants */
 	private static final float X_OFFSET = 604;
@@ -80,6 +83,7 @@ public class LetterBag extends GameObject
 		shuffleBag();
 		loadTextures();
 		
+		runOut = false;
 		highlighted = false;
 		
 		x = X_OFFSET;
@@ -88,7 +92,7 @@ public class LetterBag extends GameObject
 	
 	public void update()
 	{
-	    
+	 
 	}
 	
 	@Override
@@ -99,7 +103,14 @@ public class LetterBag extends GameObject
 		    GameObject.highlightProgram.useProgram();
 		}
 		
-		RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
+		if(!runOut)
+		{
+			RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
+		}
+		else
+		{
+			RenderUtils.renderTexture(getTexture(EMPTY_TEX), x, y);
+		}
 		
 		GameObject.highlightProgram.stopProgram();
 		
@@ -146,6 +157,7 @@ public class LetterBag extends GameObject
 	private void loadTextures()
 	{
 		addTexture(NORMAL_TEX, NORM_TEX_PATH);
+		addTexture(EMPTY_TEX, EMPTY_TEX_PATH);
 	}
 	
 	public void highlight(boolean highlighted)
