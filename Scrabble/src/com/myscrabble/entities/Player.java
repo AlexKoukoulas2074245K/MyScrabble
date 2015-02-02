@@ -94,6 +94,7 @@ public class Player
 		/* Release of letter tile to either the rack or the game board*/
 		else if(hasSelectedLetterTile() && MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON))
 		{
+		    System.out.println("Released");
 			releaseLetterTile();
 		}
 		/* Release of letter tile from game board to the tile rack */
