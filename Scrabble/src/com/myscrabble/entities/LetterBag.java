@@ -50,6 +50,7 @@ public class LetterBag extends GameObject
 	private ArrayList<Character> letters;
 	
 	private boolean highlighted;
+	private boolean runOut;
 	
 	/**
 	 * 

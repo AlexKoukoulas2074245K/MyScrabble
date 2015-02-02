@@ -191,6 +191,10 @@ public class AIController
     		finalMissingTile.setAIMovement(Movement.NONE);
     		finalMissingTile = null;
 	    }
+	    else
+	    {
+	        cancelTurn();
+	    }
 	    
 	    missingTilePerWord.clear();
         nextLetterTileIndex = 0;
@@ -330,12 +334,7 @@ public class AIController
 			}
 		}
 		
-		if(charOnBoardUsed)
-		{
-			return true;
-		}
-		
-		return false;
+		return charOnBoardUsed;
 	}
 	
 	private void removeCharFromList(List<Character> charList, char character)

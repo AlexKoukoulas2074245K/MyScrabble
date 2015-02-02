@@ -33,15 +33,18 @@ public class BWordSelection extends Button
 		y = Y_OFFSET;
 	}
 	
-	public void handleInput()
+	public void handleInput(Player playerRef)
 	{
-		super.handleInput();
+		super.handleInput(playerRef);
 	}
 
 	@Override
-	public void executeFunction()
+	public void executeFunction(Player playerRef)
 	{
-		playStateRef.finaliseMove(status == INVALID);
+	    if(playerRef.isActive() && playerRef.isHuman())
+	    {
+	        playStateRef.finaliseMove(status == INVALID);
+	    }
 	}
 	
 	@Override

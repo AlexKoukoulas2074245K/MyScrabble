@@ -150,7 +150,7 @@ public class Play extends GameState
 		
 		for(Button b : buttons)
 		{
-			b.handleInput();
+			b.handleInput(getActivePlayer());
 		}
 		
 		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
@@ -255,6 +255,11 @@ public class Play extends GameState
 	    scoreDisplay.addPoints(getActivePlayer().getCurrentPoints(), getActivePlayer());
 	    getActivePlayer().makeMove();
 	    endOfPlayersTurn();
+	}
+	
+	private void endGame()
+	{
+	    finished = true;
 	}
 	
 	/**

@@ -65,7 +65,7 @@ public abstract class Button
 	 * Responds to mouse movement
 	 * and presses.
 	 */
-	public void handleInput()
+	public void handleInput(Player playerRef)
 	{
 		int mouseX = MouseManager.getX();
 		int mouseY = MouseManager.getY();
@@ -80,7 +80,7 @@ public abstract class Button
 			}
 			else if(MouseManager.isButtonReleased(MouseManager.LEFT_BUTTON) && pressed)
 			{
-				executeFunction();
+				executeFunction(playerRef);
 				pressed = false;
 				highlighted = false;
 			}
@@ -97,7 +97,7 @@ public abstract class Button
 	}
 	
 	/* Standard method to be implemented by all children */	
-	public abstract void executeFunction();
+	public abstract void executeFunction(Player playerRef);
 	
 	public void update(Player playerRef)
 	{

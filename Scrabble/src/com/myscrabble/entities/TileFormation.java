@@ -284,7 +284,6 @@ public class TileFormation
 	            	   ((xDistance == Tile.TILE_SIZE && yDistance == 0) ||
 	            	    (xDistance == 0 && yDistance == Tile.TILE_SIZE)))
 	            {
-	            	System.out.println(neutral.getLetter() + ": " + neutral.getX() + ", " + neutral.getY() + " <> " + lt.getLetter() + ": " + lt.getX() + ", " + lt.getY());
 	            	if(lt.getX() < neutral.getX() || lt.getY() < neutral.getY())
 	            	{
 	            		tilesToAdd.put(neutral, 1);
@@ -305,10 +304,7 @@ public class TileFormation
 	    	}
 	    }
 	    
-	    tilesToAdd.clear();
-
-	    
-	    System.out.println(getWord());
+	    tilesToAdd.clear();	   
 	}
 	
 	/**
