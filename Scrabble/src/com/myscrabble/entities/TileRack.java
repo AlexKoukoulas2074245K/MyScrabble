@@ -371,7 +371,10 @@ public class TileRack extends GameObject
 	 */
 	public void drawLetterTile(int index)
 	{
-		letterTiles.add(letterBag.drawLetter(playerRef, index));
+	    if(!letterBag.hasRunOut())
+	    {
+	        letterTiles.add(letterBag.drawLetter(playerRef, index));
+	    }
 	}
 	
 	/* Add / Remove tiles from rack */

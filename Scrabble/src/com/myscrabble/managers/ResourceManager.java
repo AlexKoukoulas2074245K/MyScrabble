@@ -49,7 +49,7 @@ public class ResourceManager
 	}
 	
 	public ResourceManager(final String rootDir)
-	{		
+	{	    
 		loadedTextures = new HashMap<>();
 		loadedFonts = new HashMap<>();
 	}
@@ -225,6 +225,7 @@ public class ResourceManager
      */
     public TrueTypeFont loadFont(String fontName, float fontSize, boolean antiAlias)
     {
+        
     	if(loadedFonts.containsKey(fontName))
     	{
     		return loadedFonts.get(fontName);
@@ -234,9 +235,13 @@ public class ResourceManager
         
         try(InputStream in = getClass().getResourceAsStream(FONT_DIR + fontName + FONT_EXT))
         {
-            Font awtFont = Font.createFont(Font.TRUETYPE_FONT, in);
+            long startTime = System.nanoTime();
+            Font awtFont = Font.createFont(Font.TRUETYPE_FONT, in); //<-- This operation takes about 5 seconds
+            System.out.println("Operation took: " + (System.nanoTime() - startTime) / 1000000);
+            
             awtFont = awtFont.deriveFont(fontSize);
             result = new TrueTypeFont(awtFont, antiAlias);
+            
         }
         catch (IOException e) 
         {
@@ -251,6 +256,8 @@ public class ResourceManager
         }
         
         loadedFonts.put(fontName, result);
+        
+        
         return result;
     }
 }

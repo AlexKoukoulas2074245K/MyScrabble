@@ -18,6 +18,7 @@ public class GameStateManager
 {
 	public static final int MENU = 0;
 	public static final int PLAY = 1;
+	public static final int N_STATES = 2;
 	
 	private ResourceManager res;
 	private Stack<GameState> states;
@@ -46,7 +47,7 @@ public class GameStateManager
 		
 		if(states.peek().getFinished())
 		{
-			currentState ++;
+			currentState = (currentState + 1) % N_STATES;
 			pushState(currentState);
 		}
 	}

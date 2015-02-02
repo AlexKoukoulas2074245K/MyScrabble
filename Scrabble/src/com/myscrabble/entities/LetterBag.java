@@ -88,7 +88,7 @@ public class LetterBag extends GameObject
 	
 	public void update()
 	{
-
+	    
 	}
 	
 	@Override
@@ -115,6 +115,8 @@ public class LetterBag extends GameObject
 		
 		/* pop the random letter from bag */
 		letters.remove(randIndex);
+		
+		runOut = letters.size() == 0;
 		
 		int letterPoints = ScrabbleUtils.getValueOf(chosenLetter);
 		
@@ -152,6 +154,11 @@ public class LetterBag extends GameObject
 	}
 	
 	/* Getters / Setters */
+	public boolean hasRunOut()
+	{
+	    return runOut;
+	}
+
 	public boolean getHighlighted()
 	{
 		return highlighted;

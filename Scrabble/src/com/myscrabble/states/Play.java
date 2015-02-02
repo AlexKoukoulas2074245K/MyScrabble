@@ -203,7 +203,7 @@ public class Play extends GameState
 		
 		scoreDisplay.update();
 	}
-
+	
 	@Override
 	public void render() 
 	{
@@ -255,11 +255,7 @@ public class Play extends GameState
 	    scoreDisplay.addPoints(getActivePlayer().getCurrentPoints(), getActivePlayer());
 	    getActivePlayer().makeMove();
 	    endOfPlayersTurn();
-	}
-	
-	private void endGame()
-	{
-	    finished = true;
+	    checkForGameOver();
 	}
 	
 	/**
@@ -291,6 +287,14 @@ public class Play extends GameState
 	    if(board.isFirstRound())
 	    {
 	        board.setFirstRound(false);
+	    }
+	}
+	
+	private void checkForGameOver()
+	{
+	    if(letterBag.hasRunOut())
+	    {
+	        finished = true;
 	    }
 	}
 	

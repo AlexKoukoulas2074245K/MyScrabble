@@ -94,14 +94,7 @@ public class AIController
 	 */
 	public int calculatePoints()
 	{
-	    if(aiState == AIState.PASS)
-	    {
-	        return 0;
-	    }
-	    else
-	    {
-	        return ScrabbleUtils.calculatePoints(lastAISelection, board.getTilemap());
-	    }
+	    return ScrabbleUtils.calculatePoints(lastAISelection, board.getTilemap());
 	}
 	
 	/**
@@ -135,7 +128,27 @@ public class AIController
 		else if(aiState == AIState.VALIDATING)
 		{
 			validateLetterTiles();
-			aiState = AIState.FINISHING;
+		}
+		
+		switch(aiState)
+		{
+		    case WORD_SELECTION:
+		        System.out.println("WORD_SELECTION");
+		        break;
+		    case RACK_UPDATE:
+		        System.out.println("AI_UPDATE");
+		        break;
+		    case VALIDATING:
+		        System.out.println("VALIDATING");
+		        break;
+		    case FINISHING:
+		        System.out.println("FINISHING");
+		        break;
+		    case PASS:
+		        System.out.println("PASSED");
+		        break;
+		    default:
+		        break;
 		}
 	}
 	
@@ -190,6 +203,7 @@ public class AIController
     		finalMissingTile.setAIDirectionFreedom(null);
     		finalMissingTile.setAIMovement(Movement.NONE);
     		finalMissingTile = null;
+    		aiState = AIState.FINISHING;
 	    }
 	    else
 	    {
