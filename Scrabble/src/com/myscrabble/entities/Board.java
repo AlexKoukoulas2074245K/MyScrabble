@@ -253,6 +253,33 @@ public class Board extends GameObject
 		return result;
 	}
 	
+	public ArrayList<LetterTile> withdrawAll(Player playerRef)
+	{
+		ArrayList<LetterTile> result = new ArrayList<>();
+		
+		if(playerFormations.containsKey(playerRef))
+		{
+			for(LetterTile lt : playerFormations.get(playerRef).getTiles())
+			{
+				if(lt.isNeutral())
+				{
+					continue;
+				}
+				
+				result.add(lt);
+			}
+		}
+		
+		for(LetterTile lt : result)
+		{
+			tilemap.getLetterTileHolder(lt).clearTile();
+		}
+		
+		playerFormations.remove(playerRef);
+		
+		return result;
+	}
+	
 	/**
 	 * 
 	 * @param letterTile the letterTile to be added to the current playerFormation

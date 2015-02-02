@@ -22,7 +22,7 @@ import com.myscrabble.util.RenderUtils;
 public class ScoreDisplay 
 {
 	private static final int FONT_SIZE = 24;
-	private static final String REG_FONT_NAME = "font_regular";
+	private static final String REG_FONT_NAME = "font_bold";
 	
     private static final String TEX_DIR = "/misc/score/";
     private static final int DEFAULT_STYLE = 1;

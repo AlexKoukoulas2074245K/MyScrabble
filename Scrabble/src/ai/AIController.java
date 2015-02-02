@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.LetterTile;
@@ -130,36 +129,44 @@ public class AIController
 			validateLetterTiles();
 		}
 		
-		switch(aiState)
-		{
-		    case WORD_SELECTION:
-		        System.out.println("WORD_SELECTION");
-		        break;
-		    case RACK_UPDATE:
-		        System.out.println("AI_UPDATE");
-		        break;
-		    case VALIDATING:
-		        System.out.println("VALIDATING");
-		        break;
-		    case FINISHING:
-		        System.out.println("FINISHING");
-		        break;
-		    case PASS:
-		        System.out.println("PASSED");
-		        break;
-		    default:
-		        break;
-		}
+//		switch(aiState)
+//		{
+//		    case WORD_SELECTION:
+//		        System.out.println("WORD_SELECTION");
+//		        break;
+//		    case RACK_UPDATE:
+//		        System.out.println("AI_UPDATE");
+//		        break;
+//		    case VALIDATING:
+//		        System.out.println("VALIDATING");
+//		        break;
+//		    case FINISHING:
+//		        System.out.println("FINISHING");
+//		        break;
+//		    case PASS:
+//		        System.out.println("PASSED");
+//		        break;
+//		    default:
+//		        break;
+//		}
 	}
 	
 	private void removeNextLetterTile()
 	{
 		if(finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
 		{
+//			String word = new String();
+//			
+//			for(LetterTile lt : lastAISelection)
+//			{
+//				word += lt.getLetter();
+//			}
+//			
+//			System.out.println("Checking word: " + word + "  missing tile: " + finalMissingTile.getLetter() + " with space: " + board.getTilemap().getFreedomSpace(finalMissingTile) + " none direction");
 			aiState = AIState.WORD_SELECTION;
 			return;
 		}
-		
+
 		LetterTile nextLetterTile = lastAISelection.get(nextLetterTileIndex);
 		
 		if(aiPlayer.getTileRack().contains(nextLetterTile))
@@ -210,8 +217,10 @@ public class AIController
 	        cancelTurn();
 	    }
 	    
+	    System.out.println("------------- END TURN --------------");
 	    missingTilePerWord.clear();
         nextLetterTileIndex = 0;
+        blacklist.clear();
 	}
 	
 	private void cancelTurn()
@@ -219,6 +228,11 @@ public class AIController
 	    aiState = AIState.PASS;
 	}
 	
+	/**
+	 * 
+	 * @return Selection of LetterTiles based
+	 * on the word currently chosen
+	 */
 	private ArrayList<LetterTile> getSelection()
 	{	
 	    String wordSelection = getWordSelection();
@@ -251,6 +265,11 @@ public class AIController
 			}
 		}
 		
+//		for(LetterTile lt : result)
+//		{
+//			System.out.print(lt.getLetter() + " | ");
+//		}
+		System.out.println();
 		return result;
 	}
 		

@@ -284,11 +284,11 @@ public class LetterTile extends GameObject
 	public String toString()
 	{
 	    if(highlightStatus == LetterTile.HIGHLIGHT_SELECTED)
-	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is SELECTED";
+	        return "Letter " + getLetter() + " at position: " + x + ", " + y + " is SELECTED";
 	    else if(highlightStatus == LetterTile.HIGHLIGHT_DESELECTED)
-	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is DESELECTED";
+	        return "Letter " + getLetter() + " at position: " + x + ", " + y + " is DESELECTED";
 	    else
-	        return "Letter" + getLetter() + " at position: " + x + ", " + y + " is IDLE";
+	        return "Letter " + getLetter() + " at position: " + x + ", " + y + " is IDLE";
 	}
 	
 	public void emptyRender()

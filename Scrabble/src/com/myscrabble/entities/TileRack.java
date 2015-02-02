@@ -122,14 +122,6 @@ public class TileRack extends GameObject
 	{	
 		coreTileUpdate();
 		
-		for(LetterTile lt : letterTiles)
-		{
-		    if(lt.getY() == 594)
-		    {
-		        System.out.println("FAIL!!!!!!!!");
-		    }
-		}
-		
 		if(!tilesAreIdle())
 		{
 			return;

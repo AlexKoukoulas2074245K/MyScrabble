@@ -43,6 +43,10 @@ public class BWordSelection extends Button
 	{
 	    if(playerRef.isActive() && playerRef.isHuman())
 	    {
+	    	if(status == INVALID)
+	    	{
+	    		playerRef.withdrawAll();
+	    	}
 	        playStateRef.finaliseMove(status == INVALID);
 	    }
 	}

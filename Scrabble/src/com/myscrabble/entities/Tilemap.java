@@ -91,10 +91,11 @@ public class Tilemap
 		int horRightFreedom = 0;
 		
 		Tile tileHolder = getLetterTileHolder(lt);
+		
 		int holderCol = tileHolder.getCol();
 		int holderRow = tileHolder.getRow();
 		
-		for(int i = holderCol + 1; i < Board.BOARD_COLS - 1; i++)
+		for(int i = holderCol + 1; i < Board.BOARD_COLS; i++)
 		{
 			if(isTileEmptyAI(i, holderRow) && isTileEmptyAI(i + 1, holderRow) &&
 			   isTileEmptyAI(i, holderRow + 1) && isTileEmptyAI(i, holderRow - 1))
@@ -107,7 +108,7 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderCol - 1; i >= 1; i--)
+		for(int i = holderCol - 1; i >= 0; i--)
 		{
 			if(isTileEmptyAI(i, holderRow) && isTileEmptyAI(i - 1, holderRow) &&
 			   isTileEmptyAI(i, holderRow + 1) && isTileEmptyAI(i, holderRow - 1))
@@ -120,7 +121,7 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderRow + 1; i < Board.BOARD_ROWS - 1; i++)
+		for(int i = holderRow + 1; i < Board.BOARD_ROWS; i++)
 		{
 			if(isTileEmptyAI(holderCol, i) && isTileEmptyAI(holderCol, i + 1) &&
 			   isTileEmptyAI(holderCol + 1, i) && isTileEmptyAI(holderCol - 1, i))
@@ -133,7 +134,7 @@ public class Tilemap
 			}
 		}
 		
-		for(int i = holderRow - 1; i >= 1; i--)
+		for(int i = holderRow - 1; i >= 0; i--)
 		{
 			if(isTileEmptyAI(holderCol, i) && isTileEmptyAI(holderCol, i - 1) &&
 			   isTileEmptyAI(holderCol + 1, i) && isTileEmptyAI(holderCol - 1, i))
@@ -146,6 +147,7 @@ public class Tilemap
 			}
 		}
 		
+		
 		int totalHorFreedom = horLeftFreedom + horRightFreedom;
 		int totalVerFreedom = verUpFreedom + verDownFreedom;
 		
@@ -153,12 +155,11 @@ public class Tilemap
 		   isTileEmpty(holderCol + 1, holderRow) && 
 		   isTileEmpty(holderCol - 1, holderRow))
 		{
-		    lt.setAIMovement(Movement.HORIZONTAL);
-		    
+		    lt.setAIMovement(Movement.HORIZONTAL); 
 		    lt.setAIDirectionFreedom(new int[]{horLeftFreedom, horRightFreedom});
 		    return totalHorFreedom;
 		}
-		else if(totalHorFreedom < totalVerFreedom &&
+		else if(totalHorFreedom <= totalVerFreedom &&
 		        isTileEmpty(holderCol, holderRow + 1) &&
 		        isTileEmpty(holderCol, holderRow - 1))
 		{
@@ -204,6 +205,7 @@ public class Tilemap
 		/* set position of letter tile */
 		letterTile.setX(targetTile.getX());
 		letterTile.setY(targetTile.getY());
+		letterTile.setHighlightStatus(LetterTile.HIGHLIGHT_IDLE);
 		
 		/* place the letter tile on top of the tile */
 		targetTile.setTile(letterTile);

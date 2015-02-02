@@ -88,8 +88,7 @@ public class ScrabbleUtils
 			char temp2 = components[n - j];
 			components[j] = temp2;
 			components[n - j] = temp;
-		}
-		
+		}	
 		return new String(components);
 	}
 	
@@ -110,7 +109,6 @@ public class ScrabbleUtils
 				max = candidate;
 			}
 		}
-		
 		return max;
 	}
 	
@@ -132,7 +130,6 @@ public class ScrabbleUtils
 				max = candidate;
 			}
 		}
-		
 		return max;
 	}
 	
