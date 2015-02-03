@@ -49,8 +49,8 @@ public class Play extends GameState
 	private static final String SHADING_FACTOR_NAME = "darknessFactor";
 	
 	private static final float MAX_DARKNESS_FACTOR = 1f;
-	private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 2f;
-	private static final float DARKNESS_INTERVALS  = 0.025f;
+	private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 3f;
+	private static final float DARKNESS_INTERVALS  = 0.045f;
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
@@ -269,6 +269,11 @@ public class Play extends GameState
 		}
 		
 		scoreDisplay.render();
+		
+		if(pauseMenu.isActive())
+		{
+		    pauseMenu.render();
+		}
 	}
 	
 	@Override

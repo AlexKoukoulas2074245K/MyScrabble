@@ -105,7 +105,10 @@ public class ScoreDisplay
     
     public void render()
     {
-        renderPlayerScore();        
+        Play.applyShading();
+        renderPlayerScore();
+        Play.clearShading();
+        
         renderPlayerNames();
     }
     

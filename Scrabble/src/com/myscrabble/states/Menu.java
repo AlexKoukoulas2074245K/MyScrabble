@@ -3,7 +3,6 @@ package com.myscrabble.states;
 import com.myscrabble.managers.GameStateManager;
 
 /**
- * 
  * @author Alex Koukoulas
  * Class Description:
  */

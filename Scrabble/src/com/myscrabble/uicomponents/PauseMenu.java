@@ -8,7 +8,7 @@ import com.myscrabble.managers.ResourceManager;
 public class PauseMenu 
 {
     private static final String FONT_NAME = "font_bold";
-    private static final int FONT_SIZE = 36;
+    private static final int FONT_SIZE = 64;
     private static final boolean ANTI_ALIAS = true;
     
     private TrueTypeFont font;
