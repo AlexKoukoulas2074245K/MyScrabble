@@ -9,6 +9,8 @@ import java.util.Random;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
 
@@ -98,11 +100,19 @@ public class LetterBag extends GameObject
 	@Override
 	public void render()
 	{
-		if(highlighted)
-		{
-		    GameObject.highlightProgram.useProgram();
-		}
 		
+	    highlightProgram.useProgram();
+	    highlightProgram.setUniform3f("darknessFactor", new float[]{Play.darknessFactor, Play.darknessFactor, Play.darknessFactor});
+	    
+	    if(highlighted)
+	    {
+	        highlightProgram.setUniformb("highlighted", Shader.TRUE);
+	    }
+	    else
+	    {
+	        highlightProgram.setUniformb("highlighted", Shader.FALSE);
+	    }
+	    
 		if(!runOut)
 		{
 			RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
@@ -112,7 +122,7 @@ public class LetterBag extends GameObject
 			RenderUtils.renderTexture(getTexture(EMPTY_TEX), x, y);
 		}
 		
-		GameObject.highlightProgram.stopProgram();
+		highlightProgram.stopProgram();
 		
 	}
 	

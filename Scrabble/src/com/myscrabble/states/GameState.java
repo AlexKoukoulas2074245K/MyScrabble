@@ -30,4 +30,6 @@ public abstract class GameState
 	{
 		return finished;
 	}
+	
+	public abstract boolean isPaused();
 }

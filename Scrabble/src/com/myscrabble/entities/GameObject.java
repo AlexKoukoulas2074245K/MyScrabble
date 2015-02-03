@@ -20,9 +20,9 @@ import com.myscrabble.util.Animation;
  */
 public abstract class GameObject 
 {
-    /* Class highlighting shader */
-    public static Shader highlightProgram = new Shader(ShaderType.HIGHLIGHTING);
-       
+    /* Game object shader */
+    protected Shader highlightProgram;
+    
 	/* An instance of gsm is needed for I/O */
 	protected GameStateManager gsm;
 	
@@ -51,6 +51,7 @@ public abstract class GameObject
 		this.gsm = gsm;
 		textures = new HashMap<Integer, Texture>();
 		animations = new ArrayList<Animation>();
+		highlightProgram = new Shader(ShaderType.HIGHLIGHTING);   
 	}
 	
 	protected void addAnimation(String dirPath, int aniDelay)

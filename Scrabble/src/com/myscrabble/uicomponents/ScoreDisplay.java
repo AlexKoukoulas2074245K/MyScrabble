@@ -11,6 +11,9 @@ import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.ResourceManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 
 /**
@@ -46,6 +49,8 @@ public class ScoreDisplay
     private Player player1Ref;
     private Player player2Ref;
     
+    private Shader darkenProgram;
+    
     private int style;
     
     public ScoreDisplay(ResourceManager rm, Player player1Ref, Player player2Ref)
@@ -58,6 +63,8 @@ public class ScoreDisplay
         
         style = DEFAULT_STYLE;
         scoreTextures = rm.getAllTextures(TEX_DIR + style);
+        
+        darkenProgram = new Shader(ShaderType.SHADING);
         
         loadFonts();
     }
@@ -98,7 +105,7 @@ public class ScoreDisplay
     
     public void render()
     {
-        renderPlayerScore();
+        renderPlayerScore();        
         renderPlayerNames();
     }
     
@@ -125,8 +132,8 @@ public class ScoreDisplay
     private void renderPlayerNames()
     {
         GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-        regFont.drawString(player1NamePos[0], player1NamePos[1], player1Ref.getName(), PLAYER_NAME_COL);
-        regFont.drawString(player2NamePos[0], player2NamePos[1], player2Ref.getName(), PLAYER_NAME_COL);
+        regFont.drawString(player1NamePos[0], player1NamePos[1], player1Ref.getName(), RenderUtils.blend(PLAYER_NAME_COL, Play.darknessFactor));
+        regFont.drawString(player2NamePos[0], player2NamePos[1], player2Ref.getName(), RenderUtils.blend(PLAYER_NAME_COL, Play.darknessFactor));
         GL11.glPopAttrib();
     }
     

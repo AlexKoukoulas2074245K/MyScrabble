@@ -36,7 +36,7 @@ public class TileRack extends GameObject
 	
 	private static final float PLAYER_2_POS_X = PLAYER_1_POS_X;
 	private static final float PLAYER_2_POS_Y = 16.0f; 
-	        
+	
 	public static float[] getTilePos(final int index, final boolean isHuman)
 	{
 	    if(isHuman)

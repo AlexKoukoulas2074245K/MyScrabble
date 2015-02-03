@@ -21,11 +21,13 @@ import com.myscrabble.fx.Effect;
 import com.myscrabble.fx.PassAnimation;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.uicomponents.BWordSelection;
 import com.myscrabble.uicomponents.Button;
+import com.myscrabble.uicomponents.PauseMenu;
 import com.myscrabble.uicomponents.ScoreDisplay;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
@@ -41,16 +43,23 @@ public class Play extends GameState
 	/* TEMP */
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
-	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
 	public static final AILevel AI_LEVEL = AILevel.HARD;
-	private static final String SHADING_FACTOR_NAME = "darknessParam";
-	public static boolean LETTER_TILE_SLOWDOWN = false;
+	
+	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
+	private static final String SHADING_FACTOR_NAME = "darknessFactor";
+	
+	private static final float MAX_DARKNESS_FACTOR = 1f;
+	private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 2f;
+	private static final float DARKNESS_INTERVALS  = 0.025f;
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
 	 */
 	private ArrayList<GameObject> gameObjects;
 	
+	/* The pause menu */
+	private PauseMenu pauseMenu;
+	 
 	/* All active players */
 	private ArrayList<Player> players;
 	
@@ -81,19 +90,16 @@ public class Play extends GameState
 	/* Current player index */
 	private int activePlayer;
 	
-	/* First round flags */
-	private boolean isFirstRound;
 	
 	//TODO: remove
-	private Shader shader;
-	private float darknessFactor;
+	public static Shader shader;
+	public static float darknessFactor;
 	
 	public Play(GameStateManager gsm)
 	{
 		super(gsm);
 		
 		activePlayer = 0;
-        isFirstRound = true;
         
 		initCoreEntities();
 		
@@ -102,7 +108,7 @@ public class Play extends GameState
 		
 		shader = new Shader(ShaderType.SHADING);
 		
-		darknessFactor = 1.0f;
+		darknessFactor = MAX_DARKNESS_FACTOR;
 	}
 
 	private void initCoreEntities()
@@ -135,11 +141,19 @@ public class Play extends GameState
         {
             playerPoints.put(player, 0);
         }
+        
+        pauseMenu = new PauseMenu(gsm.getRes());
 	}
 	
 	@Override
 	public void handleInput() 
-	{	
+	{
+	    if(pauseMenu.isActive())
+	    {
+	        pauseMenu.handleInput();
+	        return;
+	    }
+	    
 		for(Player player : players)
 		{
 			if(player.isHuman())
@@ -153,15 +167,36 @@ public class Play extends GameState
 			b.handleInput(getActivePlayer());
 		}
 		
-		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
+		if(KeyboardManager.isKeyPressed(KeyboardManager.K_ESCAPE))
 		{
-		    System.out.println(MouseManager.getX() + ", " + MouseManager.getY());
+		    pauseMenu.setActive(true);
 		}
+		
+//		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
+//		{
+//		    System.out.println(MouseManager.getX() + ", " + MouseManager.getY());
+//		}
 	}
 
 	@Override
 	public void update() 
 	{	
+	    if(pauseMenu.isActive())
+	    {
+	        if(darknessFactor > MIN_DARKNESS_FACTOR)
+	        {
+	            darknessFactor -= DARKNESS_INTERVALS;
+	        }
+	        return;
+	    }
+	    else
+	    {
+	        if(darknessFactor < MAX_DARKNESS_FACTOR)
+	        {
+	            darknessFactor += DARKNESS_INTERVALS;
+	        }
+	    }
+	    
 		if(getActivePlayer().isHuman())
 		{
 			getActivePlayer().update();
@@ -207,12 +242,11 @@ public class Play extends GameState
 	@Override
 	public void render() 
 	{
-		
-		applyShading();
-		
+	    applyShading();
 		RenderUtils.renderTexture(backgroundTexture, 0, 0, 
 								  Main.getNormalDimensions()[0], 
 								  Main.getNormalDimensions()[1]);
+		clearShading();
 		
 		for(Button button : buttons)
 		{
@@ -235,8 +269,12 @@ public class Play extends GameState
 		}
 		
 		scoreDisplay.render();
-		
-		clearShading();
+	}
+	
+	@Override
+	public boolean isPaused()
+	{
+	    return pauseMenu.isActive();
 	}
 	
 	/**
@@ -304,7 +342,7 @@ public class Play extends GameState
 	 * and sets appropriately the darkness factor
 	 * uniform.
 	 */
-	private void applyShading()
+	public static void applyShading()
 	{
 		shader.useProgram();
 		shader.setUniform3f(SHADING_FACTOR_NAME, new float[]{darknessFactor, darknessFactor, darknessFactor});
@@ -313,7 +351,7 @@ public class Play extends GameState
 	/**
 	 * Stops the usage of the shading program
 	 */
-	private void clearShading()
+	public static void clearShading()
 	{
 		shader.stopProgram();
 	}

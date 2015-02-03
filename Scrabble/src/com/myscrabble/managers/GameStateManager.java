@@ -37,8 +37,10 @@ public class GameStateManager
 	public void handleInput()
 	{
 		MouseManager.listenToInput();
+		KeyboardManager.listenToInput();
 		states.peek().handleInput();
 		MouseManager.update();
+		KeyboardManager.update();
 	}
 	
 	public void update()
@@ -75,5 +77,10 @@ public class GameStateManager
 	public ResourceManager getRes()
 	{
 		return res;
+	}
+	
+	public boolean isCurrenttStatePaused()
+	{
+	    return states.peek().isPaused();
 	}
 }

@@ -1,6 +1,8 @@
 package com.myscrabble.util;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -27,7 +29,7 @@ public class RenderUtils
 	{
 		return new float[]{ r / MAX_RGB_VAL , g / MAX_RGB_VAL, b / MAX_RGB_VAL };
 	}
-	
+    
 	/**
 	 * 
 	 * @param x offset to start rendering
@@ -127,6 +129,19 @@ public class RenderUtils
 			glEnd();
 		}
 		glPopMatrix();
+	}
+	
+	/**
+	 * 
+	 * @param color the input color
+	 * @param factor the factor that the result will
+	 * be multiplied with
+	 * @return the given color multiplied by the
+	 * given factor
+	 */
+	public static Color blend(Color color, float factor)
+	{
+	    return new Color(color.r * factor, color.g * factor, color.b * factor);
 	}
 	
 	/**

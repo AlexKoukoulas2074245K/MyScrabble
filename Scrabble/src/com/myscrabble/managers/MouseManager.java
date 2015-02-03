@@ -4,6 +4,13 @@ import org.lwjgl.input.Mouse;
 
 import com.myscrabble.main.Main;
 
+/**
+ * 
+ * @author Alex Koukoulas 2074245k
+ * A class that mediates between the user and
+ * the mouse. Button states can be accessed
+ * from here.
+ */
 public class MouseManager
 {
 	public static final int MAX_BUTTONS   = 3;

@@ -33,4 +33,10 @@ public class Menu extends GameState
 	{
 		
 	}
+
+    @Override
+    public boolean isPaused()
+    {
+        return false;
+    }
 }

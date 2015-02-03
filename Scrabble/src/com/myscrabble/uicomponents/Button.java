@@ -9,6 +9,9 @@ import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 
 /**
@@ -26,6 +29,8 @@ public abstract class Button
 	/* Default directory for button textures */
 	public static final String BUTTON_TEX_DIR = "/misc/buttons/";
 	
+	/* Button highlight program */
+	protected Shader highlightProgram;
 	
 	/* Instance of gsm */
 	protected GameStateManager gsm;
@@ -53,6 +58,8 @@ public abstract class Button
 		
 		loadTextures();
 		currentTexture = 0;
+		
+		highlightProgram = new Shader(ShaderType.HIGHLIGHTING);
 	}
 	
 	private void loadTextures()
@@ -106,13 +113,20 @@ public abstract class Button
 	
 	public void render()
 	{
+	    highlightProgram.useProgram();
+	    highlightProgram.setUniform3f("darknessFactor", new float[]{Play.darknessFactor, Play.darknessFactor, Play.darknessFactor});
+	    
 	    if(highlighted && !pressed)
 	    {
-	        GameObject.highlightProgram.useProgram();
+	        highlightProgram.setUniformb("highlighted", Shader.TRUE);
 	    }
+	    else
+	    {
+	        highlightProgram.setUniformb("highlighted", Shader.FALSE);
+	    }
+	    
 		RenderUtils.renderTexture(textures.get(currentTexture), x, y);
-		
-		GameObject.highlightProgram.stopProgram();
+		highlightProgram.stopProgram();
 	}
 	
 	public Rectangle getRect()

@@ -4,6 +4,8 @@ import static org.lwjgl.opengl.GL20.*;
 
 import java.util.HashMap;
 
+import org.lwjgl.opengl.GL20;
+
 import com.myscrabble.managers.ResourceManager;
 
 /**
@@ -33,10 +35,12 @@ public class Shader
         }
     }
     
+    public static final int FALSE = 0;
+    public static final int TRUE = 1;
+    
 	private static final String VERTEX_EXT = ".vs";
 	private static final String FRAGMENT_EXT = ".fs";
 	private static final int MAX_DEBUG_STREAM_LENGTH = 1024;
-	
 	private HashMap<String, Integer> uniformLocations;
 	
 	private int programHandle;
@@ -99,6 +103,11 @@ public class Shader
 		glUseProgram(0);
 	}
 	
+	public void stopProgram(int next)
+	{
+	    glUseProgram(next);
+	}
+	
 	public void setUniform3f(String uniformName, float[] values)
 	{
 		if(!uniformLocations.containsKey(uniformName))
@@ -112,6 +121,16 @@ public class Shader
 	public void setUniform3f(String uniformName, float x, float y, float z)
 	{
 	    setUniform3f(uniformName, new float[]{x, y, z});
+	}
+	
+	public void setUniformb(String uniformName, int booleanValue)
+	{
+	    if(!uniformLocations.containsKey(uniformName))
+	    {
+	        uniformLocations.put(uniformName, glGetUniformLocation(programHandle, uniformName));
+	    }
+	    
+	    GL20.glUniform1i(uniformLocations.get(uniformName), booleanValue);
 	}
 	
 	public int getProgramHandle()

@@ -19,7 +19,6 @@ import static org.lwjgl.opengl.GL11.glOrtho;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -120,7 +119,7 @@ public class Main
 	{
 		finished = false;
 	
-		while(!Display.isCloseRequested() && !finished && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
+		while(!Display.isCloseRequested() && !finished)
 		{
 			/* Game Input Handling */
 			gsm.handleInput();

@@ -1,14 +1,11 @@
 package com.myscrabble.fx;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 
-import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.main.Main;
 import com.myscrabble.managers.ResourceManager;
 import com.myscrabble.util.RenderUtils;
@@ -23,15 +20,13 @@ import com.myscrabble.util.ScrabbleUtils;
  */
 public class PassAnimation implements Effect
 {
-	private static final Color LETTER_COL  = new Color(218, 255, 128);
-	private static final String REG_FONT_NAME = "font_regular";
+	private static final Color LETTER_COL  = Color.black;
+	private static final String REG_FONT_NAME = "font_bold";
 	private static final int FONT_SIZE = 30;
 	private static final int LETTER_MARGIN = 30;
 	
-	private static final float X_OFFSET = 8;
-	private static final float EDGE_Y = Main.getNormalDimensions()[1] -  9 * FONT_SIZE + LETTER_MARGIN;
-	private static final float MAX_VEL = 2.5f;
-	private static final float JUMP_START = 29.0f;
+	private static final float X_OFFSET = 12;
+	private static final float MAX_VEL = 2.23f;
 	private static final float GRAVITY = 1.0f;
 	private static final float SCALE = 1.5f;
 		
@@ -81,19 +76,14 @@ public class PassAnimation implements Effect
 		for(LetterBlock block : letterPositions)
 		{
 			block.vel[1] += GRAVITY;
-			block.pos[1] += block.vel[1];
-			
-			if(!block.jumped && block.pos[1] > EDGE_Y)
-			{
-				block.vel[1] = -JUMP_START;
-				block.jumped = true;
-			}
 			
 			if(block.vel[1] > MAX_VEL)
 			{
-				block.vel[1] = MAX_VEL;
+			    block.vel[1] = MAX_VEL;
 			}
 			
+			block.pos[1] += block.vel[1];
+
 			if(lastBlock.pos[1] > Main.getNormalDimensions()[1])
 			{
 				finished = true;

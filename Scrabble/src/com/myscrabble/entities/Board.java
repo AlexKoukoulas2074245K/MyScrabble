@@ -11,6 +11,7 @@ import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleUtils;
 /**
@@ -139,8 +140,9 @@ public class Board extends GameObject
 	{
 	    coloringShader.useProgram();
         coloringShader.setUniform3f("inputColor", backgroundColor.getColor());
+        coloringShader.setUniform3f("darknessFactor", new float[]{Play.darknessFactor, Play.darknessFactor, Play.darknessFactor});
         RenderUtils.renderRectangle(x, y, getTexture(BOARD_TEXTURE).getTextureWidth(), getTexture(BOARD_TEXTURE).getTextureHeight());
-        coloringShader.stopProgram();
+        coloringShader.stopProgram(Play.shader.getProgramHandle());
 	}
 	
 	/**

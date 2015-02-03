@@ -156,6 +156,7 @@ public class Player
 	
     public void render()
     {
+        Play.applyShading();
         tileRack.renderBack();
         tileRack.renderFront();
         
@@ -163,6 +164,7 @@ public class Player
         {
             selLetterTile.render();
         }
+        Play.clearShading();
     }
     
     public void makeMove()
