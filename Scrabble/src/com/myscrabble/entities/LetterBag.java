@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Random;
 
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
@@ -27,6 +26,8 @@ public class LetterBag extends GameObject
 {
 	/* Standard english alphabet letters */
 	private static final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String vowels = "AEIOUWY";
+	private static final String conson = "BCDFGHJKLMNPQRSTVXZ";
 	
 	/* Texture Paths */
 	private static final String NORM_TEX_PATH = "/misc/scrabbleBag" + STD_TEX_EXT;
@@ -164,6 +165,61 @@ public class LetterBag extends GameObject
 	private void shuffleBag()
 	{
 		Collections.shuffle(letters);
+		
+		while(!goodShuffle())
+		{
+		    Collections.shuffle(letters);
+		}  
+	}
+	
+	/**
+	 * 
+	 * @return whether only vowels or consonants
+	 * in either the first 1-7 or 8-14 letter tiles.
+	 */
+	private boolean goodShuffle()
+	{
+	    ArrayList<Character> firstLetters = new ArrayList<>();
+	    ArrayList<Character> secondLetters = new ArrayList<>();
+	    
+	    for(int i = 0; i < (TileRack.MAX_NO_TILES * 2); i++)
+	    {
+	        if(i < TileRack.MAX_NO_TILES)
+	        {
+	            firstLetters.add(letters.get(i));
+	        }
+	        else
+	        {
+	            secondLetters.add(letters.get(i));
+	        }
+	    }
+	    
+	    int[] charCounts1 = new int[2];
+	    int[] charCounts2 = new int[2];
+	    
+	    for(int i = 0; i < TileRack.MAX_NO_TILES; i++)
+	    {
+	        if(vowels.contains(String.valueOf(firstLetters.get(i))))
+	        {
+	            charCounts1[0]++;
+	        }
+	        else if(conson.contains(String.valueOf(firstLetters.get(i))))
+	        {
+	            charCounts1[1]++;
+	        }
+	        
+	        if(vowels.contains(String.valueOf(secondLetters.get(i))))
+	        {
+	            charCounts2[0]++;
+	        }
+	        else if(conson.contains(String.valueOf(secondLetters.get(i))))
+	        {
+	            charCounts2[1]++;
+	        }
+	    }
+	    
+	    return charCounts1[0] < TileRack.MAX_NO_TILES && charCounts1[1] < TileRack.MAX_NO_TILES &&
+	           charCounts2[0] < TileRack.MAX_NO_TILES && charCounts2[1] < TileRack.MAX_NO_TILES;
 	}
 	
 	private void loadTextures()

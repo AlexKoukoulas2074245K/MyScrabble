@@ -162,6 +162,11 @@ public class TileFormation
 	{
 		ArrayList<LetterTile> tilesToRemove = new ArrayList<>();
 		
+		if(nRefTiles() == 1)
+		{
+		    return;
+		}
+		
 		for(int i = 1; i < letterTiles.size(); i++)
 		{
 			if(!letterTiles.get(i).isNeutral())
@@ -243,11 +248,7 @@ public class TileFormation
 		{
 			return;
 		}
-		
-	    removeUnaligned();
-	    defragmentFormation();	    
-	    fixIndices();
-	    updateDirection();
+
 	    
 	    LinkedHashMap<LetterTile, Integer> tilesToAdd = new LinkedHashMap<>();
 	    
@@ -256,6 +257,11 @@ public class TileFormation
 	    	
 	        for(LetterTile neutral : neutralTiles)
 	        {
+	            if(letterTiles.contains(neutral))
+	            {
+	                continue;
+	            }
+	            
 	        	float xDistance = ScrabbleUtils.xDistanceBetween(lt, neutral);
 	        	float yDistance = ScrabbleUtils.yDistanceBetween(lt, neutral);
 	        	
@@ -304,7 +310,26 @@ public class TileFormation
 	    	}
 	    }
 	    
-	    tilesToAdd.clear();	   
+	    /**
+	     * Important the check below makes sure that this 
+	     * checkForNeutrals method will be called recursively
+	     * until no other tiles should be added. This is mostly
+	     * to fix cases where a letter is added to the end of a word
+	     * so the whole word needs to be included in the formation
+	     */
+	    if(tilesToAdd.size() > 0)
+	    {
+	        tilesToAdd.clear();
+	        updateDirection();
+	        checkForNeutrals(neutralTiles);
+	    }
+	          
+        removeUnaligned();
+        defragmentFormation();
+        fixIndices();
+        
+        
+        System.out.println(toString());
 	}
 	
 	/**
@@ -389,13 +414,13 @@ public class TileFormation
 	
 	private void updateDirection()
 	{
-		if(nRefTiles() == 1)
+		if(letterTiles.size() > 1)
 		{
-			resetDirection();
+		    decideDirection();
 		}
-		else if(nRefTiles() == 2)
+		else
 		{
-			decideDirection();
+		    resetDirection();
 		}
 	}
 	
@@ -434,6 +459,41 @@ public class TileFormation
 		}
 		
 		return count;
+	}
+	
+	@Override
+	public String toString()
+	{
+	    
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("[");
+	    
+	    if(letterTiles.size() > 0)
+	    {
+	        sb.append(letterTiles.get(0).getLetter());
+	        
+	        for(int i = 1; i < letterTiles.size(); i++)
+	        {
+	            sb.append(", ");
+	            sb.append(letterTiles.get(i).getLetter());   
+	        }
+	    }
+	    
+	    if(direction == NONE)
+	    {
+	        sb.append("]" + " with direction: NONE");
+	    }
+	    else if(direction == HORIZONTAL)
+	    {
+	        sb.append("]" + " with direction: HORIZONTAL");
+	    }
+	    else
+	    {
+	        sb.append("]" + " with direction: VERTICAL");
+	    }
+	            
+	     
+	    return sb.toString();
 	}
 	
 	/**

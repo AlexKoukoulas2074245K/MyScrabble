@@ -8,6 +8,8 @@ import java.util.HashSet;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
 import ai.AIController.AILevel;
@@ -40,17 +42,22 @@ import com.myscrabble.util.ScrabbleDictionary;
 
 public class Play extends GameState
 {
+    /* public use shader and uniform */
+    public static Shader shader;
+    public static float darknessFactor;
+    
+    /* Shading variables and uniform intervals */
+    public static final String SHADING_FACTOR_NAME = "darknessFactor";
+    private static final float MAX_DARKNESS_FACTOR = 1f;
+    private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 3f;
+    private static final float DARKNESS_INTERVALS  = 0.045f;
+    
 	/* TEMP */
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	public static final AILevel AI_LEVEL = AILevel.HARD;
-	
 	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
-	private static final String SHADING_FACTOR_NAME = "darknessFactor";
-	
-	private static final float MAX_DARKNESS_FACTOR = 1f;
-	private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 3f;
-	private static final float DARKNESS_INTERVALS  = 0.045f;
+
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
@@ -90,10 +97,8 @@ public class Play extends GameState
 	/* Current player index */
 	private int activePlayer;
 	
-	
-	//TODO: remove
-	public static Shader shader;
-	public static float darknessFactor;
+	// ULTRA TEMP HACK
+	private TrueTypeFont tempFont;
 	
 	public Play(GameStateManager gsm)
 	{
@@ -109,6 +114,8 @@ public class Play extends GameState
 		shader = new Shader(ShaderType.SHADING);
 		
 		darknessFactor = MAX_DARKNESS_FACTOR;
+		
+		tempFont = gsm.getRes().loadFont("font_bold", 30, false);
 	}
 
 	private void initCoreEntities()
@@ -172,10 +179,10 @@ public class Play extends GameState
 		    pauseMenu.setActive(true);
 		}
 		
-//		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
-//		{
-//		    System.out.println(MouseManager.getX() + ", " + MouseManager.getY());
-//		}
+		if(MouseManager.isButtonPressed(MouseManager.MIDDLE_BUTTON))
+		{
+		    System.out.println(MouseManager.getX() + ", " + MouseManager.getY());
+		}
 	}
 
 	@Override
@@ -278,6 +285,11 @@ public class Play extends GameState
 		
 		scoreDisplay.render();
 		
+		if(!getActivePlayer().isHuman())
+		{
+		    tempFont.drawString(480, 16, "Hmm..Let me try this!", Color.white);
+		}
+		
 		if(pauseMenu.isActive())
 		{
 		    pauseMenu.render();
@@ -300,6 +312,12 @@ public class Play extends GameState
 	{
 		if(passed)
 		{
+		    if(board.isFirstRound())
+		    {
+		        System.out.println("Can't pass on the first turn");
+		        return;
+		    }
+		    
 			effects.add(new PassAnimation(gsm.getRes(), getActivePlayer().getName()));
 		}
 		
@@ -307,6 +325,11 @@ public class Play extends GameState
 	    getActivePlayer().makeMove();
 	    endOfPlayersTurn();
 	    checkForGameOver();
+	}
+	
+	public boolean isFirstRound()
+	{
+	    return board.isFirstRound();
 	}
 	
 	/**

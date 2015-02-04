@@ -390,6 +390,8 @@ public class Board extends GameObject
 	    {
 	    	playerFormations.get(playerRef).removeUnaligned();
 	    }
+	    
+	    System.out.println(playerFormations.get(playerRef).toString());
 	}
 	
 	/**
@@ -407,6 +409,8 @@ public class Board extends GameObject
 		
 		playerFormations.get(playerRef).addTile(letterTile);
 		playerFormations.get(playerRef).checkForNeutrals(getNeutralLetterTiles());
+		
+		System.out.println(playerFormations.get(playerRef).toString());
 	}
 	
 	/**
