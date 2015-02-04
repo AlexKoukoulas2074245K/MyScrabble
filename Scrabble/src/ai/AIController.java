@@ -155,14 +155,6 @@ public class AIController
 	{
 		if(finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
 		{
-//			String word = new String();
-//			
-//			for(LetterTile lt : lastAISelection)
-//			{
-//				word += lt.getLetter();
-//			}
-//			
-//			System.out.println("Checking word: " + word + "  missing tile: " + finalMissingTile.getLetter() + " with space: " + board.getTilemap().getFreedomSpace(finalMissingTile) + " none direction");
 			aiState = AIState.WORD_SELECTION;
 			return;
 		}
@@ -217,7 +209,6 @@ public class AIController
 	        cancelTurn();
 	    }
 	    
-	    System.out.println("------------- END TURN --------------");
 	    missingTilePerWord.clear();
         nextLetterTileIndex = 0;
         blacklist.clear();
@@ -264,12 +255,7 @@ public class AIController
 				}
 			}
 		}
-		
-//		for(LetterTile lt : result)
-//		{
-//			System.out.print(lt.getLetter() + " | ");
-//		}
-		System.out.println();
+
 		return result;
 	}
 		

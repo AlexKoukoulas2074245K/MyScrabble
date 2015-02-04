@@ -458,6 +458,11 @@ public class Player
 		return selLetterTile != null;
 	}
 	
+	public AIState getAIState()
+	{
+		return aiController.getState();
+	}
+	
 	public String getCurrentWord()
 	{
 	    return board.getCurrentWord(this);

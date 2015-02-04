@@ -13,6 +13,7 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
 import ai.AIController.AILevel;
+import ai.AIController.AIState;
 
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
@@ -287,7 +288,14 @@ public class Play extends GameState
 		
 		if(!getActivePlayer().isHuman())
 		{
-		    tempFont.drawString(480, 16, "Hmm..Let me try this!", Color.white);
+			if(getActivePlayer().getAIState() == AIState.WORD_SELECTION)
+			{
+				tempFont.drawString(480, 16, "Hmm.. I'm thinking", Color.white);
+			}
+			else
+			{
+				tempFont.drawString(480, 16, "AHA I found it!", Color.white);
+			}
 		}
 		
 		if(pauseMenu.isActive())

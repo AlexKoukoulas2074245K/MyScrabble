@@ -41,7 +41,6 @@ public class Main
 	
 	public static void main(String[] args)
 	{
-	 
 		initWindow();
 		initGL();
 		initCoreEntities();

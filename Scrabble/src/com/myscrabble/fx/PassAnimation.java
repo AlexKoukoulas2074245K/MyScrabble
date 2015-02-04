@@ -52,7 +52,7 @@ public class PassAnimation implements Effect
 	private void setLetterPositions()
 	{
 		letterPositions = new HashSet<LetterBlock>();
-		System.out.println(word);
+		
 		for(int i = word.length() - 1; i >= 0; i--)
 		{
 			if(i == 0)
