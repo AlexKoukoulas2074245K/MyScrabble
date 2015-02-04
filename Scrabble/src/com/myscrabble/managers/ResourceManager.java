@@ -2,7 +2,6 @@ package com.myscrabble.managers;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.sound.midi.SysexMessage;
 
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
@@ -200,8 +197,16 @@ public class ResourceManager
 		Texture tex = null;
 		try 
 		{
-			tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER, 
-			      ResourceLoader.getResourceAsStream(TEX_DIR + fileName));
+			if(fileName.endsWith(STD_TEX_EXT))
+			{
+				tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER, 
+					  ResourceLoader.getResourceAsStream(TEX_DIR + fileName));
+			}
+			else
+			{
+				tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER,
+					  ResourceLoader.getResourceAsStream(TEX_DIR + fileName + STD_TEX_EXT));
+			}
 			
 			loadedTextures.put(fileName, tex);
 		}

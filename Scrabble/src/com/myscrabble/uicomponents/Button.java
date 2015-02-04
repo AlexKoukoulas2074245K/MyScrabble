@@ -125,6 +125,8 @@ public abstract class Button
 	        highlightProgram.setUniformb("highlighted", Shader.FALSE);
 	    }
 	    
+	    highlightProgram.setUniformb("fullWhite", Shader.FALSE);
+	    
 		RenderUtils.renderTexture(textures.get(currentTexture), x, y);
 		highlightProgram.stopProgram();
 	}

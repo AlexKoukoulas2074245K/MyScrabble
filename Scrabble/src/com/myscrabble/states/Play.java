@@ -187,6 +187,14 @@ public class Play extends GameState
 	        {
 	            darknessFactor -= DARKNESS_INTERVALS;
 	        }
+	        
+	        pauseMenu.update();
+	        
+	        if(pauseMenu.getMainMenuRequest())
+	        {
+	        	finished = true;
+	        }
+	        
 	        return;
 	    }
 	    else

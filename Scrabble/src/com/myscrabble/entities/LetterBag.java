@@ -113,6 +113,8 @@ public class LetterBag extends GameObject
 	        highlightProgram.setUniformb("highlighted", Shader.FALSE);
 	    }
 	    
+	    highlightProgram.setUniformb("fullWhite", Shader.FALSE);
+	    
 		if(!runOut)
 		{
 			RenderUtils.renderTexture(getTexture(NORMAL_TEX), x, y);
