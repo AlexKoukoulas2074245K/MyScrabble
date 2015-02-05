@@ -3,6 +3,7 @@ package ai;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import com.myscrabble.entities.Board;
@@ -73,6 +74,11 @@ public class AIController
 
 	private int nextLetterTileIndex;
 	
+	/* A check done in higher AI levels instead of passing
+	 * attempting to find a word where a prefix can be placed
+	 */
+	private boolean prefixCheck;
+	
 	public AIController(AILevel aiLevel, Player aiPlayer, Board board, ScrabbleDictionary dictionary)
 	{
 		this.aiLevel = aiLevel;
@@ -83,6 +89,7 @@ public class AIController
 		aiState = AIState.WORD_SELECTION;
 		nextLetterTileIndex = 0;
 		missingTilePerWord = new HashMap<>();
+		prefixCheck = false;
 		blacklist = new HashSet<>();
 	}
 	
@@ -104,8 +111,8 @@ public class AIController
 	{	
 		if(aiState == AIState.WORD_SELECTION)
 		{
+		    prefixCheck = false;
 			lastAISelection = getSelection();
-			
 			aiState = AIState.RACK_UPDATE;
 		}
 		else if(aiState == AIState.RACK_UPDATE)
@@ -128,32 +135,11 @@ public class AIController
 		{
 			validateLetterTiles();
 		}
-		
-//		switch(aiState)
-//		{
-//		    case WORD_SELECTION:
-//		        System.out.println("WORD_SELECTION");
-//		        break;
-//		    case RACK_UPDATE:
-//		        System.out.println("AI_UPDATE");
-//		        break;
-//		    case VALIDATING:
-//		        System.out.println("VALIDATING");
-//		        break;
-//		    case FINISHING:
-//		        System.out.println("FINISHING");
-//		        break;
-//		    case PASS:
-//		        System.out.println("PASSED");
-//		        break;
-//		    default:
-//		        break;
-//		}
 	}
 	
 	private void removeNextLetterTile()
 	{
-		if(finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
+		if(!prefixCheck && finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
 		{
 			aiState = AIState.WORD_SELECTION;
 			return;
@@ -168,12 +154,27 @@ public class AIController
 			aiPlayer.getTileRack().resetAllFlagsAI(ltIndex);
 			aiPlayer.getTileRack().pushTiles(Direction.LEFT, ltIndex + 1);
 			
-			positionTile(nextLetterTile);
+			if(!prefixCheck)
+			{
+			    positionTile(nextLetterTile);
+			}
+			else
+			{
+			    board.addLetterTileAI(nextLetterTile);
+			}
 		}
 		
 		nextLetterTileIndex++;
 	}
 	
+	/**
+	 * 
+	 * @param lt LetterTile to be positioned.
+	 * <br>
+	 * Positions the tile to its respective position in the 
+	 * game board based on the only neutral tile's position
+	 * and index.
+	 */
 	private void positionTile(LetterTile lt)
 	{	
 		float boardLetterX = finalMissingTile.getX();
@@ -195,6 +196,12 @@ public class AIController
 		board.addLetterTileAI(lastAISelection.get(currentIndex));
 	}
 	
+	/**
+	 * A validation check and a prompt to search
+	 * for prefixes as a last attempt to find a valid
+	 * move. Also resets the core variables for the next
+	 * round.
+	 */
 	private void validateLetterTiles()
 	{
 	    if(finalMissingTile != null)
@@ -206,17 +213,165 @@ public class AIController
 	    }
 	    else
 	    {
-	        cancelTurn();
+	        cancelChoice();
 	    }
-	    
+	        
 	    missingTilePerWord.clear();
         nextLetterTileIndex = 0;
         blacklist.clear();
 	}
 	
-	private void cancelTurn()
+	/**
+	 * Determines whether the AI level is high 
+	 * enough to search for a prefix-addition as 
+	 * a valid move, instead of passing this turn.
+	 */
+	private void cancelChoice()
 	{
-	    aiState = AIState.PASS;
+	    if(aiLevel == AILevel.HARD || aiLevel == AILevel.INTERMEDIATE && !prefixCheck)
+	    {
+	        prefixAdditionCheck();
+	    }
+	    else
+	    {
+	        aiState = AIState.PASS;
+	    }
+	}
+	
+	/**
+	 * Searches every word played, against every
+	 * possible prefix that ScrabbleDictionary provides.
+	 * If a valid combination from the word and the prefix is 
+	 * found, the ai tile rack contains the appropriate tiles and
+	 * enough empty tiles are next to the word so that the prefix
+	 * tiles can be placed, this combination is added to possible
+	 * candidates.
+	 */
+	private void prefixAdditionCheck()
+	{
+	    prefixCheck = true;
+	    
+	    if(board.getRegisteredWords().size() < 1)
+	    {
+	        aiState = AIState.PASS;
+	        cancelChoice();
+	    }
+	    
+	    ArrayList<LetterTile[]> prefixCandidates = new ArrayList<>();
+	    
+	    for(LetterTile[] tiles : board.getRegisteredWords())
+	    {
+	        StringBuilder sb = new StringBuilder();
+	        
+	        for(LetterTile lt : tiles)
+	        {
+	            sb.append(lt.getLetter());
+	        }
+	        
+	        Iterator<String> prefixIter = dictionary.getCommonPrefixes();
+	        
+	        while(prefixIter.hasNext())
+	        {
+	            String prefix = prefixIter.next();
+
+	            if(dictionary.wordExists(sb.toString() + prefix) && 
+	               ScrabbleUtils.formationContains(aiPlayer.getTileRack().getLetterTiles(), prefix))
+	            {
+	                System.out.println(sb.toString() + prefix);
+	                addPrefixCandidate(prefixCandidates, tiles, prefix);
+	            }
+	        }
+	    }
+	    
+	    
+	    if(prefixCandidates.size() < 1)
+	    {
+	        aiState = AIState.PASS;
+	        cancelChoice();
+	    }
+	    else
+	    {
+	        LetterTile[] decision = prefixCandidates.get(0);
+	        lastAISelection.clear();
+	        
+	        for(LetterTile lt : decision)
+	        {
+	            lastAISelection.add(lt);
+	        }
+	        
+	        aiState = AIState.RACK_UPDATE;
+	    }
+	}
+	
+	/**
+	 * 
+	 * @param prefixCandidates list of candidates found
+	 * @param tiles all the neutral tiles that the target word is composed of
+	 * @param prefix the prefix to add to the target word
+	 * <br>
+	 * Gets the direction of the target word, determines whether there is enough
+	 * space after it for the prefix tiles, positions the new tiles(that the prefix is composed of)
+	 * and adds them to the final result.
+	 */
+	private void addPrefixCandidate(ArrayList<LetterTile[]> prefixCandidates, LetterTile[] tiles, String prefix)
+	{
+	    int tileDist = (int)ScrabbleUtils.xDistanceBetween(tiles[0], tiles[1]);
+	    
+	    Movement wordDir = tileDist == Tile.TILE_SIZE ? Movement.HORIZONTAL : Movement.VERTICAL;
+	    
+	    int freedomSpaceReq = prefix.length() + 1;
+	    int currentFreedom  = 0;
+	    
+	    Tile lastHolder = board.getTilemap().getLetterTileHolder(tiles[tiles.length - 1]);
+	    
+	    if(wordDir == Movement.HORIZONTAL)
+	    {
+	        for(int col = lastHolder.getCol(); col <= col + freedomSpaceReq; col++)
+	        {
+	            if(board.getTilemap().isTileEmpty(col, lastHolder.getRow()))
+	            {
+	                currentFreedom++;
+	            }
+	        }
+	    }
+	    else if(wordDir == Movement.VERTICAL)
+	    {
+	        for(int row = lastHolder.getCol(); row <= row + freedomSpaceReq; row++)
+            {
+                if(board.getTilemap().isTileEmpty(lastHolder.getCol(), row))
+                {
+                    currentFreedom++;
+                }
+            }
+	    }
+	    
+	    if(currentFreedom >= freedomSpaceReq)
+	    {
+	        LetterTile[] result = new LetterTile[tiles.length + prefix.length()];
+	        
+	        for(int i = 0; i < tiles.length; i++)
+	        {
+	            result[i] = tiles[i];
+	        }
+	        
+	        for(int i = 0; i < prefix.length(); i++)
+	        {
+	            result[tiles.length + i] = ScrabbleUtils.getFirstOccurence(prefix.charAt(i), aiPlayer.getTileRack().getLetterTiles());
+	            
+	            if(wordDir == Movement.HORIZONTAL)
+	            {
+	                result[tiles.length + i].setX(tiles[tiles.length + i - 1].getX() + Tile.TILE_SIZE);
+	                result[tiles.length + i].setY(tiles[tiles.length + i - 1].getY());
+	            }
+	            else if(wordDir == Movement.VERTICAL)
+	            {
+	                result[tiles.length + i].setX(tiles[tiles.length + i - 1].getX());
+	                result[tiles.length + i].setY(tiles[tiles.length + i - 1].getY() + Tile.TILE_SIZE);
+	            }
+	        }
+	        
+	        prefixCandidates.add(result);
+	    }
 	}
 	
 	/**
@@ -275,8 +430,12 @@ public class AIController
 		
 		ArrayList<String> candidates = new ArrayList<>();
 		
-		for(String word : dictionary.getWords())
+		Iterator<String> dictWords = dictionary.getWords();
+		
+		while(dictWords.hasNext())
 		{
+		    String word = dictWords.next();
+		    
 			if(word.length() <= 1 || word.length() > currentLetters.length())
 			{
 				continue;
@@ -344,6 +503,7 @@ public class AIController
 				}
 				else
 				{
+				    missingTilePerWord.remove(word);
 					return false;
 				}
 			}
@@ -364,6 +524,11 @@ public class AIController
 	public AIState getState()
 	{
 		return aiState;
+	}
+	
+	public ArrayList<LetterTile> getLastSelection()
+	{
+	    return lastAISelection;
 	}
 	
 	public void setState(AIState aiState)

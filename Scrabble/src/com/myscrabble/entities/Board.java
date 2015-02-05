@@ -93,6 +93,11 @@ public class Board extends GameObject
 	private TileIndicator tileIndicator;
 	private Shader coloringShader;
 	
+	/* Used to keep track of the words that have
+	 * been played so far.
+	 */
+	private ArrayList<LetterTile[]> registeredWords;
+	
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
 	 * the board by a player) */
@@ -113,9 +118,9 @@ public class Board extends GameObject
 		tileIndicator = new TileIndicator(gsm);
 		
 		playerFormations = new HashMap<Player, TileFormation>();
+		registeredWords  = new ArrayList<LetterTile[]>();
 		
-		coloringShader = new Shader(ShaderType.COLORING);
-		
+		coloringShader = new Shader(ShaderType.COLORING);	
 		backgroundColor = BoardColor.DARK_GREEN;
 		
 		isFirstRound = true;
@@ -125,6 +130,7 @@ public class Board extends GameObject
 	public void update()
 	{
 		tileIndicator.update();
+		
 	}
 	
 	@Override
@@ -184,8 +190,16 @@ public class Board extends GameObject
 	{  
 	    if(player.isHuman() && playerFormations.containsKey(player))
 	    {
+	        ArrayList<LetterTile> selection = playerFormations.get(player).getTiles();
+	        addWord(selection);
+	        
 	        playerFormations.get(player).releaseTiles();
 	        playerFormations.remove(player);
+	    }
+	    else if(!player.isHuman())
+	    {
+	        ArrayList<LetterTile> selection = player.getLastSelectionAI();
+	        addWord(selection);
 	    }
 	}
 	
@@ -413,6 +427,12 @@ public class Board extends GameObject
 		System.out.println(playerFormations.get(playerRef).toString());
 	}
 	
+	private void addWord(ArrayList<LetterTile> wordSelection)
+	{
+	    /* Fast list -> array operation */
+	    registeredWords.add(wordSelection.toArray(new LetterTile[wordSelection.size()]));
+	}
+	
 	/**
 	 * 
 	 * @return All the neutral tiles on the
@@ -498,6 +518,11 @@ public class Board extends GameObject
 	public TileIndicator getIndicator()
 	{
 		return tileIndicator;
+	}
+	
+	public ArrayList<LetterTile[]> getRegisteredWords()
+	{
+	    return registeredWords;
 	}
 	
 	public LetterTile getLetterTile(float x, float y)

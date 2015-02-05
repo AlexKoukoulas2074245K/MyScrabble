@@ -54,6 +54,26 @@ public class Tilemap
 		return tiles[row][col];
 	}
 	
+    public boolean isTileEmptyAI(int x, int y)
+    {
+        if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
+        {
+            return true;
+        }
+        
+        return getTile(x, y).isEmpty();
+    }
+    
+    public boolean isTileEmpty(int x, int y)
+    {
+        if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
+        {
+            return false;
+        }
+        
+        return getTile(x, y).isEmpty();
+    }
+	
 	/**
 	 * 
 	 * @param letterTile to be searched in the tile map
@@ -79,7 +99,7 @@ public class Tilemap
 	/**
 	 * 
 	 * @param lt The LetterTile to check
-	 * @return the maximum from the number of horizontal
+	 * @return the maximum between the number of horizontal
 	 * and vertical free tiles with lt being the origin
 	 */
 	public int getFreedomSpace(LetterTile lt)
@@ -244,25 +264,4 @@ public class Tilemap
 			}
 		}
 	}
-	
-	/* Getters / Setters */
-	public boolean isTileEmptyAI(int x, int y)
-	{
-	    if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
-	    {
-	        return true;
-	    }
-	    
-		return getTile(x, y).isEmpty();
-	}
-	
-	public boolean isTileEmpty(int x, int y)
-    {
-        if(x < 0 || y < 0 || x >= Board.BOARD_COLS || y >= Board.BOARD_ROWS)
-        {
-            return false;
-        }
-        
-        return getTile(x, y).isEmpty();
-    }
 }

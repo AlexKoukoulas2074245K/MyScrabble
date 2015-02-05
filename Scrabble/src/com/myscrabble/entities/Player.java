@@ -1,5 +1,7 @@
 package com.myscrabble.entities;
 
+import java.util.ArrayList;
+
 import ai.AIController;
 import ai.AIController.AIState;
 
@@ -466,6 +468,11 @@ public class Player
 	public String getCurrentWord()
 	{
 	    return board.getCurrentWord(this);
+	}
+	
+	public ArrayList<LetterTile> getLastSelectionAI()
+	{
+	    return aiController.getLastSelection();
 	}
 	
 	public int getCurrentPoints()
