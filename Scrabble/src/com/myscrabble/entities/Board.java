@@ -6,7 +6,10 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.newdawn.slick.opengl.Texture;
+
 import com.myscrabble.entities.LetterTile.Movement;
+import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.rendering.Shader;
@@ -83,15 +86,18 @@ public class Board extends GameObject
 	
 	/* Texture Paths */
 	private static final String BOARD_TEX_PATH = "/board/board_trans" + STD_TEX_EXT;
+	private static final String BOARD_BG_PATH = "/board/boardBackgrounds/";
 	
 	/* Texture Flags */
-	private static final int BOARD_TEXTURE = 0;
-	
+	private static final int BOARD_TEXTURE_INDEX = 0;
 	private BoardColor backgroundColor;
 	
 	private Tilemap tilemap;
 	private TileIndicator tileIndicator;
 	private Shader coloringShader;
+	
+	/* All the background textures available */
+	private ArrayList<Texture> backgroundTextures;
 	
 	/* Used to keep track of players' current letter
 	 * formations. (i.e. the word created so far in 
@@ -104,7 +110,8 @@ public class Board extends GameObject
 	{
 		super(gsm);
 		
-		addTexture(BOARD_TEXTURE, BOARD_TEX_PATH);
+		addTexture(BOARD_TEXTURE_INDEX, BOARD_TEX_PATH);
+		loadBackgrounds();
 		
 		x = X_OFFSET;
 		y = Y_OFFSET;
@@ -121,6 +128,12 @@ public class Board extends GameObject
 		isFirstRound = true;
 	}
 	
+	private void loadBackgrounds()
+	{
+		backgroundTextures = new ArrayList<Texture>();
+		backgroundTextures = gsm.getRes().getAllTextures(BOARD_BG_PATH);
+	}
+	
 	@Override
 	public void update()
 	{
@@ -131,9 +144,15 @@ public class Board extends GameObject
 	public void render()
 	{
 		drawColoredBackground();
-		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE), x, y);
+		RenderUtils.renderTexture(getTexture(BOARD_TEXTURE_INDEX), x, y);
 		tilemap.render();
 		tileIndicator.render();
+	}
+	
+	public void renderBackground()
+	{
+		RenderUtils.renderTexture(backgroundTextures.get(0), 0, 0, 
+				  Main.getNormalDimensions()[0], Main.getNormalDimensions()[1]);
 	}
 	
 	private void drawColoredBackground()
@@ -141,7 +160,7 @@ public class Board extends GameObject
 	    coloringShader.useProgram();
         coloringShader.setUniform3f("inputColor", backgroundColor.getColor());
         coloringShader.setUniform3f("darknessFactor", new float[]{Play.darknessFactor, Play.darknessFactor, Play.darknessFactor});
-        RenderUtils.renderRectangle(x, y, getTexture(BOARD_TEXTURE).getTextureWidth(), getTexture(BOARD_TEXTURE).getTextureHeight());
+        RenderUtils.renderRectangle(x, y, getTexture(BOARD_TEXTURE_INDEX).getTextureWidth(), getTexture(BOARD_TEXTURE_INDEX).getTextureHeight());
         coloringShader.stopProgram(Play.shader.getProgramHandle());
 	}
 	
@@ -320,8 +339,8 @@ public class Board extends GameObject
 	public Rectangle getRect()
 	{
 		return new Rectangle((int)x + SIDE_WIDTH, (int)y + SIDE_HEIGHT, 
-							 getTexture(BOARD_TEXTURE).getTextureWidth() - 2 * SIDE_WIDTH,
-						     getTexture(BOARD_TEXTURE).getTextureHeight() - 2 * SIDE_HEIGHT);	
+							 getTexture(BOARD_TEXTURE_INDEX).getTextureWidth() - 2 * SIDE_WIDTH,
+						     getTexture(BOARD_TEXTURE_INDEX).getTextureHeight() - 2 * SIDE_HEIGHT);	
 	}
 	
 	/**

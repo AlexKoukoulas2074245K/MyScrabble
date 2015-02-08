@@ -5,13 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.opengl.Texture;
-
 
 import com.myscrabble.ai.AIController.AILevel;
 import com.myscrabble.ai.AIController.AIState;
@@ -57,7 +52,6 @@ public class Play extends GameState
 	public static final int NO_PLAYERS = 1;
 	public static final int TILE_STYLE = 1;
 	public static final AILevel AI_LEVEL = AILevel.HARD;
-	private static final String BG_DIR = "/board/boardBackgrounds/wood.png";
 
 	
 	/* All the GameObjects that need to be drawn and 
@@ -90,8 +84,6 @@ public class Play extends GameState
 	/* Letter bag */
 	private LetterBag letterBag;
 	
-	private Texture backgroundTexture;
-	
 	/* Dictionary Reference */
 	private ScrabbleDictionary scrabbleDict;
 	
@@ -108,15 +100,9 @@ public class Play extends GameState
 		activePlayer = 0;
         
 		initCoreEntities();
-		
-		//TODO: remove
-		backgroundTexture = gsm.getRes().loadTexture(BG_DIR);
-		
+
 		shader = new Shader(ShaderType.SHADING);
-		
 		darknessFactor = MAX_DARKNESS_FACTOR;
-		
-		tempFont = gsm.getRes().loadFont("font_bold", 30, false);
 	}
 
 	private void initCoreEntities()
@@ -258,10 +244,8 @@ public class Play extends GameState
 	@Override
 	public void render() 
 	{
-	    applyShading();
-		RenderUtils.renderTexture(backgroundTexture, 0, 0, 
-								  Main.getNormalDimensions()[0], 
-								  Main.getNormalDimensions()[1]);
+		applyShading();
+		board.renderBackground();
 		clearShading();
 		
 		for(Button button : buttons)
