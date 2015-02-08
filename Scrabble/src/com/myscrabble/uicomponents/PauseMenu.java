@@ -5,9 +5,12 @@ import java.awt.Rectangle;
 import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.main.Main;
+import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.managers.ResourceManager;
+import com.myscrabble.managers.SoundManager;
+import com.myscrabble.managers.SoundManager.SoundType;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.RenderUtils;
@@ -41,6 +44,9 @@ public class PauseMenu
     	}
     }
     
+    /* Sound effect name */
+    private static final String SFX_NAME = "buttonClick";
+    
     /* Default path for all the textures needed */
     private static final String TEX_DIR = "/misc/pauseMenu/";
     
@@ -61,6 +67,9 @@ public class PauseMenu
     private static final float MAX_VEL  = 12.0f;
     private static final float BOUNCE   = -4.0f;
     
+    /* GameStateManager reference */
+    private GameStateManager gsm;
+    
     /* Option textures */
     private Texture[] textures;
     
@@ -77,23 +86,30 @@ public class PauseMenu
     /* Whether a main menu request was made */
     private boolean mainMenuRequest;
     
-    public PauseMenu(ResourceManager rm)
+    public PauseMenu(GameStateManager gsm)
     {
-    	loadTextures(rm);
+    	this.gsm = gsm;
+    	loadTextures();
+    	loadSoundEffect();
     	resetPosAndVel();
         isActive = false;
         mainMenuRequest = false;
         highlightShader = new Shader(ShaderType.HIGHLIGHTING);
     }
     
-    private void loadTextures(ResourceManager rm)
+    private void loadTextures()
     {
     	textures = new Texture[PauseOption.values().length];
     	
     	for(PauseOption option : PauseOption.values())
     	{
-    		textures[option.value] = rm.loadTexture(TEX_DIR + option.name);
+    		textures[option.value] = gsm.getRes().loadTexture(TEX_DIR + option.name);
     	}
+    }
+    
+    private void loadSoundEffect()
+    {
+    	gsm.getSoundManager().loadClip(SFX_NAME, SoundType.SOUND_EFFECT);
     }
     
     private void resetPosAndVel()
@@ -127,6 +143,7 @@ public class PauseMenu
         	if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON) && option.highlighted)
         	{
         		executeFunction(option);
+        		gsm.getSoundManager().playClip(SFX_NAME);
         	}
         }
     }

@@ -12,9 +12,9 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
-import ai.AIController.AILevel;
-import ai.AIController.AIState;
 
+import com.myscrabble.ai.AIController.AILevel;
+import com.myscrabble.ai.AIController.AIState;
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
@@ -150,7 +150,7 @@ public class Play extends GameState
             playerPoints.put(player, 0);
         }
         
-        pauseMenu = new PauseMenu(gsm.getRes());
+        pauseMenu = new PauseMenu(gsm);
 	}
 	
 	@Override

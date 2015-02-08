@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL11.glOrtho;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -144,6 +145,7 @@ public class Main
 	private static void cleanUp()
 	{
 		Display.destroy();
+		AL.destroy();
 	}
 	
 }

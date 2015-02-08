@@ -1,11 +1,12 @@
 package com.myscrabble.entities;
 
-import ai.AIController;
-import ai.AIController.AIState;
 
+import com.myscrabble.ai.AIController;
+import com.myscrabble.ai.AIController.AIState;
 import com.myscrabble.entities.LetterTile.Direction;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.managers.SoundManager.SoundType;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.ScrabbleDictionary;
 import com.myscrabble.util.Timer;
@@ -24,6 +25,12 @@ public class Player
 	private static final int SELECTION_COOLDOWN = 60; /* measured in frames */
 	private static final String AI_NAME = "AI Player";
 	private static final String DEFAULT_PLAYER_NAME = "Player 1";
+	
+	/* Sound effect constant */
+	private static final String SFX_RELEASE_NAME = "tileRelease";
+	
+	/* Game State Manager reference */
+	private GameStateManager gsm;
 	
 	/* Name of the player */
 	private String name;
@@ -65,6 +72,7 @@ public class Player
 	public Player(GameStateManager gsm, Play playStateRef, Board board, 
 				  ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
 	{
+		this.gsm = gsm;
 		this.playStateRef = playStateRef;
 		this.board = board;
 		this.scrabbleDict = scrabbleDict;
@@ -82,6 +90,8 @@ public class Player
 		drawingAllowance = 0;
 		
 		selectionTimer = new Timer(SELECTION_COOLDOWN);
+		
+		gsm.getSoundManager().loadClip(SFX_RELEASE_NAME, SoundType.SOUND_EFFECT);
 	}
 	
 	public void handleInput()
@@ -179,6 +189,8 @@ public class Player
     
 	private void releaseLetterTile()
 	{
+		gsm.getSoundManager().playClip(SFX_RELEASE_NAME);
+		
 		if(selLetterTile.getRect().intersects(board.getRect()))
 		{
 			

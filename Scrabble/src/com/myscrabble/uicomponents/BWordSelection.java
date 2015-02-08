@@ -2,11 +2,14 @@ package com.myscrabble.uicomponents;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.managers.SoundManager.SoundType;
 import com.myscrabble.states.Play;
 
 public class BWordSelection extends Button
 {
-
+	
+	private static final String SFX_NAME = "buttonClick";
+	
 	/* Standard button name */
 	private static final String BUTTON_NAME = "wordSelection";
 	
@@ -25,6 +28,7 @@ public class BWordSelection extends Button
 	{
 		super(BUTTON_NAME, gsm);
 		
+		gsm.getSoundManager().loadClip(SFX_NAME, SoundType.SOUND_EFFECT);
 		this.playStateRef = playStateRef;
 		
 		status = INVALID;
@@ -48,6 +52,7 @@ public class BWordSelection extends Button
 	    		playerRef.withdrawAll();
 	    	}
 	        playStateRef.finaliseMove(status == INVALID);
+	        gsm.getSoundManager().playClip(SFX_NAME);
 	    }
 	}
 	

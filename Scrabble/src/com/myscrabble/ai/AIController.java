@@ -1,4 +1,4 @@
-package ai;
+package com.myscrabble.ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -21,12 +21,16 @@ public class GameStateManager
 	public static final int N_STATES = 2;
 	
 	private ResourceManager res;
+	private SoundManager soundManager;
+	
 	private Stack<GameState> states;
 	private int currentState;
 	
 	public GameStateManager()
 	{
 		res = new ResourceManager();
+		soundManager = new SoundManager(res);
+		soundManager.disable();
 		
 		states = new Stack<GameState>();
 		currentState = MENU;
@@ -77,6 +81,11 @@ public class GameStateManager
 	public ResourceManager getRes()
 	{
 		return res;
+	}
+	
+	public SoundManager getSoundManager()
+	{
+		return soundManager;
 	}
 	
 	public boolean isCurrenttStatePaused()

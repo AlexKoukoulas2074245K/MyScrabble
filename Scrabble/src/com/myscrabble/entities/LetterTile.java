@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.MouseManager;
+import com.myscrabble.managers.SoundManager.SoundType;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 /**
@@ -50,6 +51,9 @@ public class LetterTile extends GameObject
 	public static final int HIGHLIGHT_SELECTED = 1;
 	public static final int HIGHLIGHT_DESELECTED = 2;
 	
+	/* Sound effect constants */
+	private static String SFX_NAME = "tileHover";
+	
 	/* Default texture path for all letters */
 	private static String DEFAULT_LETTER_PATH = "/tiles/" + Play.TILE_STYLE + "/";
 	private static String EMPTY_LETTER_PATH = DEFAULT_LETTER_PATH + "NONE" + STD_TEX_EXT;
@@ -88,6 +92,7 @@ public class LetterTile extends GameObject
 					       int points, boolean drawAnimating, int index)
 	{
 		super(gsm);
+		gsm.getSoundManager().loadClip(SFX_NAME, SoundType.SOUND_EFFECT);
 		
 		this.playerRef = playerRef;
 		this.letter = letter;
@@ -256,6 +261,7 @@ public class LetterTile extends GameObject
 			if(highlightStatus != LetterTile.HIGHLIGHT_SELECTED && !recentlyAdded)
 			{
 				highlightStatus = LetterTile.HIGHLIGHT_SELECTED;
+				gsm.getSoundManager().playClip(SFX_NAME);
 			}
 		}
 		else

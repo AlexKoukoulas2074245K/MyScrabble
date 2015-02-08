@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -28,14 +30,19 @@ import com.myscrabble.util.Animation;
 
 public class ResourceManager 
 {
+	/* Extension constants */
 	public static final String STD_TEX_EXT = ".png";
-	private static final String STD_TEX_EXT_UPPER = "PNG";
+	private static final String STD_TEX_EXT_CAPS = "PNG";
+	private static final String STD_SFX_EXT = ".wav";
+	private static final String STD_SFX_EXT_CAPS = "WAV";
 	private static final String INVALID_EXT = ".db";
 	private static final String FONT_EXT = ".ttf";
 	
-	private static final String RES_DIR = "res";
-	private static final String TEX_DIR = RES_DIR + "/tex";
+	/* Directory constants */
+	private static final String RES_DIR  = "res";
+	private static final String TEX_DIR  = RES_DIR + "/tex";
 	private static final String FONT_DIR = "/fonts/";
+	private static final String SFX_DIR  = RES_DIR + "/sfx/";
 	
 	private HashMap<String, Texture> loadedTextures;
 	private HashMap<String, TrueTypeFont> loadedFonts;
@@ -118,7 +125,7 @@ public class ResourceManager
 		    
 			try
 			{
-				Texture tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER, 
+				Texture tex = TextureLoader.getTexture(STD_TEX_EXT_CAPS, 
 					          ResourceLoader.getResourceAsStream(f.getAbsolutePath()));
 				
 				keyFrames.add(tex);
@@ -163,7 +170,7 @@ public class ResourceManager
 		    
 			try
 			{
-				result.add(TextureLoader.getTexture(STD_TEX_EXT_UPPER,
+				result.add(TextureLoader.getTexture(STD_TEX_EXT_CAPS,
 						   ResourceLoader.getResourceAsStream(f.getAbsolutePath())));
 			}
 			catch (IOException e)
@@ -175,6 +182,23 @@ public class ResourceManager
 		}
 		
 		return result;
+	}
+	
+	public Audio loadAudio(final String fileName)
+	{
+		try
+		{
+			return AudioLoader.getAudio(STD_SFX_EXT_CAPS, 
+				   ResourceLoader.getResourceAsStream(SFX_DIR + fileName + STD_SFX_EXT));
+		} 
+		catch (IOException e)
+		{
+			System.err.println("Sound file not found: " + SFX_DIR + fileName + STD_SFX_EXT);
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -199,12 +223,12 @@ public class ResourceManager
 		{
 			if(fileName.endsWith(STD_TEX_EXT))
 			{
-				tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER, 
+				tex = TextureLoader.getTexture(STD_TEX_EXT_CAPS, 
 					  ResourceLoader.getResourceAsStream(TEX_DIR + fileName));
 			}
 			else
 			{
-				tex = TextureLoader.getTexture(STD_TEX_EXT_UPPER,
+				tex = TextureLoader.getTexture(STD_TEX_EXT_CAPS,
 					  ResourceLoader.getResourceAsStream(TEX_DIR + fileName + STD_TEX_EXT));
 			}
 			
