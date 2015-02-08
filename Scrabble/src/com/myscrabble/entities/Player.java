@@ -1,6 +1,7 @@
 package com.myscrabble.entities;
 
 
+import java.util.ArrayList;
 import com.myscrabble.ai.AIController;
 import com.myscrabble.ai.AIController.AIState;
 import com.myscrabble.entities.LetterTile.Direction;
@@ -478,6 +479,11 @@ public class Player
 	public String getCurrentWord()
 	{
 	    return board.getCurrentWord(this);
+	}
+	
+	public ArrayList<LetterTile> getLastSelectionAI()
+	{
+	    return aiController.getLastSelection();
 	}
 	
 	public int getCurrentPoints()

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.myscrabble.managers.ResourceManager;
@@ -19,6 +20,15 @@ import com.myscrabble.managers.ResourceManager;
  */
 public class ScrabbleDictionary
 {
+    private static Set<String> commonPrefixes;
+    
+    static
+    {
+        commonPrefixes = new HashSet<String>();
+        commonPrefixes.add("S");  commonPrefixes.add("ED"); commonPrefixes.add("D");
+        commonPrefixes.add("ER");
+    }
+    
 	private static final String DICT_DIR = "/specs/dictionary.dict";
 	private static final String COMMON_DIR = "/specs/common.dict";
 	
@@ -62,9 +72,15 @@ public class ScrabbleDictionary
 	 * @return The whole set
 	 * of words
 	 */
-	public Set<String> getWords()
+	public Iterator<String> getWords()
 	{
-		return words;
+		return words.iterator();
+	}
+	
+    
+	public Iterator<String> getCommonPrefixes()
+	{
+	    return commonPrefixes.iterator();
 	}
 	
 	/**

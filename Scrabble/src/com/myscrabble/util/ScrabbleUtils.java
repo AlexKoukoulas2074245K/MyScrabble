@@ -47,7 +47,7 @@ public class ScrabbleUtils
 		letterPoints.put('P', 3);  letterPoints.put('Q', 10); letterPoints.put('R', 1);
 		letterPoints.put('S', 1);  letterPoints.put('T', 1);  letterPoints.put('U', 1);
 		letterPoints.put('V', 4);  letterPoints.put('W', 4);  letterPoints.put('X', 8);
-		letterPoints.put('Y', 4);  letterPoints.put('Z', 10); 
+		letterPoints.put('Y', 4);  letterPoints.put('Z', 10);
 	}
 	
 	/**
@@ -73,6 +73,32 @@ public class ScrabbleUtils
 	
 	/**
 	 * 
+	 * @param formation the LetterTiles to search for word containment
+	 * @param word the word for each character of which the formation will be checked
+	 * @return whether every character of the specified word is found in the tile formation.
+	 */
+	public static boolean formationContains(ArrayList<LetterTile> formation, String word)
+	{
+	    StringBuilder sb = new StringBuilder();
+	    
+	    for(LetterTile lt : formation)
+	    {
+	        sb.append(lt.getLetter());
+	    }
+	    
+	    for(int i = 0; i < word.length(); i++)
+	    {
+	        if(!sb.toString().contains(String.valueOf(word.charAt(i))))
+	        {
+	            return false;
+	        }
+	    }
+	    
+	    return true;
+	}
+	
+	/**
+	 * 
 	 * @param input to be reversed
 	 * @return the input String reversed
 	 */
@@ -90,6 +116,25 @@ public class ScrabbleUtils
 			components[n - j] = temp;
 		}	
 		return new String(components);
+	}
+	
+	/**
+	 * 
+	 * @param character to search for
+	 * @param letterTiles to search for the desired character 
+	 * @return the first LetterTile containing the character specified
+	 */
+	public static LetterTile getFirstOccurence(char character, ArrayList<LetterTile> letterTiles)
+	{
+	    for(LetterTile lt : letterTiles)
+	    {
+	        if(lt.getLetter() == character)
+	        {
+	            return lt;
+	        }
+	    }
+	    
+	    return null;
 	}
 	
 	/**
@@ -160,6 +205,8 @@ public class ScrabbleUtils
 		
 		return validCommonWords.get(randomIndex);
 	}
+	
+
 	
 	/**
 	 * 
