@@ -270,17 +270,17 @@ public class Play extends GameState
 		
 		scoreDisplay.render();
 		
-		if(!getActivePlayer().isHuman())
-		{
-			if(getActivePlayer().getAIState() == AIState.WORD_SELECTION)
-			{
-				tempFont.drawString(480, 16, "Hmm.. I'm thinking", Color.white);
-			}
-			else
-			{
-				tempFont.drawString(480, 16, "AHA I found it!", Color.white);
-			}
-		}
+//		if(!getActivePlayer().isHuman())
+//		{
+//			if(getActivePlayer().getAIState() == AIState.WORD_SELECTION)
+//			{
+//				tempFont.drawString(480, 16, "Hmm.. I'm thinking", Color.white);
+//			}
+//			else
+//			{
+//				tempFont.drawString(480, 16, "AHA I found it!", Color.white);
+//			}
+//		}
 		
 		if(pauseMenu.isActive())
 		{

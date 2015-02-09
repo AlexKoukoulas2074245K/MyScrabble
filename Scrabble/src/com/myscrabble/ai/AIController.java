@@ -79,6 +79,9 @@ public class AIController
 	 */
 	private boolean prefixCheck;
 	
+	/* The prefix addition was succesful */
+	private boolean prefixSuccesful;
+	
 	public AIController(AILevel aiLevel, Player aiPlayer, Board board, ScrabbleDictionary dictionary)
 	{
 		this.aiLevel = aiLevel;
@@ -89,7 +92,10 @@ public class AIController
 		aiState = AIState.WORD_SELECTION;
 		nextLetterTileIndex = 0;
 		missingTilePerWord = new HashMap<>();
+		
 		prefixCheck = false;
+		prefixSuccesful = false;
+		
 		blacklist = new HashSet<>();
 	}
 	
@@ -112,6 +118,7 @@ public class AIController
 		if(aiState == AIState.WORD_SELECTION)
 		{
 		    prefixCheck = false;
+		    prefixSuccesful = false;
 			lastAISelection = getSelection();
 			aiState = AIState.RACK_UPDATE;
 		}
@@ -139,7 +146,7 @@ public class AIController
 	
 	private void removeNextLetterTile()
 	{
-		if(!prefixCheck && finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null)
+		if(!prefixCheck && (finalMissingTile.getAIMovement() == Movement.NONE || finalMissingTile == null))
 		{
 			aiState = AIState.WORD_SELECTION;
 			return;
@@ -161,6 +168,7 @@ public class AIController
 			else
 			{
 			    board.addLetterTileAI(nextLetterTile);
+			    prefixSuccesful = true;
 			}
 		}
 		
@@ -228,13 +236,20 @@ public class AIController
 	 */
 	private void cancelChoice()
 	{
-	    if(aiLevel == AILevel.HARD || aiLevel == AILevel.INTERMEDIATE && !prefixCheck)
+	    if((aiLevel == AILevel.HARD || aiLevel == AILevel.INTERMEDIATE) && !prefixCheck)
 	    {
 	        prefixAdditionCheck();
 	    }
 	    else
 	    {
-	        aiState = AIState.PASS;
+	        if(!prefixSuccesful)
+	        {
+	            aiState = AIState.PASS;
+	        }
+	        else
+	        {
+	            aiState = AIState.FINISHING;
+	        }
 	    }
 	}
 	

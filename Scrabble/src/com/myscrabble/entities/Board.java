@@ -156,7 +156,7 @@ public class Board extends GameObject
 	
 	public void renderBackground()
 	{
-		RenderUtils.renderTexture(backgroundTextures.get(0), 0, 0, 
+		RenderUtils.renderTexture(backgroundTextures.get(5), 0, 0, 
 				  Main.getNormalDimensions()[0], Main.getNormalDimensions()[1]);
 	}
 	
