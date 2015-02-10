@@ -5,6 +5,7 @@ import java.util.Stack;
 import com.myscrabble.states.GameState;
 import com.myscrabble.states.Menu;
 import com.myscrabble.states.Play;
+import com.myscrabble.user.UserProfile;
 
 /**
  * 
@@ -65,6 +66,13 @@ public class GameStateManager
 	
 	public void pushState(int state)
 	{
+	    UserProfile currentUser = null;
+	    
+	    if(states.size() > 0)
+	    {
+	        currentUser = states.peek().getCurrentUser();
+	    }
+	    
 		states.clear();
 		
 		if(state == MENU)
@@ -74,7 +82,7 @@ public class GameStateManager
 		
 		else if(state == PLAY)
 		{
-			states.push(new Play(this));	
+			states.push(new Play(this, currentUser));	
 		}
 	}
 	
@@ -86,6 +94,11 @@ public class GameStateManager
 	public SoundManager getSoundManager()
 	{
 		return soundManager;
+	}
+	
+	public GameState getCurrentState()
+	{
+	    return states.peek();
 	}
 	
 	public boolean isCurrenttStatePaused()

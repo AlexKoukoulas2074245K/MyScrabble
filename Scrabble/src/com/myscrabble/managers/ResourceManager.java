@@ -3,9 +3,11 @@ package com.myscrabble.managers;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -60,14 +62,40 @@ public class ResourceManager
 	
 	/**
 	 * 
+	 * @param f to write on
+	 * @param content to write on file
+	 * (NOTE) static to be accessible to non game objects
+	 * such as UserProfile objects.
+	 */
+	public static void writeToFile(File f, String content)
+	{
+	    try(BufferedWriter bw = new BufferedWriter(new FileWriter(f)))
+	    {
+	        bw.write(content);
+	    }
+	    catch (IOException e) 
+	    {
+	        System.err.println("Failed to write on file: " + f.getAbsolutePath());
+            e.printStackTrace();
+        }
+	}
+	
+	public static String loadFileAsString(final String filePath)
+    {
+        return loadFileAsString(filePath, false);
+    }
+	
+	/**
+	 * 
 	 * @param filePath of the file to open
 	 * @return the file contents as a Strings
 	 * (NOTE) static to be accessible to non game objects 
-	 * such as shader objects and ScrabbleDictionary objects.
+	 * such as shader objects, user profiles and ScrabbleDictionary objects.
 	 */
-	public static String loadFileAsString(final String filePath)
+	public static String loadFileAsString(final String filePath, boolean absolutePath)
 	{
-		String fileDir = RES_DIR + filePath;
+	    String fileDir = absolutePath ? filePath : RES_DIR + filePath;
+	    
 		StringBuilder result  = new StringBuilder();
 		
 		File file = new File(fileDir);

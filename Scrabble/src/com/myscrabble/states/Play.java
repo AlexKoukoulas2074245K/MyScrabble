@@ -27,6 +27,7 @@ import com.myscrabble.uicomponents.BWordSelection;
 import com.myscrabble.uicomponents.Button;
 import com.myscrabble.uicomponents.PauseMenu;
 import com.myscrabble.uicomponents.ScoreDisplay;
+import com.myscrabble.user.UserProfile;
 import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 
@@ -53,6 +54,9 @@ public class Play extends GameState
 	public static final int TILE_STYLE = 1;
 	public static final AILevel AI_LEVEL = AILevel.HARD;
 
+	
+	/* Reference to the profile of the user currently playing */
+	private UserProfile currentUserProfile;
 	
 	/* All the GameObjects that need to be drawn and 
 	 * updated on screen
@@ -93,7 +97,7 @@ public class Play extends GameState
 	// ULTRA TEMP HACK
 	private TrueTypeFont tempFont;
 	
-	public Play(GameStateManager gsm)
+	public Play(GameStateManager gsm, UserProfile userProfile)
 	{
 		super(gsm);
 		
@@ -270,22 +274,16 @@ public class Play extends GameState
 		
 		scoreDisplay.render();
 		
-//		if(!getActivePlayer().isHuman())
-//		{
-//			if(getActivePlayer().getAIState() == AIState.WORD_SELECTION)
-//			{
-//				tempFont.drawString(480, 16, "Hmm.. I'm thinking", Color.white);
-//			}
-//			else
-//			{
-//				tempFont.drawString(480, 16, "AHA I found it!", Color.white);
-//			}
-//		}
-		
 		if(pauseMenu.isActive())
 		{
 		    pauseMenu.render();
 		}
+	}
+	
+	@Override
+	public UserProfile getCurrentUser()
+	{
+	    return currentUserProfile;
 	}
 	
 	@Override

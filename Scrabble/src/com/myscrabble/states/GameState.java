@@ -1,6 +1,7 @@
 package com.myscrabble.states;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.user.UserProfile;
 
 /**
  * 
@@ -25,6 +26,7 @@ public abstract class GameState
 	public abstract void handleInput();
 	public abstract void update();
 	public abstract void render();
+	public abstract UserProfile getCurrentUser();
 	
 	public boolean getFinished()
 	{

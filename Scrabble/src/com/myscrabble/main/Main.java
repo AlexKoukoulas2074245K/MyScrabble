@@ -144,6 +144,7 @@ public class Main
 	
 	private static void cleanUp()
 	{
+	    gsm.getCurrentState().getCurrentUser().save();
 		Display.destroy();
 		AL.destroy();
 	}

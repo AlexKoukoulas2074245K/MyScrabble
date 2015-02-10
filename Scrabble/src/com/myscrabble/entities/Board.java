@@ -156,7 +156,7 @@ public class Board extends GameObject
 	
 	public void renderBackground()
 	{
-		RenderUtils.renderTexture(backgroundTextures.get(5), 0, 0, 
+		RenderUtils.renderTexture(backgroundTextures.get(6), 0, 0, 
 				  Main.getNormalDimensions()[0], Main.getNormalDimensions()[1]);
 	}
 	
@@ -354,6 +354,11 @@ public class Board extends GameObject
 		return new Rectangle((int)x + SIDE_WIDTH, (int)y + SIDE_HEIGHT, 
 							 getTexture(BOARD_TEXTURE_INDEX).getTextureWidth() - 2 * SIDE_WIDTH,
 						     getTexture(BOARD_TEXTURE_INDEX).getTextureHeight() - 2 * SIDE_HEIGHT);	
+	}
+	
+	public ArrayList<Texture> getBackgroundTextures()
+	{
+	    return backgroundTextures;
 	}
 	
 	/**
