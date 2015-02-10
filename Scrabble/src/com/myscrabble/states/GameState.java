@@ -27,11 +27,20 @@ public abstract class GameState
 	public abstract void update();
 	public abstract void render();
 	public abstract UserProfile getCurrentUser();
+	public abstract boolean isPaused();
 	
 	public boolean getFinished()
 	{
 		return finished;
 	}
 	
-	public abstract boolean isPaused();
+	public void mute()
+	{
+		gsm.getSoundManager().disable();
+	}
+	
+	public void enableSounds()
+	{
+		gsm.getSoundManager().enable();
+	}
 }

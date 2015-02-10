@@ -24,21 +24,37 @@ import com.myscrabble.util.RenderUtils;
  */
 public class PauseMenu 
 {
+	public enum PauseState
+	{
+		MAIN,
+		OPTIONS,
+		CONFIRMATION;
+	}
+	
     public enum PauseOption
     {
-    	RESUME(0, "resume"),
-    	OPTIONS(1, "options"),
-    	MAIN_MENU(2, "main_menu");
+    	RESUME(0, "resume", PauseState.MAIN, true),
+    	OPTIONS(1, "options", PauseState.MAIN, true),
+    	MAIN_MENU(2, "main_menu", PauseState.MAIN, true),
+    	YES(3, "yes", PauseState.CONFIRMATION, true),
+    	NO(4, "no", PauseState.CONFIRMATION, true),
+    	EXIT_WARN(5, "exit_warn", PauseState.CONFIRMATION, false),
+    	SOUND(6, "sound", PauseState.OPTIONS, true),
+    	BACK(7, "back", PauseState.OPTIONS, true);
     	
+    	public PauseState optionState;
     	public boolean hasBounced;
     	public boolean highlighted;
+    	public boolean available;
     	public int value;
     	public String name;
     	
-    	private PauseOption(int value, String name)
+    	private PauseOption(int value, String name, PauseState optionState, boolean available)
     	{
     		this.value = value;
     		this.name  = name;
+    		this.optionState = optionState;
+    		this.available = available;
     		this.hasBounced = false;
     		this.highlighted = false;
     	}
@@ -58,7 +74,11 @@ public class PauseMenu
     
     /* Positional Constants */
     private static final float GOAL_X = Main.getCenterDimensions()[0] - 64;
+    private static final float GOAL_Y = Main.getCenterDimensions()[1];
+    private static final float SEC_GOAL_Y = GOAL_Y - 128;
     private static final float START_X_MARGIN = 48;
+    private static final float START_Y_MARGIN = START_X_MARGIN;
+    private static final float X_OFFSET = Main.getCenterDimensions()[0] - 128;
     private static final float Y_OFFSET = 200;
     private static final float Y_MARGIN = 128;
     
@@ -72,6 +92,9 @@ public class PauseMenu
     
     /* Option textures */
     private Texture[] textures;
+    
+    /* Pause Menu state */
+    private PauseState state;
     
     /* Option Highlighting Shader */
     private Shader highlightShader;
@@ -95,6 +118,7 @@ public class PauseMenu
         isActive = false;
         mainMenuRequest = false;
         highlightShader = new Shader(ShaderType.HIGHLIGHTING);
+        state = PauseState.MAIN;
     }
     
     private void loadTextures()
@@ -103,7 +127,15 @@ public class PauseMenu
     	
     	for(PauseOption option : PauseOption.values())
     	{
-    		textures[option.value] = gsm.getRes().loadTexture(TEX_DIR + option.name);
+    		if(option.name.equals("sound"))
+    		{
+    			String postFix = gsm.getSoundManager().isActive() ? "_on" : "_off";
+    			textures[option.value] = gsm.getRes().loadTexture(TEX_DIR + option.name + postFix);
+    		}
+    		else
+    		{
+    			textures[option.value] = gsm.getRes().loadTexture(TEX_DIR + option.name);
+    		}
     	}
     }
     
@@ -119,8 +151,45 @@ public class PauseMenu
     	
     	for(PauseOption option : PauseOption.values())
     	{
-    		float x = - textures[option.value].getTextureWidth() / 2f - option.value * START_X_MARGIN;
-    		float y = Y_OFFSET + option.value * Y_MARGIN;
+    		float x = 0.0f;
+    		float y = 0.0f;
+    		
+    		if(option.optionState == PauseState.MAIN)
+    		{
+    			x = - textures[option.value].getTextureWidth() / 2f - option.value * START_X_MARGIN;
+    			y = Y_OFFSET + option.value * Y_MARGIN;
+    		}
+    		else if(option.optionState == PauseState.CONFIRMATION)
+    		{
+    			if(option.name.equals("yes"))
+    			{
+    				x = X_OFFSET;
+    				y = - textures[option.value].getTextureHeight() / 2f;
+    			}
+    			else if(option.name.equals("no"))
+    			{
+    				x = X_OFFSET + textures[option.value].getTextureWidth();
+    				y = - textures[option.value].getTextureHeight() / 2f - START_Y_MARGIN;
+    			}
+    			else
+    			{
+    				x = Main.getCenterDimensions()[0] - textures[option.value].getTextureWidth() / 4f;
+    				y = - textures[option.value].getTextureHeight() / 2f - 3 * START_Y_MARGIN;
+    			}
+    		}
+    		else if(option.optionState == PauseState.OPTIONS)
+    		{
+    			if(option.name.equals("sound"))
+    			{
+    				x = Main.getNormalDimensions()[0];
+    				y = Y_OFFSET;
+    			}
+    			else if(option.name.equals("back"))
+    			{
+    				x = Main.getNormalDimensions()[0] + START_X_MARGIN;
+    				y = Y_OFFSET + Y_MARGIN;
+    			}
+    		}
     		
     		optionPositions[option.value] = new float[]{x, y};
     		optionVelocities[option.value] = new float[2];
@@ -133,12 +202,25 @@ public class PauseMenu
     {
         if(KeyboardManager.isKeyPressed(KeyboardManager.K_ESCAPE))
         {
-            isActive = false;
+        	if(state == PauseState.MAIN)
+        	{
+        		isActive = false;
+        	}
+        	else if(state == PauseState.CONFIRMATION || state == PauseState.OPTIONS)
+        	{
+        		state = PauseState.MAIN;
+        		resetPosAndVel();
+        	}
         }
         
         for(PauseOption option : PauseOption.values())
         {
-        	option.highlighted = mouseOnOption(option);
+        	if(option.optionState != state)
+        	{
+        		continue;
+        	}
+        	
+        	option.highlighted = mouseOnOption(option) && option.available;
         	
         	if(MouseManager.isButtonPressed(MouseManager.LEFT_BUTTON) && option.highlighted)
         	{
@@ -150,13 +232,54 @@ public class PauseMenu
     
     private void executeFunction(PauseOption option)
     {
-    	if(option.name.equals("resume"))
+    	PauseState state0 = state;
+    	
+    	switch(option.name)
     	{
+    	case "resume":
     		isActive = false;
-    	}
-    	else if(option.name.equals("main_menu"))
-    	{
+    		break;
+    	
+    	case "options":
+    		state = PauseState.OPTIONS;
+    		break;
+    	
+    	case "main_menu":
+    		state = PauseState.CONFIRMATION;
+    		break;
+    	
+    	case "yes":
     		mainMenuRequest = true;
+    		break;
+    	
+    	case "no":
+    		state = PauseState.MAIN;
+    		break;
+    	
+    	case "back":
+    		state = PauseState.MAIN;
+    		break;
+    	
+    	case "sound":
+    		if(gsm.getSoundManager().isActive())
+    		{
+    			gsm.getCurrentState().mute();
+    			textures[PauseOption.SOUND.value] = gsm.getRes().loadTexture(TEX_DIR + "sound_off");
+    		}
+    		else
+    		{
+    			gsm.getCurrentState().enableSounds();
+    			textures[PauseOption.SOUND.value] = gsm.getRes().loadTexture(TEX_DIR + "sound_on");
+    		}
+    		break;
+    	
+    	default:
+    		break;
+    	}
+    	
+    	if(state != state0)
+    	{
+    		resetPosAndVel();
     	}
     }
     
@@ -164,36 +287,124 @@ public class PauseMenu
     public void update()
     {
     	for(PauseOption option : PauseOption.values())
-    	{	
-    		optionVelocities[option.value][0] += VEL_INCS;
-    		
-    		if(optionVelocities[option.value][0] > MAX_VEL)
+    	{
+    		if(option.optionState != state)
     		{
-    			optionVelocities[option.value][0] = MAX_VEL;
+    			continue;
     		}
     		
-    		optionPositions[option.value][0] += optionVelocities[option.value][0];
-    		optionPositions[option.value][1] += optionVelocities[option.value][1];
-    		
-    		if(optionPositions[option.value][0] >= GOAL_X)
+    		if(state == PauseState.MAIN)
     		{
-    			if(option.hasBounced)
-    			{
-    				optionPositions[option.value][0] = GOAL_X;
-    			}
-    			else
-    			{
-    				optionVelocities[option.value][0] = BOUNCE;
-    				option.hasBounced = true;
-    			}
+    			updateMain(option);
+    		}
+    		else if(state == PauseState.CONFIRMATION)
+    		{
+    			updateConf(option);
+    		}
+    		else if(state == PauseState.OPTIONS)
+    		{
+    			updateOpts(option);
     		}
     	}
+    }
+    
+    private void updateMain(PauseOption option)
+    {
+    	optionVelocities[option.value][0] += VEL_INCS;
+		
+		if(optionVelocities[option.value][0] > MAX_VEL)
+		{
+			optionVelocities[option.value][0] = MAX_VEL;
+		}
+		
+		optionPositions[option.value][0] += optionVelocities[option.value][0];
+		optionPositions[option.value][1] += optionVelocities[option.value][1];
+		
+		if(optionPositions[option.value][0] >= GOAL_X)
+		{
+			if(option.hasBounced)
+			{
+				optionPositions[option.value][0] = GOAL_X;
+			}
+			else
+			{
+				optionVelocities[option.value][0] = BOUNCE;
+				option.hasBounced = true;
+			}
+		}
+    }
+    
+    private void updateConf(PauseOption option)
+    {
+    	optionVelocities[option.value][1] += VEL_INCS;
+		
+		if(optionVelocities[option.value][1] > MAX_VEL)
+		{
+			optionVelocities[option.value][1] = MAX_VEL;
+		}
+		
+		optionPositions[option.value][0] += optionVelocities[option.value][0];
+		optionPositions[option.value][1] += optionVelocities[option.value][1];
+		
+		float goalY = 0.0f;
+		if(option.name.equals("yes") || option.name.equals("no"))
+		{
+			goalY = GOAL_Y;
+		}
+		else
+		{
+			goalY = SEC_GOAL_Y;
+		}
+		
+		if(optionPositions[option.value][1] >= goalY)
+		{
+			if(option.hasBounced)
+			{
+				optionPositions[option.value][1] = goalY;
+			}
+			else
+			{
+				optionVelocities[option.value][1] = BOUNCE;
+				option.hasBounced = true;
+			}
+		}
+    }
+    
+    public void updateOpts(PauseOption option)
+    {
+    	optionVelocities[option.value][0] -= VEL_INCS;
+		
+		if(optionVelocities[option.value][0] < -MAX_VEL)
+		{
+			optionVelocities[option.value][0] = -MAX_VEL;
+		}
+		
+		optionPositions[option.value][0] += optionVelocities[option.value][0];
+		optionPositions[option.value][1] += optionVelocities[option.value][1];
+		
+		if(optionPositions[option.value][0] <= GOAL_X)
+		{
+			if(option.hasBounced)
+			{
+				optionPositions[option.value][0] = GOAL_X;
+			}
+			else
+			{
+				optionVelocities[option.value][0] = -BOUNCE;
+				option.hasBounced = true;
+			}
+		}
     }
     
     public void render()
     {
     	for(PauseOption option : PauseOption.values())
     	{
+    		if(option.optionState != state)
+    		{
+    			continue;
+    		}
+    		
     		if(option.highlighted)
     		{
     			highlightShader.useProgram();

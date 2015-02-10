@@ -22,7 +22,7 @@ import com.myscrabble.util.Timer;
 
 public class Player
 {
-	/* A cool down for the players selection (to avoid spamming left click on tile rack) */
+	/* A cool down for the player's selection (to avoid spamming left click on tile rack) */
 	private static final int SELECTION_COOLDOWN = 60; /* measured in frames */
 	private static final String AI_NAME = "AI Player";
 	private static final String DEFAULT_PLAYER_NAME = "Player 1";

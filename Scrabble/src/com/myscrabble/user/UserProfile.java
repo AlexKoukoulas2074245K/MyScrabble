@@ -144,6 +144,11 @@ public class UserProfile
         return currentTokens;
     }
     
+    public int getLastBackgroundUsed()
+    {
+    	return lastBgUsed;
+    }
+    
     public boolean[] getBackgroundsUnlocked()
     {
         return backgroundsUnlocked;

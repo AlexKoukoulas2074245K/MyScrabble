@@ -82,7 +82,7 @@ public class GameStateManager
 		
 		else if(state == PLAY)
 		{
-			states.push(new Play(this, currentUser));	
+			states.push(new Play(this, currentUser));
 		}
 	}
 	

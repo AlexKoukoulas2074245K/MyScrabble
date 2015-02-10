@@ -109,10 +109,13 @@ public class Board extends GameObject
 	private HashMap<Player, TileFormation> playerFormations;
 	
 	private boolean isFirstRound;
+	private int currentBackground;
 	
-	public Board(GameStateManager gsm)
+	public Board(GameStateManager gsm, int backgroundIndex)
 	{
 		super(gsm);
+		
+		currentBackground = backgroundIndex;
 		
 		addTexture(BOARD_TEXTURE_INDEX, BOARD_TEX_PATH);
 		loadBackgrounds();
@@ -156,7 +159,7 @@ public class Board extends GameObject
 	
 	public void renderBackground()
 	{
-		RenderUtils.renderTexture(backgroundTextures.get(6), 0, 0, 
+		RenderUtils.renderTexture(backgroundTextures.get(currentBackground), 0, 0, 
 				  Main.getNormalDimensions()[0], Main.getNormalDimensions()[1]);
 	}
 	

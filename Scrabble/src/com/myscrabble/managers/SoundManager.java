@@ -94,6 +94,11 @@ public class SoundManager
 		}
 	}
 	
+	public boolean isActive()
+	{
+		return active;
+	}
+	
 	public void disable()
 	{
 		active = false;

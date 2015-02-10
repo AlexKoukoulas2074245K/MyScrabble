@@ -5,11 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
-
 import com.myscrabble.ai.AIController.AILevel;
-import com.myscrabble.ai.AIController.AIState;
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
@@ -17,7 +13,6 @@ import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileRack;
 import com.myscrabble.fx.Effect;
 import com.myscrabble.fx.PassAnimation;
-import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
@@ -28,7 +23,6 @@ import com.myscrabble.uicomponents.Button;
 import com.myscrabble.uicomponents.PauseMenu;
 import com.myscrabble.uicomponents.ScoreDisplay;
 import com.myscrabble.user.UserProfile;
-import com.myscrabble.util.RenderUtils;
 import com.myscrabble.util.ScrabbleDictionary;
 
 /**
@@ -39,13 +33,33 @@ import com.myscrabble.util.ScrabbleDictionary;
 
 public class Play extends GameState
 {
+	/**
+	 * Uses the shading program for
+	 * all entities that are rendered on screen
+	 * and sets appropriately the darkness factor
+	 * uniform.
+	 */
+	public static void applyShading()
+	{
+		shader.useProgram();
+		shader.setUniform3f(SHADING_FACTOR_NAME, new float[]{darknessFactor, darknessFactor, darknessFactor});
+	}
+	
+	/**
+	 * Stops the usage of the shading program
+	 */
+	public static void clearShading()
+	{
+		shader.stopProgram();
+	}
+	
     /* public use shader and uniform */
-    public static Shader shader;
-    public static float darknessFactor;
+    public static Shader shader = new Shader(ShaderType.SHADING);
+    public static float darknessFactor = 1.0f;
     
     /* Shading variables and uniform intervals */
     public static final String SHADING_FACTOR_NAME = "darknessFactor";
-    private static final float MAX_DARKNESS_FACTOR = 1f;
+    private static final float MAX_DARKNESS_FACTOR = 1.0f;
     private static final float MIN_DARKNESS_FACTOR = MAX_DARKNESS_FACTOR / 3f;
     private static final float DARKNESS_INTERVALS  = 0.045f;
     
@@ -94,25 +108,21 @@ public class Play extends GameState
 	/* Current player index */
 	private int activePlayer;
 	
-	// ULTRA TEMP HACK
-	private TrueTypeFont tempFont;
-	
 	public Play(GameStateManager gsm, UserProfile userProfile)
 	{
 		super(gsm);
 		
+		this.currentUserProfile = userProfile;
+		
 		activePlayer = 0;
         
 		initCoreEntities();
-
-		shader = new Shader(ShaderType.SHADING);
-		darknessFactor = MAX_DARKNESS_FACTOR;
 	}
 
 	private void initCoreEntities()
 	{
 	    scrabbleDict = new ScrabbleDictionary();
-        board = new Board(gsm);
+        board = new Board(gsm, currentUserProfile.getLastBackgroundUsed());
         letterBag = new LetterBag(gsm);
         
         
@@ -360,26 +370,6 @@ public class Play extends GameState
 	    {
 	        finished = true;
 	    }
-	}
-	
-	/**
-	 * Uses the shading program for
-	 * all entities that are rendered on screen
-	 * and sets appropriately the darkness factor
-	 * uniform.
-	 */
-	public static void applyShading()
-	{
-		shader.useProgram();
-		shader.setUniform3f(SHADING_FACTOR_NAME, new float[]{darknessFactor, darknessFactor, darknessFactor});
-	}
-	
-	/**
-	 * Stops the usage of the shading program
-	 */
-	public static void clearShading()
-	{
-		shader.stopProgram();
 	}
 	
 	/**
