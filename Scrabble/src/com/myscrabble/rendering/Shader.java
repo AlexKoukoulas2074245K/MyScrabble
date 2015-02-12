@@ -20,7 +20,8 @@ public class Shader
     {
         SHADING("/shaders/shading"),
         COLORING("/shaders/coloring"),
-        HIGHLIGHTING("/shaders/highlight");
+        HIGHLIGHTING("/shaders/highlight"),
+        AUTO_BRIGHTNESS("/shaders/autoBrightness");
         
         private String fileName;
         
@@ -121,6 +122,16 @@ public class Shader
 	public void setUniform3f(String uniformName, float x, float y, float z)
 	{
 	    setUniform3f(uniformName, new float[]{x, y, z});
+	}
+	
+	public void setUniformf(String uniformName, float value)
+	{
+		if (!uniformLocations.containsKey(uniformName))
+		{
+			uniformLocations.put(uniformName, glGetUniformLocation(programHandle, uniformName));
+		}
+		
+		glUniform1f(uniformLocations.get(uniformName), value);
 	}
 	
 	public void setUniformb(String uniformName, int booleanValue)

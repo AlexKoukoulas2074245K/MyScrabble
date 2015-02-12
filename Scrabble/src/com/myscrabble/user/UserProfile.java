@@ -15,7 +15,7 @@ import com.myscrabble.managers.ResourceManager;
 public class UserProfile 
 {
     private static final String USER_SAVE_EXT = ".user";
-    private static final String USER_SAVE_DIR = "save";
+    private static final String USER_SAVE_DIR = ResourceManager.SAV_DIR;
     
     private String userName;
     private int currentTokens;

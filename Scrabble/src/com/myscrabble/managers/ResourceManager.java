@@ -32,15 +32,20 @@ import com.myscrabble.util.Animation;
 
 public class ResourceManager 
 {
-	/* Extension constants */
-	public static final String STD_TEX_EXT = ".png";
-	private static final String STD_TEX_EXT_CAPS = "PNG";
-	private static final String STD_SFX_EXT = ".wav";
-	private static final String STD_SFX_EXT_CAPS = "WAV";
-	private static final String INVALID_EXT = ".db";
-	private static final String FONT_EXT = ".ttf";
+	/* Public constants */
+	public static final String DOT_REGEX         = "\\.";
+	public static final String STD_TEX_EXT       = ".png";
+	public static final String SAV_DIR           = "save";
 	
-	/* Directory constants */
+	/* Private Extension constants */
+	private static final String STD_TEX_EXT_CAPS = "PNG";
+	private static final String STD_SFX_EXT      = ".wav";
+	private static final String STD_SFX_EXT_CAPS = "WAV";
+	private static final String INVALID_EXT      = ".db";
+	private static final String FONT_EXT         = ".ttf";
+	
+	/* Private Directory constants */
+
 	private static final String RES_DIR  = "res";
 	private static final String TEX_DIR  = RES_DIR + "/tex";
 	private static final String FONT_DIR = "/fonts/";
@@ -69,7 +74,7 @@ public class ResourceManager
 	 */
 	public static void writeToFile(File f, String content)
 	{
-	    try(BufferedWriter bw = new BufferedWriter(new FileWriter(f)))
+	    try (BufferedWriter bw = new BufferedWriter(new FileWriter(f)))
 	    {
 	        bw.write(content);
 	    }
@@ -78,6 +83,29 @@ public class ResourceManager
 	        System.err.println("Failed to write on file: " + f.getAbsolutePath());
             e.printStackTrace();
         }
+	}
+	
+	public static String[] getFileNames(String dirPath)
+	{
+		File dir = new File(dirPath);
+		
+		if (!dir.isDirectory())
+		{
+			System.out.println("Directory not found: " + dirPath);
+			return null;
+		}
+		
+		File[] listFiles = dir.listFiles();
+		String[] fileNames = new String[listFiles.length];
+		
+		for (int i = 0;
+			 i < fileNames.length;
+			 i++)
+		{
+			fileNames[i] = listFiles[i].getName();
+		}
+		
+		return fileNames;
 	}
 	
 	public static String loadFileAsString(final String filePath)

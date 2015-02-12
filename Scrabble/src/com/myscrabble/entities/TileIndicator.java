@@ -1,6 +1,8 @@
 package com.myscrabble.entities;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.rendering.Shader;
+import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.util.RenderUtils;
 
 /**
@@ -21,12 +23,17 @@ public class TileIndicator extends GameObject
 	
 	
 	/* Root animation directories */
-	private static final String TEX_FAILURE_ROOT_DIR = "/tiles/selection/failure/";
-	private static final String TEX_SUCCESS_ROOT_DIR = "/tiles/selection/success/";
-	private static final String TEX_NORMAL_ROOT_DIR  = "/tiles/selection/normal";
+	private static final String TEX_FAILURE_PATH = "/tiles/selection/failure.png";
+	private static final String TEX_SUCCESS_PATH = "/tiles/selection/success.png";
+	private static final String TEX_NORMAL_PATH  = "/tiles/selection/normal.png";
 	
-	/* Default animation delay */
-	private static final int ANI_DELAY = 5;
+	private static final float MAX_BRIGHT_FACT = 1.5f;
+	private static final float MIN_BRIGHT_FACT = 0.5f;
+	private static final float BRIGHT_INTERS   = 0.02f;
+	
+	private Shader brightnessShader;
+	private boolean brightRaiseFlag;
+	private float brightnessFactor;
 	
 	private int currentAnimation;
 	private int status;
@@ -36,26 +43,41 @@ public class TileIndicator extends GameObject
 	public TileIndicator(GameStateManager  gsm)
 	{
 		super(gsm);
-		loadAnimations();
+		loadTextures();
 		
+		brightnessShader = new Shader(ShaderType.AUTO_BRIGHTNESS); 
 		status = NONE;
 		currentAnimation = NONE;
 		
 	}
 	
-	private void loadAnimations()
+	private void loadTextures()
 	{
-		addAnimation(TEX_FAILURE_ROOT_DIR, ANI_DELAY);
-		addAnimation(TEX_SUCCESS_ROOT_DIR, ANI_DELAY);
-		addAnimation(TEX_NORMAL_ROOT_DIR,  ANI_DELAY);
+		addTexture(FAILURE, TEX_FAILURE_PATH);
+		addTexture(SUCCESS, TEX_SUCCESS_PATH);
+		addTexture(NORMAL, TEX_NORMAL_PATH);
 	}
 	
 	@Override
 	public void update()
 	{	
-		if(currentAnimation != NONE)
+		if (brightRaiseFlag)
 		{
-			animations.get(currentAnimation).update();
+			brightnessFactor += BRIGHT_INTERS;
+			
+			if (brightnessFactor >= MAX_BRIGHT_FACT)
+			{
+				brightRaiseFlag = !brightRaiseFlag;
+			}
+		}
+		else
+		{
+			brightnessFactor -= BRIGHT_INTERS;
+			
+			if (brightnessFactor <= MIN_BRIGHT_FACT)
+			{
+				brightRaiseFlag = !brightRaiseFlag;
+			}
 		}
 	}
 	
@@ -64,7 +86,10 @@ public class TileIndicator extends GameObject
 	{		
 		if(currentAnimation != NONE)
 		{
-			RenderUtils.renderTexture(animations.get(currentAnimation).getCurrentFrame(), x, y);
+			brightnessShader.useProgram();
+			brightnessShader.setUniformf("brightnessFactor", brightnessFactor);
+			RenderUtils.renderTexture(getTexture(currentAnimation), x, y);
+			brightnessShader.stopProgram();
 		}
 	}
 
