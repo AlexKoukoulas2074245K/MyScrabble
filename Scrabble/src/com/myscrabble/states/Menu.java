@@ -7,6 +7,7 @@ import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.ProfileManager;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;
+import com.myscrabble.uicomponents.Customize;
 import com.myscrabble.uicomponents.MainOption;
 import com.myscrabble.uicomponents.MainOption.OptionName;
 import com.myscrabble.user.UserProfile;
@@ -24,7 +25,10 @@ public class Menu extends GameState
 	{
 		PROFILE_CREATION,
 		PROFILE_SELECTION,
-		MAIN_MENU;
+		MAIN_MENU,
+		PLAY,
+		CUSTOMIZE,
+		EXIT;
 	}
 	
 	enum TransState
@@ -54,6 +58,7 @@ public class Menu extends GameState
 	
 	private ProfileManager profileManager;
     private UserProfile currentUserProfile;
+    private Customize custom;
     private Texture backgroundTex;
     private Texture titleTex;
     private MainOption[] options;
@@ -82,8 +87,8 @@ public class Menu extends GameState
 		brightnessFactor = MIN_BRIGHT_FACT;
 		brightRaiseFlag  = true;
 		
-		alphaFactor = 0.0f;
-		transState  = TransState.IDLE;
+		alphaFactor = 1.0f;
+		transState  = TransState.BRIGHTEN;
 		transShader = new Shader(ShaderType.TRANSITION);
 	}
 	
@@ -114,7 +119,7 @@ public class Menu extends GameState
 			state = MenuState.MAIN_MENU;
 		}
 		
-		nextState = null;
+		nextState = state;
 	}
 	
 	@Override
@@ -137,6 +142,17 @@ public class Menu extends GameState
 		
 		case MAIN_MENU:
 			handleInputOptions();
+			break;
+			
+		case PLAY:
+			break;
+		
+		case CUSTOMIZE:
+			custom.handleInput();
+			break;
+			
+		case EXIT:
+			break;
 		}
 	}
 	
@@ -149,18 +165,21 @@ public class Menu extends GameState
 		
 		if(options[0].isSelected())
 		{
-			finished = true;
+			setState(MenuState.PLAY);
+		}
+		else if(options[1].isSelected())
+		{
+			setState(MenuState.CUSTOMIZE);
 		}
 		else if(options[2].isSelected())
 		{
-			Main.endGame();
+			setState(MenuState.EXIT);
 		}
 	}
 	
 	@Override
 	public void update() 
 	{
-		System.out.println(alphaFactor);
 		if(nextState != null)
 		{
 			transState();
@@ -188,6 +207,23 @@ public class Menu extends GameState
 				alphaFactor = MAX_ALPHA_FACT;
 				transState = TransState.BRIGHTEN;
 				state = nextState;
+				
+				if(state == MenuState.PLAY)
+				{
+					finished = true;
+				}
+				else if(state == MenuState.EXIT)
+				{
+					Main.endGame();
+				}
+				else if(state == MenuState.CUSTOMIZE)
+				{
+					custom = new Customize(gsm, currentUserProfile);
+				}
+				else if(state == MenuState.MAIN_MENU)
+				{
+					custom = null;
+				}
 			}
 		}
 		else if(transState == TransState.BRIGHTEN)
@@ -232,6 +268,20 @@ public class Menu extends GameState
 			break;
 		
 		case MAIN_MENU:
+			break;
+			
+		case PLAY:
+			break;
+		
+		case CUSTOMIZE:
+			custom.update();
+			if(custom.isFinished())
+			{
+				setState(MenuState.MAIN_MENU);
+			}
+			break;
+			
+		case EXIT:
 			break;
 		}
 	}
@@ -294,6 +344,18 @@ public class Menu extends GameState
 		
 		case MAIN_MENU:
 			renderOptions();
+			break;
+			
+		case CUSTOMIZE:
+			custom.render();
+			break;
+				
+		case PLAY:
+			break;
+		
+		
+		case EXIT:
+			break;
 		}
 	}
 
@@ -321,6 +383,12 @@ public class Menu extends GameState
     {
     	transState = TransState.DARKEN;
     	alphaFactor += TRANS_INTERVS;
+    	
+    	for(MainOption option : options)
+    	{
+    		option.setHighlighted(false);
+    	}
+    	
     	this.nextState = state;
     }
 }

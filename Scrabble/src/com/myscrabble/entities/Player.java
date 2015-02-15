@@ -25,7 +25,6 @@ public class Player
 	/* A cool down for the player's selection (to avoid spamming left click on tile rack) */
 	private static final int SELECTION_COOLDOWN = 60; /* measured in frames */
 	private static final String AI_NAME = "AI Player";
-	private static final String DEFAULT_PLAYER_NAME = "Player 1";
 	
 	/* Sound effect constant */
 	private static final String SFX_RELEASE_NAME = "tileRelease";
@@ -70,8 +69,13 @@ public class Player
 	/* Drawing allowance of the player */
 	private int drawingAllowance;
 	
-	public Player(GameStateManager gsm, Play playStateRef, Board board, 
+	public Player(GameStateManager gsm, Play playStateRef, Board board,
 				  ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman)
+	{
+		this(gsm, playStateRef, board, scrabbleDict, letterBag, isHuman, AI_NAME);
+	}
+	public Player(GameStateManager gsm, Play playStateRef, Board board, 
+				  ScrabbleDictionary scrabbleDict, LetterBag letterBag, boolean isHuman, String name)
 	{
 		this.gsm = gsm;
 		this.playStateRef = playStateRef;
@@ -79,11 +83,10 @@ public class Player
 		this.scrabbleDict = scrabbleDict;
 		this.letterBag = letterBag;
 		this.isHuman = isHuman;
+		this.name = name;
 		
 		aiController = new AIController(Play.AI_LEVEL, this, board, scrabbleDict);
 		tileRack = new TileRack(gsm, this, letterBag);
-		
-		name = isHuman ? DEFAULT_PLAYER_NAME : AI_NAME;
 		
 		isActive = false;
 		

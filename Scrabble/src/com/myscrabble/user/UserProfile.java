@@ -72,8 +72,8 @@ public class UserProfile
             StringBuilder content = new StringBuilder();
             
             content.append("0"); content.append(System.lineSeparator());
-            content.append("0 0 0 0 0 0 0 0 0 0 1"); content.append(System.lineSeparator());
-            content.append("10"); content.append(System.lineSeparator());
+            content.append("0 0 0 0 0 0 0 0 0 1"); content.append(System.lineSeparator());
+            content.append("9"); content.append(System.lineSeparator());
             
             ResourceManager.writeToFile(userFile, content.toString());
         }
@@ -168,5 +168,10 @@ public class UserProfile
     public void addTokens(int tokens)
     {
     	currentTokens += tokens;
+    }
+    
+    public void setLastBackgroundUsed(int lastBgUsed)
+    {
+    	this.lastBgUsed = lastBgUsed;
     }
 }

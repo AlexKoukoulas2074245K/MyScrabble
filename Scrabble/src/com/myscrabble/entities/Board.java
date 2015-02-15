@@ -574,6 +574,11 @@ public class Board extends GameObject
 		return getTileOnMouse().getPos();
 	}
 	
+	public int getCurrentBackground()
+	{
+		return currentBackground;	
+	}
+	
 	/* Transformed mouse x and y coordinates which are
 	 * used to extract a tile from the tile map */
 	public int getTransfMouseX()
@@ -602,5 +607,10 @@ public class Board extends GameObject
 	public void setFirstRound(boolean isFirstRound)
 	{
 	    this.isFirstRound = isFirstRound;
+	}
+	
+	public void setCurrentBackground(int currentBackground)
+	{
+		this.currentBackground = currentBackground;
 	}
 }

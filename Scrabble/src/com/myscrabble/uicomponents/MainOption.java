@@ -87,4 +87,9 @@ public class MainOption
 
 		return optionRect.contains(MouseManager.getX(), MouseManager.getY());
 	}
+	
+	public void setHighlighted(boolean highlighted)
+	{
+		this.highlighted = highlighted;
+	}
 }

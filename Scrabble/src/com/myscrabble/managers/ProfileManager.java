@@ -19,6 +19,13 @@ import com.myscrabble.util.RenderUtils;
  */
 public class ProfileManager
 {	
+	public static final org.newdawn.slick.Color STD_FONT_COLOR = 
+	                new org.newdawn.slick.Color(196, 196, 196);
+	public static final org.newdawn.slick.Color DIM_FONT_COLOR = 
+     	            new org.newdawn.slick.Color(148, 148, 148);
+	public static final org.newdawn.slick.Color WHITE_FONT_COLOR = 
+	 		        new org.newdawn.slick.Color(255, 255, 255);
+	
 	/* Asset directories and paths */
 	private static final String FONT_NAME         = "font_regular";
 	private static final String PROF_CRE_TEX      = "/menu/profileCreation";
@@ -42,12 +49,7 @@ public class ProfileManager
 	
 	private static final float PROF_Y_MARGIN = 48;
 	
-	private static final org.newdawn.slick.Color STD_FONT_COLOR = 
-			         new org.newdawn.slick.Color(196, 196, 196);
-	private static final org.newdawn.slick.Color DIM_FONT_COLOR = 
-	         		 new org.newdawn.slick.Color(148, 148, 148);
-	private static final org.newdawn.slick.Color WHITE_COLOR = 
-    		 		new org.newdawn.slick.Color(255, 255, 255);
+
 	
 	private static final int MAX_PROFILE_NAME_SIZE = 16;
 	
@@ -258,7 +260,7 @@ public class ProfileManager
 				font.drawString(profileRects[i].x, 
 								profileRects[i].y,
 								allProfiles[i].toString(),
-								WHITE_COLOR);
+								WHITE_FONT_COLOR);
 			}
 			else
 			{

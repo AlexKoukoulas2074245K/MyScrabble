@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import org.newdawn.slick.TrueTypeFont;
+
 import com.myscrabble.ai.AIController.AILevel;
 import com.myscrabble.entities.Board;
 import com.myscrabble.entities.GameObject;
 import com.myscrabble.entities.LetterBag;
 import com.myscrabble.entities.Player;
 import com.myscrabble.entities.TileRack;
-import com.myscrabble.fx.Effect;
-import com.myscrabble.fx.PassAnimation;
+import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
@@ -69,6 +70,12 @@ public class Play extends GameState
 	public static final int TILE_STYLE = 1;
 	public static final AILevel AI_LEVEL = AILevel.HARD;
 
+	private static final String FONT_NAME   = "font_bold";
+	private static final int FONT_SIZE      = 32;
+	private static final boolean FONT_ALIAS = true;
+	private static final float PASS_RED_INTERVAL = 0.02f;
+	private static final float[] AI_PASS_POS  = new float[]{470, 15};
+	private static final float[] HUM_PASS_POS = new float[]{470, Main.getNormalDimensions()[1] - 50};
 	
 	/* Reference to the profile of the user currently playing */
 	private UserProfile currentUserProfile;
@@ -84,15 +91,14 @@ public class Play extends GameState
 	/* All active players */
 	private ArrayList<Player> players;
 	
+	/* Pass text time for each player */
+	private HashMap<Player, Float> playerPassTime;
+	
 	/* All active buttons */
 	private ArrayList<Button> buttons;
 	
 	/* Player Points */
 	private HashMap<Player, Integer> playerPoints;
-	
-	/* Game Effects */
-	private HashSet<Effect> effects;
-	private HashSet<Effect> effectsToRemove;
 	
 	/* Instance of game Board */
 	private Board board;
@@ -108,6 +114,9 @@ public class Play extends GameState
 	
 	/* Current player index */
 	private int activePlayer;
+	
+	/* Font to alert about passes */
+	private TrueTypeFont passFont;
 	
 	public Play(GameStateManager gsm, UserProfile userProfile)
 	{
@@ -129,7 +138,7 @@ public class Play extends GameState
         letterBag = new LetterBag(gsm);
         
         players = new ArrayList<Player>();
-        players.add(new Player(gsm, this, board, scrabbleDict, letterBag, true));
+        players.add(new Player(gsm, this, board, scrabbleDict, letterBag, true, currentUserProfile.getName()));
         players.get(activePlayer).setActive(true);
         players.add(new Player(gsm, this, board, scrabbleDict, letterBag, false));
 
@@ -142,17 +151,18 @@ public class Play extends GameState
         
         scoreDisplay = new ScoreDisplay(gsm.getRes(), players.get(0), players.get(1));
         
+        playerPassTime = new HashMap<Player, Float>();
         playerPoints = new HashMap<Player, Integer>();
-        
-        effects = new HashSet<Effect>();
-        effectsToRemove = new HashSet<Effect>();
         
         for(Player player : players)
         {
             playerPoints.put(player, 0);
+            playerPassTime.put(player, 0.0f);
         }
         
         pauseMenu = new PauseMenu(gsm);
+        
+        passFont = gsm.getRes().loadFont(FONT_NAME, FONT_SIZE, FONT_ALIAS);
 	}
 	
 	@Override
@@ -234,24 +244,12 @@ public class Play extends GameState
 			go.update();
 		}
 		
-		for(Effect effect : effects)
+		for(Entry<Player, Float> entry : playerPassTime.entrySet())
 		{
-			effect.update();
-			
-			if(effect.isFinished())
+			if(entry.getValue() > 0.0f)
 			{
-				effectsToRemove.add(effect);
+				playerPassTime.replace(entry.getKey(), entry.getValue() - PASS_RED_INTERVAL);
 			}
-		}
-		
-		if(effectsToRemove.size() > 0)
-		{
-			for(Effect effect : effectsToRemove)
-			{
-				effects.remove(effect);
-			}
-			
-			effectsToRemove.clear();
 		}
 		
 		scoreDisplay.update();
@@ -279,9 +277,16 @@ public class Play extends GameState
 			player.render();
 		}
 		
-		for(Effect effect : effects)
+		for(Entry<Player, Float> entry : playerPassTime.entrySet())
 		{
-			effect.render();
+			if(entry.getValue() > 0.0f && entry.getKey().isHuman())
+			{
+				passFont.drawString(HUM_PASS_POS[0], HUM_PASS_POS[1], "I pass..");
+			}
+			else if(entry.getValue() > 0.0f && !entry.getKey().isHuman())
+			{
+				passFont.drawString(AI_PASS_POS[0], AI_PASS_POS[1], "I pass..");
+			}
 		}
 		
 		scoreDisplay.render();
@@ -320,7 +325,7 @@ public class Play extends GameState
 		        return;
 		    }
 		    
-			effects.add(new PassAnimation(gsm.getRes(), getActivePlayer().getName()));
+			playerPassTime.replace(getActivePlayer(), 1.0f);
 		}
 		
 	    scoreDisplay.addPoints(getActivePlayer().getCurrentPoints(), getActivePlayer());
