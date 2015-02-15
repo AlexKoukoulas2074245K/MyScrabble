@@ -4,6 +4,7 @@ package com.myscrabble.states;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import com.myscrabble.ai.AIController.AILevel;
 import com.myscrabble.entities.Board;
@@ -117,6 +118,8 @@ public class Play extends GameState
 		activePlayer = 0;
         
 		initCoreEntities();
+		
+		darknessFactor = 0.0f;
 	}
 
 	private void initCoreEntities()
@@ -124,7 +127,6 @@ public class Play extends GameState
 	    scrabbleDict = new ScrabbleDictionary();
         board = new Board(gsm, currentUserProfile.getLastBackgroundUsed());
         letterBag = new LetterBag(gsm);
-        
         
         players = new ArrayList<Player>();
         players.add(new Player(gsm, this, board, scrabbleDict, letterBag, true));
@@ -368,6 +370,13 @@ public class Play extends GameState
 	{
 	    if(letterBag.hasRunOut())
 	    {
+	    	for(Entry<Player, Integer> entry : playerPoints.entrySet())
+	    	{
+	    		if(entry.getKey().isHuman())
+	    		{
+	    			currentUserProfile.addTokens(entry.getValue());
+	    		}
+	    	}
 	        finished = true;
 	    }
 	}

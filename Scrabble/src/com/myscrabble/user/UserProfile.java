@@ -139,6 +139,17 @@ public class UserProfile
         ResourceManager.writeToFile(userFile, content.toString());
     }
     
+    @Override
+    public String toString()
+    {
+    	return userName + " ( " + currentTokens + " tokens" + " )";
+    }
+    
+    public String getName()
+    {
+    	return userName;
+    }
+    
     public int getCurrentTokens()
     {
         return currentTokens;
@@ -152,5 +163,10 @@ public class UserProfile
     public boolean[] getBackgroundsUnlocked()
     {
         return backgroundsUnlocked;
+    }
+    
+    public void addTokens(int tokens)
+    {
+    	currentTokens += tokens;
     }
 }

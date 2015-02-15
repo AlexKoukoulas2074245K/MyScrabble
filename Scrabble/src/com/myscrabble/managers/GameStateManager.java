@@ -77,7 +77,7 @@ public class GameStateManager
 		
 		if(state == MENU)
 		{	
-			states.push(new Menu(this));
+			states.push(new Menu(this, currentUser));
 		}
 		
 		else if(state == PLAY)

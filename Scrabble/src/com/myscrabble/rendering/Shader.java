@@ -21,7 +21,8 @@ public class Shader
         SHADING("/shaders/shading"),
         COLORING("/shaders/coloring"),
         HIGHLIGHTING("/shaders/highlight"),
-        AUTO_BRIGHTNESS("/shaders/autoBrightness");
+        AUTO_BRIGHTNESS("/shaders/autoBrightness"),
+        TRANSITION("/shaders/transition");
         
         private String fileName;
         

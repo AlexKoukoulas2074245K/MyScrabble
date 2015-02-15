@@ -144,7 +144,15 @@ public class Main
 	
 	private static void cleanUp()
 	{
-	    gsm.getCurrentState().getCurrentUser().save();
+		if(gsm.getCurrentState().getCurrentUser() != null)
+		{
+			gsm.getCurrentState().getCurrentUser().save();
+		}
+		else
+		{
+			System.out.println("No profiles were saved");
+		}
+		
 		Display.destroy();
 		AL.destroy();
 	}

@@ -52,7 +52,7 @@ public class ResourceManager
 	private static final String SFX_DIR  = RES_DIR + "/sfx/";
 	
 	private HashMap<String, Texture> loadedTextures;
-	private HashMap<String, TrueTypeFont> loadedFonts;
+	private HashMap<String, Font> loadedFonts;
 	
 	public ResourceManager()
 	{
@@ -313,15 +313,18 @@ public class ResourceManager
         
     	if(loadedFonts.containsKey(fontName))
     	{
-    		return loadedFonts.get(fontName);
+    		Font cacheFont = loadedFonts.get(fontName);
+    		cacheFont = cacheFont.deriveFont(fontSize);
+    		return new TrueTypeFont(cacheFont, antiAlias);
     	}
     	
         TrueTypeFont result = null;
+        Font awtFont = null;
         
         try(InputStream in = getClass().getResourceAsStream(FONT_DIR + fontName + FONT_EXT))
         {
             long startTime = System.nanoTime();
-            Font awtFont = Font.createFont(Font.TRUETYPE_FONT, in); //<-- This operation takes about 5 seconds
+            awtFont = Font.createFont(Font.TRUETYPE_FONT, in); //<-- This operation takes about 5 seconds
             System.out.println("Operation took: " + (System.nanoTime() - startTime) / 1000000);
             
             awtFont = awtFont.deriveFont(fontSize);
@@ -340,7 +343,7 @@ public class ResourceManager
             e.printStackTrace();
         }
         
-        loadedFonts.put(fontName, result);
+        loadedFonts.put(fontName, awtFont);
         
         
         return result;
