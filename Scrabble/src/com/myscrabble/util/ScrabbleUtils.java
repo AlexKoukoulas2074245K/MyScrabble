@@ -248,6 +248,23 @@ public class ScrabbleUtils
 		return result;
 	}
 	
+	public static String getTimeRepresentation(int time)
+	{
+	    int secondsInAMinute = 60;
+	    int minutesInAnHour  = 60;
+	    
+	    int seconds = time % secondsInAMinute;
+	    int totalMinutes = time / secondsInAMinute;
+	    int minutes = totalMinutes % minutesInAnHour;
+	    int hours   = totalMinutes / minutesInAnHour;
+	    
+	    String secondsComp = seconds < 10 ? "0" + seconds : String.valueOf(seconds);
+	    String minutesComp = minutes < 10 ? "0" + minutes : String.valueOf(minutes);
+	    String hoursComp   = hours   < 10 ? "0" + hours : String.valueOf(hours);
+	    
+	    return hoursComp + "H " + minutesComp + "M " + secondsComp + "S"; 
+	}
+	
 	/**
 	 * 
 	 * @param t1 

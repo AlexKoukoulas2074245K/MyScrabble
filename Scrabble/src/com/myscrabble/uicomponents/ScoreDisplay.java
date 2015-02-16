@@ -11,8 +11,6 @@ import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.entities.Player;
 import com.myscrabble.managers.ResourceManager;
-import com.myscrabble.rendering.Shader;
-import com.myscrabble.rendering.Shader.ShaderType;
 import com.myscrabble.states.Play;
 import com.myscrabble.util.RenderUtils;
 
@@ -49,7 +47,6 @@ public class ScoreDisplay
     private Player player1Ref;
     private Player player2Ref;
     
-    private Shader darkenProgram;
     
     private int style;
     
@@ -63,8 +60,6 @@ public class ScoreDisplay
         
         style = DEFAULT_STYLE;
         scoreTextures = rm.getAllTextures(TEX_DIR + style);
-        
-        darkenProgram = new Shader(ShaderType.SHADING);
         
         loadFonts();
     }

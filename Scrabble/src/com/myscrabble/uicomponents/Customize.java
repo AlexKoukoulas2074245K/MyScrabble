@@ -10,7 +10,6 @@ import org.newdawn.slick.opengl.Texture;
 
 import com.myscrabble.entities.Board;
 import com.myscrabble.managers.GameStateManager;
-import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
 import com.myscrabble.managers.ProfileManager;
 import com.myscrabble.user.UserProfile;
@@ -143,7 +142,7 @@ public class Customize
 												   ProfileManager.DIM_FONT_COLOR; 
 		font.drawString(GO_BACK_RECT.x,
 						GO_BACK_RECT.y,
-						"Go Back",
+						"Okay!",
 						backCol);
 		
 		GL11.glPopAttrib();

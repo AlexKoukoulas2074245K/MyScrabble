@@ -37,21 +37,21 @@ public class ProfileManager
 	private static final int MAX_PROFILES = 3;
 	
 	/* Positional Constants */
-	private static final float   FONT_SIZE           = 34;
-	private static final float[] PROF_RECT_SIZE      = new float[]{256, 32};
-	private static final float[] PROF_CRE_POS        = new float[]{120, 264};
+	private static final float   FONT_SIZE           = 32;
+	private static final float[] PROF_RECT_SIZE      = new float[]{450, 32};
+	private static final float[] PROF_CRE_POS        = new float[]{115, 264};
 	private static final float[] NEW_NAME_POS        = new float[]{PROF_CRE_POS[0] + 76, PROF_CRE_POS[1] + 150};
 	private static final float[] VALID_PROF_TEXT_POS = new float[]{NEW_NAME_POS[0] - 70, NEW_NAME_POS[1] + 64};
 	private static final float[] SEL_PROF_TEXT_POS   = new float[]{PROF_CRE_POS[0] + 24, PROF_CRE_POS[1] - 48};
 	private static final float[] PROF_FOUND_POS      = new float[]{SEL_PROF_TEXT_POS[0], PROF_CRE_POS[1]};
-	private static final float[] FIRST_PROF_POS      = new float[]{PROF_FOUND_POS[0] + 24, PROF_FOUND_POS[1] + 48};
+	private static final float[] FIRST_PROF_POS      = new float[]{PROF_FOUND_POS[0], PROF_FOUND_POS[1] + 48};
 	private static final float[] CRE_NEW_PROF_POS    = new float[]{220, 480};
 	
 	private static final float PROF_Y_MARGIN = 48;
 	
 
 	
-	private static final int MAX_PROFILE_NAME_SIZE = 16;
+	private static final int MAX_PROFILE_NAME_SIZE = 6;
 	
 	private GameStateManager gsm;
 	
@@ -215,7 +215,14 @@ public class ProfileManager
 			{
 				if(newProfileName.length() < MAX_PROFILE_NAME_SIZE)
 				{
-					newProfileName += nextChar;
+				    if(newProfileName.length() > 0)
+				    {
+				        newProfileName += String.valueOf(nextChar).toLowerCase();
+				    }
+				    else
+				    {
+				        newProfileName += String.valueOf(nextChar).toUpperCase();
+				    }
 				}
 			}
 		}	

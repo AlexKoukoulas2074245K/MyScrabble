@@ -3,7 +3,6 @@ package com.myscrabble.states;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.newdawn.slick.TrueTypeFont;
@@ -115,6 +114,10 @@ public class Play extends GameState
 	/* Current player index */
 	private int activePlayer;
 	
+	/* Time accumulator for the player */
+	private int timeAccum;
+	private int frameCounter;
+	
 	/* Font to alert about passes */
 	private TrueTypeFont passFont;
 	
@@ -129,6 +132,8 @@ public class Play extends GameState
 		initCoreEntities();
 		
 		darknessFactor = 0.0f;
+		timeAccum = 0;
+		frameCounter = 0;
 	}
 
 	private void initCoreEntities()
@@ -201,6 +206,13 @@ public class Play extends GameState
 	@Override
 	public void update() 
 	{	
+	    frameCounter++;
+	    if(frameCounter == Main.getFPS())
+	    {
+	        timeAccum++;
+	        frameCounter = 0;
+	    }
+	    
 	    if(pauseMenu.isActive())
 	    {
 	        if(darknessFactor > MIN_DARKNESS_FACTOR)
@@ -213,6 +225,8 @@ public class Play extends GameState
 	        if(pauseMenu.getMainMenuRequest())
 	        {
 	        	finished = true;
+	        	currentUserProfile.addTimePlayed(timeAccum);
+	        	timeAccum = 0;
 	        }
 	        
 	        return;
@@ -383,6 +397,8 @@ public class Play extends GameState
 	    		}
 	    	}
 	        finished = true;
+	        currentUserProfile.addTimePlayed(timeAccum);
+	        timeAccum = 0;
 	    }
 	}
 	
@@ -394,5 +410,10 @@ public class Play extends GameState
 	private Player getActivePlayer()
 	{
 	    return players.get(activePlayer);
-	}    
+	}
+	
+	public int getTimeElapsed()
+	{
+	    return timeAccum;
+	}
 }

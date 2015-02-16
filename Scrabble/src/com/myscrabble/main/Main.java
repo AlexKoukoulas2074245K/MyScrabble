@@ -24,6 +24,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import com.myscrabble.managers.GameStateManager;
+import com.myscrabble.states.Play;
 
 /**
  * 
@@ -55,6 +56,11 @@ public class Main
 	public static void endGame()
 	{
 		Main.finished = true;
+	}
+	
+	public static int getFPS()
+	{
+	    return wconfig.getFps();
 	}
 	
 	public static float[] getNormalDimensions()
@@ -146,6 +152,11 @@ public class Main
 	{
 		if(gsm.getCurrentState().getCurrentUser() != null)
 		{
+		    if(gsm.getCurrentState() instanceof Play)
+		    {
+		        Play state = (Play)gsm.getCurrentState();
+		        gsm.getCurrentState().getCurrentUser().addTimePlayed(state.getTimeElapsed());
+		    }
 			gsm.getCurrentState().getCurrentUser().save();
 		}
 		else

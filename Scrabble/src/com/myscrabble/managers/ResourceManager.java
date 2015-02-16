@@ -53,6 +53,7 @@ public class ResourceManager
 	
 	private HashMap<String, Texture> loadedTextures;
 	private HashMap<String, Font> loadedFonts;
+	private static final int ENCRYPT_KEY = 24;
 	
 	public ResourceManager()
 	{
@@ -75,8 +76,8 @@ public class ResourceManager
 	public static void writeToFile(File f, String content)
 	{
 	    try (BufferedWriter bw = new BufferedWriter(new FileWriter(f)))
-	    {
-	        bw.write(content);
+	    {	        
+	        bw.write(encrypt(content));
 	    }
 	    catch (IOException e) 
 	    {
@@ -85,6 +86,36 @@ public class ResourceManager
         }
 	}
 	
+	private static String encrypt(String content)
+	{
+	    StringBuilder result = new StringBuilder();
+	    
+	    for(int i = 0; i < content.length(); i++)
+	    {
+	        result.append((char)((int)content.charAt(i) + ENCRYPT_KEY));
+	    }
+	    
+	    return result.toString();
+	}
+	
+	private static String decrypt(String content)
+	{
+	    StringBuilder result = new StringBuilder();
+	    
+	    for(int i = 0; i < content.length(); i++)
+	    {
+	        result.append((char)((int)content.charAt(i) - ENCRYPT_KEY));
+	    }
+	    
+	    return result.toString();
+	}
+	
+	/**
+	 * 
+	 * @param dirPath to extract the file names from
+	 * @return all the filenames from a specified
+	 * directory
+	 */
 	public static String[] getFileNames(String dirPath)
 	{
 		File dir = new File(dirPath);
@@ -110,7 +141,7 @@ public class ResourceManager
 	
 	public static String loadFileAsString(final String filePath)
     {
-        return loadFileAsString(filePath, false);
+        return loadFileAsString(filePath, false, false);
     }
 	
 	/**
@@ -120,7 +151,7 @@ public class ResourceManager
 	 * (NOTE) static to be accessible to non game objects 
 	 * such as shader objects, user profiles and ScrabbleDictionary objects.
 	 */
-	public static String loadFileAsString(final String filePath, boolean absolutePath)
+	public static String loadFileAsString(final String filePath, boolean absolutePath, boolean decryptionNeeded)
 	{
 	    String fileDir = absolutePath ? filePath : RES_DIR + filePath;
 	    
@@ -134,7 +165,14 @@ public class ResourceManager
 			
 			while((line = br.readLine()) != null)
 			{
-				result.append(line);
+			    if(decryptionNeeded)
+			    {
+			        result.append(decrypt(line));
+			    }
+			    else
+			    {
+			        result.append(line);
+			    }
 				result.append(System.lineSeparator());
 			}
 			

@@ -8,8 +8,6 @@ import com.myscrabble.main.Main;
 import com.myscrabble.managers.GameStateManager;
 import com.myscrabble.managers.KeyboardManager;
 import com.myscrabble.managers.MouseManager;
-import com.myscrabble.managers.ResourceManager;
-import com.myscrabble.managers.SoundManager;
 import com.myscrabble.managers.SoundManager.SoundType;
 import com.myscrabble.rendering.Shader;
 import com.myscrabble.rendering.Shader.ShaderType;

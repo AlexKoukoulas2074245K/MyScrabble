@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.IllegalFormatException;
 
 import com.myscrabble.managers.ResourceManager;
+import com.myscrabble.util.ScrabbleUtils;
 
 /**
  * 
@@ -21,6 +22,7 @@ public class UserProfile
     private int currentTokens;
     private boolean[] backgroundsUnlocked;
     private int lastBgUsed;
+    private int timePlayed;
     
     public UserProfile(String userName)
     {
@@ -53,7 +55,7 @@ public class UserProfile
             createUserProfile();
         }
         
-        return ResourceManager.loadFileAsString(userSaveFile.getAbsolutePath(), true);       
+        return ResourceManager.loadFileAsString(userSaveFile.getAbsolutePath(), true, true);       
     }
     
     private void createUserProfile()
@@ -74,6 +76,7 @@ public class UserProfile
             content.append("0"); content.append(System.lineSeparator());
             content.append("0 0 0 0 0 0 0 0 0 1"); content.append(System.lineSeparator());
             content.append("9"); content.append(System.lineSeparator());
+            content.append("0"); content.append(System.lineSeparator());
             
             ResourceManager.writeToFile(userFile, content.toString());
         }
@@ -96,6 +99,8 @@ public class UserProfile
             }
             
             lastBgUsed = Integer.parseInt(contentLines[2]);
+            timePlayed = Integer.parseInt(contentLines[3]);
+            
         }
         catch(IllegalFormatException e)
         {
@@ -132,22 +137,28 @@ public class UserProfile
             {
                 content.append(" ");
             }
-        } 
+        }content.append(System.lineSeparator());
         
-        content.append(System.lineSeparator());
         content.append(lastBgUsed); content.append(System.lineSeparator());
+        content.append(timePlayed); content.append(System.lineSeparator());
+        
         ResourceManager.writeToFile(userFile, content.toString());
     }
     
     @Override
     public String toString()
     {
-    	return userName + " ( " + currentTokens + " tokens" + " )";
+    	return userName + " (played for: " + ScrabbleUtils.getTimeRepresentation(timePlayed) + ")";
     }
     
     public String getName()
     {
     	return userName;
+    }
+    
+    public int getTimePlayed()
+    {
+        return timePlayed;
     }
     
     public int getCurrentTokens()
@@ -163,6 +174,11 @@ public class UserProfile
     public boolean[] getBackgroundsUnlocked()
     {
         return backgroundsUnlocked;
+    }
+    
+    public void addTimePlayed(int time)
+    {
+        this.timePlayed += time;
     }
     
     public void addTokens(int tokens)
